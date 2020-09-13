@@ -51,19 +51,19 @@ const uiSchema = {
   elements: [
     {
       type: "Control",
-      scope: "#/properties/name"
+      ref: "#/name"
     },
     {
       type: "Control",
-      scope: "#/properties/age"
+      ref: "#/age"
     },
     {
       type: "Control",
-      scope: "#/properties/male"
+      ref: "#/male"
     },
     {
       type: "Control",
-      scope: "#/properties/children"
+      ref: "#/children"
     }
   ]
 };

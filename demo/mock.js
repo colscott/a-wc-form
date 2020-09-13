@@ -71,15 +71,15 @@ export const uiSchema = {
       elements: [
         {
           type: "Control",
-          scope: "#/properties/name"
+          ref: "#/name"
         },
         {
           type: "Control",
-          scope: "#/properties/personalData/properties/age"
+          ref: "#/personalData/age"
         },
         {
           type: "Control",
-          scope: "#/properties/birthDate"
+          ref: "#/birthDate"
         }
       ]
     },
@@ -92,15 +92,15 @@ export const uiSchema = {
       elements: [
         {
           type: "Control",
-          scope: "#/properties/personalData/properties/height"
+          ref: "#/personalData/height"
         },
         {
           type: "Control",
-          scope: "#/properties/nationality"
+          ref: "#/nationality"
         },
         {
           type: "Control",
-          scope: "#/properties/occupation",
+          ref: "#/occupation",
           suggestion: [
             "Accountant",
             "Engineer",
@@ -116,7 +116,7 @@ export const uiSchema = {
     },
     {
       type: "Control",
-      scope: "#/properties/comments"
+      ref: "#/comments"
     }
   ]
 };

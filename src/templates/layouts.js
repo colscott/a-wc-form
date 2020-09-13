@@ -97,7 +97,7 @@ function getControls(context) {
   const uiSchema = [];
   uiSchema.push({
     type: "Control",
-    scope: null,
+    ref: null,
     label: null
   });
   return uiSchema;

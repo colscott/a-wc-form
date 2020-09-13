@@ -12,7 +12,7 @@
  * @typedef {Object} JsonUiSchemaControl
  * @property {('Control')} type the controller type
  * @property {string} label some layout make use of the label as a UI header
- * @property {string} scope pointer to the type in the JSON Schema that will back this value
+ * @property {string} ref pointer to the type in the JSON Schema that will back this value
  */
 
 /** @typedef {JsonUiSchemaControl|JsonUiSchemaLayout} JsonUiSchema */

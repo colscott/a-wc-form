@@ -10,30 +10,30 @@ export function getUiSchema(schema, baseScope) {
 }
 
 const schema2UiSchema = {
-  boolean: (schema, scope) => ({
+  boolean: (schema, ref) => ({
     type: "Control",
-    scope
+    ref
   }),
-  interger: (schema, scope) => ({
+  interger: (schema, ref) => ({
     type: "Control",
-    scope
+    ref
   }),
-  number: (schema, scope) => ({
+  number: (schema, ref) => ({
     type: "Control",
-    scope
+    ref
   }),
-  string: (schema, scope) => ({
+  string: (schema, ref) => ({
     type: "Control",
-    scope
+    ref
   }),
-  array: (schema, scope) => ({
+  array: (schema, ref) => ({
     type: "Control",
-    scope
+    ref
   }),
-  object: (schema, scope) => {
-    const innerScope = `${scope}/properties`;
+  object: (schema, ref) => {
+    const innerScope = ref;
     return {
-      type: isNaN(scope.substr(scope.lastIndexOf(`/${1}`)))
+      type: isNaN(ref.substr(ref.lastIndexOf(`/${1}`)))
         ? "VerticalLayout"
         : "HorizontalLayout",
       elements: Object.entries(schema.properties).map(entry =>

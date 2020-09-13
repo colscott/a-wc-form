@@ -1,4 +1,4 @@
-import { getValue } from "./json-schema-data-exchange.js";
+import { getSchema } from "./json-schema-data-binder.js";
 /** @type {Map<string, JsonUiSchemaTemplate>} */
 // @ts-ignore
 export const controlTemplates = new Map();
@@ -22,9 +22,9 @@ const getTemplate = type =>
 export function getControlTemplate(jsonUiSchemaContext) {
   // @ts-ignore
   // eslint-disable-next-line no-undef
-  const jsonSchemaRefValue = getValue(
+  const jsonSchemaRefValue = getSchema(
     jsonUiSchemaContext.rootSchema,
-    jsonUiSchemaContext.currentUiSchema.scope
+    jsonUiSchemaContext.currentUiSchema.ref
   );
 
   let type = jsonSchemaRefValue.type.toString();

@@ -1,11 +1,10 @@
-// @ts-check
 import { html } from "lit-html/lit-html.js";
 import { ifDefined } from "lit-html/directives/if-defined.js";
 import {
   controlTemplates,
   getLayoutTemplate
 } from "../lib/template-registry.js";
-import { getValue } from "../lib/json-schema-data-exchange.js";
+import { getValue, getSchema } from "../lib/json-schema-data-binder.js";
 import { horizontalTemplate } from "./layouts.js";
 import { notImplementedTemplate } from "./misc.js";
 import { getUiSchema } from "../lib/schema-generator.js";
@@ -30,11 +29,11 @@ export function valueChangedHandler(changeEvent, context) {
  * @param {JsonUiSchemeControlContext} context
  */
 export function isRequired(context) {
-  const { scope } = context.currentUiSchema;
-  const innerProperties = scope.substr(0, scope.lastIndexOf("/properties"));
+  const { ref } = context.currentUiSchema;
+  const innerProperties = ref.substr(0, ref.lastIndexOf("/properties"));
   /** @type {JSONSchema} */
-  const schema = getValue(context.rootSchema, innerProperties);
-  const property = scope.substr(scope.lastIndexOf("/") + 1);
+  const schema = getSchema(context.rootSchema, innerProperties);
+  const property = ref.substr(ref.lastIndexOf("/") + 1);
   return schema.required != null && schema.required.indexOf(property) > -1;
 }
 
@@ -47,8 +46,8 @@ function genericInput(context, type) {
   return html`
     <input
       type="${type}"
-      name="${context.currentUiSchema.scope}"
-      value="${getValue(context.data, context.currentUiSchema.scope)}"
+      name="${context.currentUiSchema.ref}"
+      value="${getValue(context.data, context.currentUiSchema.ref)}"
       minlength="${ifDefined(context.currentSchema.minLength)}"
       maxlength="${ifDefined(context.currentSchema.maxLength)}"
       title="${ifDefined(context.currentSchema.description)}"
@@ -78,11 +77,11 @@ export function arrayTemplate(context) {
   if (itemSchemaArray.length) {
     uiSchema = getUiSchema(
       itemSchemaArray[0],
-      `${currentUiSchema.scope}/items`
+      `${currentUiSchema.ref}/items`
     );
   }
 
-  const itemDataArray = getValue(context.data, currentUiSchema.scope);
+  const itemDataArray = getValue(context.data, currentUiSchema.ref);
 
   return html`
     <table>
@@ -103,7 +102,7 @@ export function arrayTemplate(context) {
                       currentSchema: schemaItem,
                       currentUiSchema: getUiSchema(
                         itemSchemaArray[0],
-                        `${currentUiSchema.scope}/items/${i}`
+                        `${currentUiSchema.ref}/items/${i}`
                       ),
                       data: context.data,
                       rootSchema: context.rootSchema,
@@ -144,7 +143,7 @@ export function booleanTemplate(context) {
   return html`
     <input
       type="checkbox"
-      ?checked=${getValue(context.currentData, context.currentUiSchema.scope)}
+      ?checked=${getValue(context.currentData, context.currentUiSchema.ref)}
       title="${context.currentSchema.description}"
       @change=${valueChangedHandler}
     />
@@ -185,7 +184,7 @@ export function stringTemplate(context) {
 export function enumTemplate(context) {
   return html`
     <select
-      value="${getValue(context.currentData, context.currentUiSchema.scope)}"
+      value="${getValue(context.currentData, context.currentUiSchema.ref)}"
     >
       ${context.currentSchema.enum.map(
         e =>
