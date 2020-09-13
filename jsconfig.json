@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "lib": ["esnext.array", "esnext", "es2017", "dom"],
+    "rootDir": "./",
+    "moduleResolution": "node",
+    "checkJs": true
+  },
+  "include": [
+      "src/**/*"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "json-forms-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "es-module-shims": "^0.5.2",
+    "lit-element": "^2.4.0",
+    "lit-html": "^1.1.2"
+  },
+  "devDependencies": {
+    "@types/json-schema": "^7.0.3",
+    "dev-lib-colscott": "^1.1.8",
+    "express": "^4.17.1"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "npm run test:unit",
+    "test:unit": "node ./node_modules/karma/bin/karma start karma-unit.conf.js --no-single-run"
+  },
+  "author": "",
+  "license": "MIT"
+}
