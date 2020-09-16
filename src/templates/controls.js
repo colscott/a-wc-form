@@ -1,13 +1,17 @@
-import { html } from "lit-html/lit-html.js";
+import { html, TemplateResult } from "lit-html/lit-html.js";
 import { ifDefined } from "lit-html/directives/if-defined.js";
 import {
   controlTemplates,
+  getControlTemplate,
   getLayoutTemplate
 } from "../lib/template-registry.js";
 import { getValue, getSchema } from "../lib/json-schema-data-binder.js";
 import { horizontalTemplate } from "./layouts.js";
 import { notImplementedTemplate } from "./misc.js";
 import { getUiSchema } from "../lib/schema-generator.js";
+
+/** @typedef {import('../lib/json-ui-schema-models.js').JsonUiSchemeControlContext} JsonUiSchemeControlContext */
+/** @typedef {import('../lib/json-ui-schema-models.js').JsonSchema} JsonSchema */
 
 /**
  * @param {Event} changeEvent
@@ -30,8 +34,8 @@ export function valueChangedHandler(changeEvent, context) {
  */
 export function isRequired(context) {
   const { ref } = context.currentUiSchema;
-  const innerProperties = ref.substr(0, ref.lastIndexOf("/properties"));
-  /** @type {JSONSchema} */
+  const innerProperties = ref.substr(0, ref.lastIndexOf("/"));
+  /** @type {JsonSchema} */
   const schema = getSchema(context.rootSchema, innerProperties);
   const property = ref.substr(ref.lastIndexOf("/") + 1);
   return schema.required != null && schema.required.indexOf(property) > -1;
@@ -53,13 +57,13 @@ function genericInput(context, type) {
       title="${ifDefined(context.currentSchema.description)}"
       ?required=${isRequired(context)}
       @change=${e => valueChangedHandler(e, context)}
-    />
+    />${context.currentUiSchema.ref}
   `;
 }
 
 /**
  * @param {JsonUiSchemeControlContext} context
- * @returns {import('lit-html/lit-html').TemplateResult}
+ * @returns {Array<TemplateResult>}
  */
 export function arrayTemplate(context) {
   const { currentSchema, currentUiSchema } = context;
@@ -69,70 +73,61 @@ export function arrayTemplate(context) {
     return null;
   }
 
-  /** @type {import("json-schema").JSONSchema7[]} */
-  // @ts-ignore
-  const itemSchemaArray = items instanceof Array ? items : [items];
-
-  let uiSchema = null;
-  if (itemSchemaArray.length) {
-    uiSchema = getUiSchema(
-      itemSchemaArray[0],
-      `${currentUiSchema.ref}/items`
-    );
-  }
-
   const itemDataArray = getValue(context.data, currentUiSchema.ref);
 
-  return html`
-    <table>
-      <thead>
-        ${html`
-          <th></th>
-        `}
-      </thead>
-      <tbody>
-        ${itemDataArray.map(
-          dataItem => html`
-            <tr>
-              ${itemSchemaArray.map(
-                (schemaItem, i) => html`
-                  <td>
-                    ${getLayoutTemplate({
-                      currentData: dataItem,
-                      currentSchema: schemaItem,
-                      currentUiSchema: getUiSchema(
-                        itemSchemaArray[0],
-                        `${currentUiSchema.ref}/items/${i}`
-                      ),
-                      data: context.data,
-                      rootSchema: context.rootSchema,
-                      rootUiSchema: context.rootUiSchema
-                    })}
-                  </td>
-                `
-              )}
-            </tr>
-          `
-        )}
-        ${itemSchemaArray.map(
-          item => html`
-            <tr>
-              <td>
-                ${horizontalTemplate({
-                  currentData: {},
-                  currentSchema: item,
-                  currentUiSchema: uiSchema,
-                  data: context.data,
-                  rootSchema: context.rootSchema,
-                  rootUiSchema: context.rootUiSchema
-                })}
-              </td>
-            </tr>
-          `
-        )}
-      </tbody>
-    </table>
-  `;
+  /** @type {Array<TemplateResult>} */
+  const templates = [];
+  // TODO abstract the array itteration logic away from the HTML mark-up so that it can be reused.
+
+  // object of number - infinite array - iterate data output vertical
+  // object of object - infinite array
+  // Array of object - finite array - iterate data same time output vertical with each obect in a horizontal row (grid)
+  // Array of Array?? - finite array - iterate uiSchema and data same time output horizontal
+  if (items instanceof Array) {
+    // items: [{type: number},{type: number}]
+    itemDataArray.forEach((dataItem, i) => {
+      const uiSchema = getUiSchema(
+        items[i],
+        `${currentUiSchema.ref}/items/${i}`
+      );
+      templates.push(
+        getControlTemplate({
+          ...context,
+          currentData: dataItem,
+          currentSchema: items,
+          currentUiSchema: uiSchema
+        })
+      );
+    });
+  } else if (items.type === "object") {
+    // items: { type: object }
+    itemDataArray.forEach((dataItem, i) => {
+      const uiSchema = getUiSchema(items, `${currentUiSchema.ref}/items/${i}`);
+      templates.push(
+        horizontalTemplate({
+          ...context,
+          currentData: dataItem,
+          currentSchema: items,
+          currentUiSchema: uiSchema
+        })
+      );
+    });
+  } else {
+    // items: { type: number }
+    itemDataArray.forEach((dataItem, i) => {
+      const uiSchema = getUiSchema(items, `${currentUiSchema.ref}/items/${i}`);
+      templates.push(
+        getControlTemplate({
+          ...context,
+          currentData: dataItem,
+          currentSchema: items,
+          currentUiSchema: uiSchema
+        })
+      );
+    });
+  }
+
+  return templates;
 }
 
 /**
@@ -143,7 +138,7 @@ export function booleanTemplate(context) {
   return html`
     <input
       type="checkbox"
-      ?checked=${getValue(context.currentData, context.currentUiSchema.ref)}
+      ?checked=${getValue(context.data, context.currentUiSchema.ref)}
       title="${context.currentSchema.description}"
       @change=${valueChangedHandler}
     />
@@ -184,7 +179,7 @@ export function stringTemplate(context) {
 export function enumTemplate(context) {
   return html`
     <select
-      value="${getValue(context.currentData, context.currentUiSchema.ref)}"
+      value="${getValue(context.data, context.currentUiSchema.ref)}"
     >
       ${context.currentSchema.enum.map(
         e =>
