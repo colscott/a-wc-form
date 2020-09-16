@@ -27,7 +27,7 @@ export const getValue = (data, ref) => {
   const dataAndProperty = getDataRef(data, ref);
   return dataAndProperty.property === "#"
     ? dataAndProperty.data
-    : dataAndProperty.data[dataAndProperty.property] || "";
+    : dataAndProperty.data[dataAndProperty.property] || dataAndProperty.data;
 };
 
 /**
@@ -41,13 +41,13 @@ export const setValue = (data, ref, value) => {
 };
 
 /**
- * @param {JSONSchema} schema
+ * @param {import("./json-ui-schema-models").JsonSchema} schema
  * @param {string} ref
- * @returns {any}
+ * @returns {import("json-schema").JSONSchema7}
  */
 export const getSchema = (schema, ref) => {
   const dataAndProperty = getDataRef(schema, ref, true);
   return dataAndProperty.property === "#"
     ? dataAndProperty.data
-    : dataAndProperty.data[dataAndProperty.property] || "";
+    : dataAndProperty.data[dataAndProperty.property] || dataAndProperty.data;
 };

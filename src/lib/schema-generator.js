@@ -1,12 +1,10 @@
-// @ts-check
-
 /**
- * @param {JSONSchema} schema
- * @param {string=} baseScope JSON pointer string to use as a starting point. Use if we are generating uiSchema to be inserted into another uiSchema.
- * @returns {JsonUiSchema}
+ * @param {import("./json-ui-schema-models").JsonSchema} schema to generate uiSchema for
+ * @param {string} [startRef='#'] JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
+ * @returns {import("./json-ui-schema-models").JsonUiSchema} for the schema passed in
  */
-export function getUiSchema(schema, baseScope) {
-  return schema2UiSchema[schema.type](schema, baseScope || "#");
+export function getUiSchema(schema, startRef) {
+  return schema2UiSchema[schema.type](schema, startRef || "#");
 }
 
 const schema2UiSchema = {
@@ -45,8 +43,8 @@ const schema2UiSchema = {
 
 /**
  * Generates JSON schema from plain data
- * @param {Object} data
- * @returns {JSONSchema}
+ * @param {Object} data to generate the JSONSchema for
+ * @returns {import("./json-ui-schema-models").JsonSchema}
  */
 export function getSchema(data) {
   return obj2Schema[typeof data](data);

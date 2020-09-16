@@ -1,9 +1,9 @@
-import { html, TemplateResult } from "lit-html/lit-html.js";
+import { html } from "lit-html/lit-html.js";
 import { ifDefined } from "lit-html/directives/if-defined.js";
 import {
   controlTemplates,
   getControlTemplate,
-  getLayoutTemplate
+  getTemplate
 } from "../lib/template-registry.js";
 import { getValue, getSchema } from "../lib/json-schema-data-binder.js";
 import { horizontalTemplate } from "./layouts.js";
@@ -12,6 +12,7 @@ import { getUiSchema } from "../lib/schema-generator.js";
 
 /** @typedef {import('../lib/json-ui-schema-models.js').JsonUiSchemeControlContext} JsonUiSchemeControlContext */
 /** @typedef {import('../lib/json-ui-schema-models.js').JsonSchema} JsonSchema */
+/** @typedef {import('lit-element').TemplateResult} TemplateResult */
 
 /**
  * @param {Event} changeEvent
@@ -86,38 +87,26 @@ export function arrayTemplate(context) {
   if (items instanceof Array) {
     // items: [{type: number},{type: number}]
     itemDataArray.forEach((dataItem, i) => {
-      const uiSchema = getUiSchema(
-        items[i],
-        `${currentUiSchema.ref}/items/${i}`
-      );
-      templates.push(
-        getControlTemplate({
-          ...context,
-          currentData: dataItem,
-          currentSchema: items,
-          currentUiSchema: uiSchema
-        })
-      );
-    });
-  } else if (items.type === "object") {
-    // items: { type: object }
-    itemDataArray.forEach((dataItem, i) => {
-      const uiSchema = getUiSchema(items, `${currentUiSchema.ref}/items/${i}`);
-      templates.push(
-        horizontalTemplate({
-          ...context,
-          currentData: dataItem,
-          currentSchema: items,
-          currentUiSchema: uiSchema
-        })
-      );
+      const item = items[i];
+      if (typeof item !== "boolean") {
+        const uiSchema = getUiSchema(item, `${currentUiSchema.ref}/items/${i}`);
+        templates.push(
+          getTemplate({
+            ...context,
+            currentData: dataItem,
+            currentSchema: item,
+            currentUiSchema: uiSchema
+          })
+        );
+      }
     });
   } else {
+    // items: { type: object }
     // items: { type: number }
     itemDataArray.forEach((dataItem, i) => {
       const uiSchema = getUiSchema(items, `${currentUiSchema.ref}/items/${i}`);
       templates.push(
-        getControlTemplate({
+        getTemplate({
           ...context,
           currentData: dataItem,
           currentSchema: items,
@@ -126,7 +115,6 @@ export function arrayTemplate(context) {
       );
     });
   }
-
   return templates;
 }
 
@@ -178,9 +166,7 @@ export function stringTemplate(context) {
  */
 export function enumTemplate(context) {
   return html`
-    <select
-      value="${getValue(context.data, context.currentUiSchema.ref)}"
-    >
+    <select value="${getValue(context.data, context.currentUiSchema.ref)}">
       ${context.currentSchema.enum.map(
         e =>
           html`

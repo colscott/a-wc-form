@@ -3,6 +3,9 @@ import { getLayoutTemplate } from "../lib/template-registry.js";
 import "../templates/controls.js";
 import "../templates/layouts.js";
 
+/** @typedef {import("../lib/json-ui-schema-models.js").JsonSchema} JsonSchema */
+/** @typedef {import("../lib/json-ui-schema-models.js").JsonUiSchemeContext} JsonUiSchemeContext */
+
 /**  */
 export class JsonSchemaUi extends LitElement {
   /** @inheritdoc */
@@ -18,10 +21,10 @@ export class JsonSchemaUi extends LitElement {
   constructor() {
     super();
 
-    /** @type {JSONSchema} */
+    /** @type {import("../lib/json-ui-schema-models.js").JsonSchema} */
     this.schema = null;
 
-    /** @type {JsonUiSchema} */
+    /** @type {import("../lib/json-ui-schema-models.js").JsonUiSchema} */
     this.uiSchema = null;
 
     /** @type {any} */

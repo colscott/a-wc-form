@@ -6,6 +6,10 @@ import {
 } from "../lib/template-registry.js";
 import { notImplementedTemplate } from "./misc.js";
 
+/** @typedef {import('../lib/json-ui-schema-models.js').JsonUiSchemeLayoutContext} JsonUiSchemeLayoutContext */
+/** @typedef {import('../lib/json-ui-schema-models.js').JsonUiSchemeControlContext} JsonUiSchemeControlContext */
+/** @typedef {import('../lib/json-ui-schema-models.js').JsonUiSchema} JsonUiSchema */
+
 /**
  * @param {JsonUiSchemeControlContext} context
  * @returns {import('lit-html/lit-html').TemplateResult}

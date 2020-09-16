@@ -1,4 +1,9 @@
 import { getSchema } from "./json-schema-data-binder.js";
+
+/** @typedef {import('../lib/json-ui-schema-models.js').JsonUiSchemeContext} JsonUiSchemeContext */
+/** @typedef {import('../lib/json-ui-schema-models.js').JsonUiSchemeControlContext} JsonUiSchemeControlContext */
+/** @typedef {import('../lib/json-ui-schema-models.js').JsonUiSchemaTemplate} JsonUiSchemaTemplate */
+
 /** @type {Map<string, JsonUiSchemaTemplate>} */
 // @ts-ignore
 export const controlTemplates = new Map();
@@ -10,7 +15,7 @@ export const layoutTemplates = new Map();
  * @param {string} type
  * @returns {JsonUiSchemaTemplate}
  */
-const getTemplate = type =>
+const resolveToTemplate = type =>
   layoutTemplates.get(type) !== undefined
     ? layoutTemplates.get(type)
     : controlTemplates.get(type);
@@ -32,7 +37,7 @@ export function getControlTemplate(jsonUiSchemaContext) {
     type = jsonSchemaRefValue.format;
   }
 
-  const template = getTemplate(type);
+  const template = resolveToTemplate(type);
   const templateResult = template({
     currentSchema: jsonSchemaRefValue,
     rootSchema: jsonUiSchemaContext.rootSchema,
@@ -45,12 +50,24 @@ export function getControlTemplate(jsonUiSchemaContext) {
 }
 
 /**
- * @param {JsonUiSchemeContext} jsonUiSchemaContext
+ * @param {import("./json-ui-schema-models.js").JsonUiSchemeLayoutContext} jsonUiSchemaContext
  * @returns {import('lit-html/lit-html').TemplateResult}
  */
 export function getLayoutTemplate(jsonUiSchemaContext) {
-  const template = getTemplate(jsonUiSchemaContext.currentUiSchema.type);
+  const template = resolveToTemplate(jsonUiSchemaContext.currentUiSchema.type);
 
   const templateResult = template(jsonUiSchemaContext);
   return templateResult;
+}
+
+/**
+ * @param {JsonUiSchemeContext} jsonUiSchemaContext
+ * @returns {import('lit-html/lit-html').TemplateResult}
+ */
+export function getTemplate(jsonUiSchemaContext) {
+  const { currentUiSchema } = jsonUiSchemaContext;
+  if ("ref" in currentUiSchema) {
+    return getControlTemplate({ ...jsonUiSchemaContext, currentUiSchema });
+  }
+  return getLayoutTemplate({ ...jsonUiSchemaContext, currentUiSchema });
 }
