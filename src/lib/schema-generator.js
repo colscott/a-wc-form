@@ -12,7 +12,7 @@ const schema2UiSchema = {
     type: "Control",
     ref
   }),
-  interger: (schema, ref) => ({
+  integer: (schema, ref) => ({
     type: "Control",
     ref
   }),
@@ -30,10 +30,12 @@ const schema2UiSchema = {
   }),
   object: (schema, ref) => {
     const innerScope = ref;
+    const arrayItemIndex = ref.match(/\/(\d+)$/);
     return {
-      type: isNaN(ref.substr(ref.lastIndexOf(`/${1}`)))
-        ? "VerticalLayout"
-        : "HorizontalLayout",
+      type:
+        arrayItemIndex && arrayItemIndex[1]
+          ? "HorizontalLayout"
+          : "VerticalLayout",
       elements: Object.entries(schema.properties).map(entry =>
         schema2UiSchema[entry[1].type](entry[1], `${innerScope}/${entry[0]}`)
       )

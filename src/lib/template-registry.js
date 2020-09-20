@@ -39,7 +39,6 @@ export function getControlTemplate(jsonUiSchemaContext) {
 
   const template = resolveToTemplate(type);
   const templateResult = template({
-    currentSchema: jsonSchemaRefValue,
     rootSchema: jsonUiSchemaContext.rootSchema,
     currentUiSchema: jsonUiSchemaContext.currentUiSchema,
     rootUiSchema: jsonUiSchemaContext.rootUiSchema,
@@ -66,7 +65,7 @@ export function getLayoutTemplate(jsonUiSchemaContext) {
  */
 export function getTemplate(jsonUiSchemaContext) {
   const { currentUiSchema } = jsonUiSchemaContext;
-  if ("ref" in currentUiSchema) {
+  if (currentUiSchema.type === "Control") {
     return getControlTemplate({ ...jsonUiSchemaContext, currentUiSchema });
   }
   return getLayoutTemplate({ ...jsonUiSchemaContext, currentUiSchema });

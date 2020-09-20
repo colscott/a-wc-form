@@ -1,5 +1,6 @@
 import { LitElement, html } from "lit-element";
-import { getLayoutTemplate } from "../lib/template-registry.js";
+import { getUiSchema } from "../lib/schema-generator.js";
+import { getTemplate } from "../lib/template-registry.js";
 import "../templates/controls.js";
 import "../templates/layouts.js";
 
@@ -31,12 +32,21 @@ export class JsonSchemaUi extends LitElement {
     this.data = null;
   }
 
+  /** @inheritdoc */
+  connectedCallback() {
+    this.setAttribute("role", "form");
+    super.connectedCallback();
+  }
+
   /** @returns {import('lit-element').TemplateResult} for UI */
   render() {
-    if (this.schema !== null && this.uiSchema !== null && this.data !== null) {
+    if (this.schema !== null && this.data !== null) {
+      if (this.uiSchema === null) {
+        this.uiSchema = getUiSchema(this.schema);
+      }
+
       /** @type {JsonUiSchemeContext} */
       const context = {
-        currentSchema: this.schema,
         currentUiSchema: this.uiSchema,
         currentData: this.data,
         rootSchema: this.schema,
@@ -44,7 +54,7 @@ export class JsonSchemaUi extends LitElement {
         data: this.data
       };
 
-      return getLayoutTemplate(context);
+      return getTemplate(context);
     }
     return html``;
   }

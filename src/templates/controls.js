@@ -34,6 +34,15 @@ export function valueChangedHandler(changeEvent, context) {
  * @param {JsonUiSchemeControlContext} context
  */
 export function isRequired(context) {
+  const currentSchema = getSchema(
+    context.rootSchema,
+    context.currentUiSchema.ref
+  );
+
+  if (currentSchema.readOnly === true) {
+    return true;
+  }
+
   const { ref } = context.currentUiSchema;
   const innerProperties = ref.substr(0, ref.lastIndexOf("/"));
   /** @type {JsonSchema} */
@@ -48,17 +57,51 @@ export function isRequired(context) {
  * @returns {import('lit-html/lit-html').TemplateResult}
  */
 function genericInput(context, type) {
+  const currentSchema = getSchema(
+    context.rootSchema,
+    context.currentUiSchema.ref
+  );
+
   return html`
+    ${currentSchema.title
+      ? html`
+          <label
+            for=${context.currentUiSchema.ref}
+            title=${ifDefined(currentSchema.description)}
+            >${currentSchema.title}</label
+          >
+        `
+      : html``}
     <input
       type="${type}"
       name="${context.currentUiSchema.ref}"
       value="${getValue(context.data, context.currentUiSchema.ref)}"
-      minlength="${ifDefined(context.currentSchema.minLength)}"
-      maxlength="${ifDefined(context.currentSchema.maxLength)}"
-      title="${ifDefined(context.currentSchema.description)}"
+      ?checked="${getValue(context.data, context.currentUiSchema.ref) === true}"
+      aria-label=${ifDefined(currentSchema.title)}
+      aria-description=${ifDefined(currentSchema.description)}
+      minlength="${ifDefined(currentSchema.minLength)}"
+      maxlength="${ifDefined(currentSchema.maxLength)}"
+      min="${ifDefined(
+        currentSchema.minimum || currentSchema.exclusiveMinimum
+      )}"
+      aria-valuemin=${ifDefined(
+        currentSchema.minimum || currentSchema.exclusiveMinimum
+      )}
+      max="${ifDefined(
+        currentSchema.maximum || currentSchema.exclusiveMaximum
+      )}"
+      aria-valuemax=${ifDefined(
+        currentSchema.maximum || currentSchema.exclusiveMaximum
+      )}
+      step="${ifDefined(currentSchema.multipleOf)}"
       ?required=${isRequired(context)}
+      aria-required="${ifDefined(currentSchema.required)}"
+      pattern=${ifDefined(currentSchema.pattern)}
+      title="${ifDefined(currentSchema.description)}"
+      aria-readonly="${ifDefined(currentSchema.readOnly)}"
+      ?readonly=${currentSchema.readOnly === true}
       @change=${e => valueChangedHandler(e, context)}
-    />${context.currentUiSchema.ref}
+    />
   `;
 }
 
@@ -67,7 +110,11 @@ function genericInput(context, type) {
  * @returns {Array<TemplateResult>}
  */
 export function arrayTemplate(context) {
-  const { currentSchema, currentUiSchema } = context;
+  const { currentUiSchema } = context;
+  const currentSchema = getSchema(
+    context.rootSchema,
+    context.currentUiSchema.ref
+  );
   const { minItems, maxItems, uniqueItems, items } = currentSchema;
 
   if (typeof items === "boolean") {
@@ -94,7 +141,6 @@ export function arrayTemplate(context) {
           getTemplate({
             ...context,
             currentData: dataItem,
-            currentSchema: item,
             currentUiSchema: uiSchema
           })
         );
@@ -109,7 +155,6 @@ export function arrayTemplate(context) {
         getTemplate({
           ...context,
           currentData: dataItem,
-          currentSchema: items,
           currentUiSchema: uiSchema
         })
       );
@@ -123,14 +168,7 @@ export function arrayTemplate(context) {
  * @returns {import('lit-html/lit-html').TemplateResult}
  */
 export function booleanTemplate(context) {
-  return html`
-    <input
-      type="checkbox"
-      ?checked=${getValue(context.data, context.currentUiSchema.ref)}
-      title="${context.currentSchema.description}"
-      @change=${valueChangedHandler}
-    />
-  `;
+  return genericInput(context, "checkbox");
 }
 
 /**
@@ -154,7 +192,11 @@ export function numberTemplate(context) {
  * @returns {import('lit-html/lit-html').TemplateResult}
  */
 export function stringTemplate(context) {
-  if (context.currentSchema.enum != null) {
+  const currentSchema = getSchema(
+    context.rootSchema,
+    context.currentUiSchema.ref
+  );
+  if (currentSchema.enum != null) {
     return enumTemplate(context);
   }
   return genericInput(context, "text");
@@ -165,9 +207,13 @@ export function stringTemplate(context) {
  * @returns {import('lit-html/lit-html').TemplateResult}
  */
 export function enumTemplate(context) {
+  const currentSchema = getSchema(
+    context.rootSchema,
+    context.currentUiSchema.ref
+  );
   return html`
     <select value="${getValue(context.data, context.currentUiSchema.ref)}">
-      ${context.currentSchema.enum.map(
+      ${currentSchema.enum.map(
         e =>
           html`
             <option value="${e}">${e}</option>

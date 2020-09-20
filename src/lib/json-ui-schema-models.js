@@ -6,7 +6,6 @@ export {};
  * @property {JsonUiSchemaLayoutType} type the layout type to use for this part of the form. This will direct how the form will be rendered
  * @property {string} [label] some layout make use of the label as a UI header
  * @property {Array<JsonUiSchema>} elements
- * @property {string} text
  */
 
 /**
@@ -25,7 +24,6 @@ export {};
  * @property {JsonUiSchema} rootUiSchema
  * @property {JsonUiSchema} currentUiSchema
  * @property {JsonSchema} rootSchema
- * @property {JsonSchema} currentSchema
  * @property {any} data
  * @property {any} currentData
  */
@@ -35,7 +33,6 @@ export {};
  * @property {JsonUiSchema} rootUiSchema
  * @property {JsonUiSchemaLayout} currentUiSchema
  * @property {JsonSchema} rootSchema
- * @property {JsonSchema} currentSchema
  * @property {any} data
  * @property {any} currentData
  */
@@ -45,7 +42,6 @@ export {};
  * @property {JsonUiSchema} rootUiSchema
  * @property {JsonUiSchemaControl} currentUiSchema
  * @property {JsonSchema} rootSchema
- * @property {JsonSchema} currentSchema
  * @property {any} data
  * @property {any} currentData
  */

@@ -1,8 +1,9 @@
+import { ifDefined } from "lit-html/directives/if-defined";
 import { html } from "lit-html/lit-html.js";
 import {
   layoutTemplates,
   getControlTemplate,
-  getLayoutTemplate
+  getTemplate
 } from "../lib/template-registry.js";
 import { notImplementedTemplate } from "./misc.js";
 
@@ -31,10 +32,14 @@ export function horizontalTemplate(context) {
     <div
       style="display:grid; grid-template-columns: repeat(${elements.length}, 1fr)"
     >
+      ${context.currentUiSchema.label
+        ? html`
+            <span>${context.currentUiSchema.label}</span>
+          `
+        : html``}
       ${elements.map(element =>
-        getLayoutTemplate({
+        getTemplate({
           currentData: context.data,
-          currentSchema: context.currentSchema,
           currentUiSchema: element,
           data: context.data,
           rootSchema: context.rootSchema,
@@ -50,31 +55,23 @@ export function horizontalTemplate(context) {
  * @returns {import('lit-html/lit-html').TemplateResult}
  */
 export function verticalTemplate(context) {
-  const { elements } = context.currentUiSchema;
+  const elements = getElements(context);
   return html`
-    <div>
+    <div aria-label=${ifDefined(context.currentUiSchema.label)}>
+      ${context.currentUiSchema.label
+        ? html`
+            <span>${context.currentUiSchema.label}</span>
+          `
+        : html``}
       ${elements.map(element =>
-        getLayoutTemplate({
+        getTemplate({
           currentData: context.data,
-          currentSchema: context.currentSchema,
           currentUiSchema: element,
           data: context.data,
           rootSchema: context.rootSchema,
           rootUiSchema: context.rootUiSchema
         })
       )}
-    </div>
-  `;
-}
-
-/**
- * @param {JsonUiSchemeLayoutContext} context
- * @returns {import('lit-html/lit-html').TemplateResult}
- */
-export function labelTemplate(context) {
-  return html`
-    <div>
-      ${context.currentUiSchema.text}
     </div>
   `;
 }
@@ -108,7 +105,6 @@ function getControls(context) {
 }
 
 layoutTemplates.set("Control", controlTemplate);
-layoutTemplates.set("Label", labelTemplate);
 layoutTemplates.set("Group", notImplementedTemplate);
 layoutTemplates.set("HorizontalLayout", horizontalTemplate);
 layoutTemplates.set("VerticalLayout", verticalTemplate);
