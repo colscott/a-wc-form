@@ -17,6 +17,7 @@ export const schema = {
       type: "string",
       enum: ["DE", "IT", "JP", "US", "RU", "Other"]
     },
+    // Should be vertical layout
     personalData: {
       type: "object",
       properties: {
@@ -43,9 +44,11 @@ export const schema = {
       type: "string",
       maxLength: 5
     },
+    // Should be vertical layout
     comments: {
       type: "array",
       items: {
+        //Should be horizontal layout
         type: "object",
         properties: {
           date: {
@@ -160,7 +163,7 @@ export const uiSchema = {
 
 export const data = {
   name: "John Doe",
-  vegetarian: false,
+  vegetarian: true,
   birthDate: "1985-06-02",
   occupation: "Engineer",
   personalData: {
