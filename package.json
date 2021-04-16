@@ -27,6 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "a-wc-form-binder": "file:packages\\core",
+    "a-wc-form-json-schema": "file:packages\\json-schema",
     "a-wc-form-binder-material": "file:packages\\material"
   }
 }

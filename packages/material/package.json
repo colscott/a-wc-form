@@ -1,22 +1,14 @@
 {
   "name": "a-wc-form-binder-material",
   "version": "0.0.0",
-  "description": "> TODO: description",
+  "description": "Material Web Component Binders and Templates for the form-binder",
   "author": "colin scott",
   "homepage": "",
-  "license": "ISC",
-  "main": "lib/material.js",
-  "directories": {
-    "lib": "lib",
-    "test": "__tests__"
-  },
-  "main": "index.js",
+  "license": "MIT",
+  "main": "src/index.js",
   "files": [
     "src"
   ],
-  "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
-  },
   "dependencies": {
     "a-wc-form-binder": "file:../core"
   },
