@@ -1,23 +1,32 @@
 {
-  "name": "json-forms-example",
+  "name": "a-wc-form-binder",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {
-    "es-module-shims": "^0.5.2",
-    "lit-element": "^2.4.0",
-    "lit-html": "^1.1.2"
-  },
   "devDependencies": {
+    "@esm-bundle/chai": "^4.3.4",
+    "@material/mwc-checkbox": "^0.20.0",
+    "@material/mwc-formfield": "^0.20.0",
+    "@material/mwc-select": "^0.20.0",
+    "@material/mwc-slider": "^0.20.0",
+    "@material/mwc-switch": "^0.20.0",
+    "@material/mwc-textfield": "^0.20.0",
     "@types/json-schema": "^7.0.3",
+    "@web/test-runner": "^0.12.17",
     "dev-lib-colscott": "^1.1.8",
-    "express": "^4.17.1"
+    "lerna": "^3.22.1"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "es-dev-server --node-resolve --preserve-symlinks",
     "test": "npm run test:unit",
-    "test:unit": "node ./node_modules/karma/bin/karma start karma-unit.conf.js --no-single-run"
+    "test:coverage": "npm run test:unit -- --coverage",
+    "test:watch": "npm run test:unit -- --watch",
+    "test:unit": "web-test-runner \"packages/**/test/unit/**/*.js\" --node-resolve"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "a-wc-form-binder": "file:packages\\core",
+    "a-wc-form-binder-material": "file:packages\\material"
+  }
 }
