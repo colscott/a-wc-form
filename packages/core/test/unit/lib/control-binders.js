@@ -4,7 +4,7 @@ import { expect } from "@esm-bundle/chai/esm/chai.js";
 import {
   controlBinders as binders,
   controlBinder as binder
-} from "a-wc-form-binder";
+} from "../../../src/index.js";
 
 describe("Custom Binders", () => {
   before(() => {

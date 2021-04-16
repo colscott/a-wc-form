@@ -4,7 +4,7 @@ import {
   controlBinders as binders,
   controlBinder as binder,
   controlValidator as validator
-} from "a-wc-form-binder";
+} from "../../../src/index.js";
 import { data } from "../../../demo/mock.js";
 
 /** @returns {import('../../../src/components/form-binder.js').FormBinder} */
