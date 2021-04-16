@@ -14,21 +14,22 @@ import { getUiSchema } from "../lib/schema-generator.js";
 /** @typedef {import('../lib/json-ui-schema-models.js').JsonSchema} JsonSchema */
 /** @typedef {import('lit-element').TemplateResult} TemplateResult */
 
-/**
- * @param {Event} changeEvent
- * @param {JsonUiSchemeControlContext} context
- */
-export function valueChangedHandler(changeEvent, context) {
-  const customEvent = new CustomEvent("formValueChanged", {
-    bubbles: true,
-    composed: true,
-    detail: {
-      originalEvent: changeEvent
-    }
-  });
-  changeEvent.target.dispatchEvent(customEvent);
-  changeEvent.stopPropagation();
-}
+// TODO Use new control binders instead of valueChangedHandler
+// /**
+//  * @param {Event} changeEvent
+//  * @param {JsonUiSchemeControlContext} context
+//  */
+// export function valueChangedHandler(changeEvent, context) {
+//   const customEvent = new CustomEvent("formValueChanged", {
+//     bubbles: true,
+//     composed: true,
+//     detail: {
+//       originalEvent: changeEvent
+//     }
+//   });
+//   changeEvent.target.dispatchEvent(customEvent);
+//   changeEvent.stopPropagation();
+// }
 
 /**
  * @param {JsonUiSchemeControlContext} context
@@ -95,7 +96,7 @@ function genericInput(context, type) {
       )}
       step="${ifDefined(currentSchema.multipleOf)}"
       ?required=${isRequired(context)}
-      aria-required="${ifDefined(currentSchema.required)}"
+      aria-required="${!!currentSchema.required}"
       pattern=${ifDefined(currentSchema.pattern)}
       title="${ifDefined(currentSchema.description)}"
       aria-readonly="${ifDefined(currentSchema.readOnly)}"

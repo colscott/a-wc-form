@@ -8,14 +8,27 @@ import "../templates/layouts.js";
 /** @typedef {import("../lib/json-ui-schema-models.js").JsonUiSchemeContext} JsonUiSchemeContext */
 
 /**  */
-export class JsonSchemaUi extends LitElement {
+class JsonSchemaForm extends LitElement {
   /** @inheritdoc */
   static get properties() {
     return {
       data: { type: Object },
       schema: { type: Object },
-      uiSchema: { type: Object }
+      uiSchema: { type: Object },
     };
+  }
+
+  /** @returns {import("../lib/json-ui-schema-models.js").JsonUiSchema} */
+  get uiSchema() {
+    if (!this._uiSchema) {
+      this.uiSchema = getUiSchema(this.schema);
+    }
+    return this._uiSchema;
+  }
+
+  /** @param {import("../lib/json-ui-schema-models.js").JsonUiSchema} uiSchema to use for form layout */
+  set uiSchema(uiSchema) {
+    this._uiSchema = uiSchema;
   }
 
   /** @inheritdoc */
@@ -38,13 +51,14 @@ export class JsonSchemaUi extends LitElement {
     super.connectedCallback();
   }
 
+  /** @override to remove shadow DOM */
+  createRenderRoot() {
+    return this;
+  }
+
   /** @returns {import('lit-element').TemplateResult} for UI */
   render() {
     if (this.schema !== null && this.data !== null) {
-      if (this.uiSchema === null) {
-        this.uiSchema = getUiSchema(this.schema);
-      }
-
       /** @type {JsonUiSchemeContext} */
       const context = {
         currentUiSchema: this.uiSchema,
@@ -60,4 +74,4 @@ export class JsonSchemaUi extends LitElement {
   }
 }
 
-window.customElements.define("json-schema-ui", JsonSchemaUi);
+window.customElements.define("json-schema-form", JsonSchemaForm);

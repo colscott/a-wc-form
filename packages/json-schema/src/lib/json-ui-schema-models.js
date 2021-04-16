@@ -46,4 +46,4 @@ export {};
  * @property {any} currentData
  */
 
-/** @typedef {function(JsonUiSchemeContext):import('lit-html').TemplateResult} JsonUiSchemaTemplate */
+/** @typedef {function(JsonUiSchemeContext):import('lit-html').TemplateResult|Array<import('lit-html').TemplateResult>} JsonUiSchemaTemplate */

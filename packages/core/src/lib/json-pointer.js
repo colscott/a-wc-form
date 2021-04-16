@@ -19,15 +19,30 @@ const getDataRef = (data, ref, traverseSchema) => {
 };
 
 /**
+ * @param {{data: any; property: string;}} dataAndProperty
+ * @returns {any} value
+ */
+const getDataProperty = dataAndProperty => {
+  if (dataAndProperty.property === "#") {
+    return dataAndProperty.data;
+  }
+
+  const value = dataAndProperty.data[dataAndProperty.property];
+  if (value !== undefined) {
+    return value;
+  }
+
+  return dataAndProperty.data;
+};
+
+/**
  * @param {any} data
  * @param {string} ref
  * @returns {any}
  */
 export const getValue = (data, ref) => {
   const dataAndProperty = getDataRef(data, ref);
-  return dataAndProperty.property === "#"
-    ? dataAndProperty.data
-    : dataAndProperty.data[dataAndProperty.property] || dataAndProperty.data;
+  return getDataProperty(dataAndProperty);
 };
 
 /**
@@ -47,7 +62,5 @@ export const setValue = (data, ref, value) => {
  */
 export const getSchema = (schema, ref) => {
   const dataAndProperty = getDataRef(schema, ref, true);
-  return dataAndProperty.property === "#"
-    ? dataAndProperty.data
-    : dataAndProperty.data[dataAndProperty.property] || dataAndProperty.data;
+  return getDataProperty(dataAndProperty);
 };

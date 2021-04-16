@@ -4,7 +4,8 @@ export const schema = {
     name: {
       type: "string",
       minLength: 3,
-      description: "Please enter your name"
+      description: "Please enter your name",
+      title: "Name"
     },
     vegetarian: {
       type: "boolean"
@@ -111,10 +112,6 @@ export const uiSchema = {
           ref: "#/birthDate"
         }
       ]
-    },
-    {
-      type: "Label",
-      text: "Additional Information"
     },
     {
       type: "HorizontalLayout",

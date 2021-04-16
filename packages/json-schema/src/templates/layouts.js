@@ -1,4 +1,4 @@
-import { ifDefined } from "lit-html/directives/if-defined";
+import { ifDefined } from "lit-html/directives/if-defined.js";
 import { html } from "lit-html/lit-html.js";
 import {
   layoutTemplates,
@@ -29,9 +29,7 @@ export function horizontalTemplate(context) {
   const elements = getElements(context);
 
   return html`
-    <div
-      style="display:grid; grid-template-columns: repeat(${elements.length}, 1fr)"
-    >
+    <div style="display:flex ">
       ${context.currentUiSchema.label
         ? html`
             <span>${context.currentUiSchema.label}</span>

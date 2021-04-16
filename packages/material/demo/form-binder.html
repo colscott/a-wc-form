@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="module">
+          import { schema, uiSchema, data } from './mock.js';
+          import {LitElement, html} from 'lit-element';
+          import { controlBinder as binder } from 'a-wc-form-binder';
+          import { controlBinders as binders } from '../index.js';
+          import '@material/mwc-checkbox';
+          import '@material/mwc-textfield';
+          import '@material/mwc-slider';
+          import '@material/mwc-switch';
+
+          binder.add(...Object.values(binders));
+
+          customElements.define('test-form-binder', class extends LitElement {
+            static get properties() {
+              return {
+                data: { type: Object },
+              }; 
+            }
+            constructor() {
+              super();
+              this.data = data;
+            }
+            render() { return html`
+              <form-binder @form-binder:change=${e => {this.data = e.detail.data;this.requestUpdate();}} .data=${this.data}>
+                <section>
+                <mwc-textfield type="text" name="#/name"></mwc-textfield>
+                <mwc-textfield type="number" name="#/personalData/age"></mwc-textfield>
+                <mwc-textfield type="number" name="/personalData/age"></mwc-textfield>
+                <mwc-textfield type="number" name="personalData/age"></mwc-textfield>
+                <mwc-slider name="personalData/age" min="0" max="120" step="1"></mwc-slider>
+                <mwc-textfield name="#/telephoneNumbers/1"></mwc-textfield>
+                <mwc-switch id="vegetarian" name="vegetarian"></mwc-switch>
+                <mwc-checkbox id="vegetarian" name="vegetarian"></mwc-checkbox>
+                </section>
+                <section>${JSON.stringify(this.data)}<br/>${JSON.stringify(data)}</section>
+              </form-binder>` }
+          })
+        </script>
+    </head>
+    <body>
+        <test-form-binder></test-form-binder>
+    </body>
+</html>

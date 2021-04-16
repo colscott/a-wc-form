@@ -1,8 +1,8 @@
-import { getSchema } from "./json-schema-data-binder.js";
+import { getSchema } from "./json-pointer.js";
 
-/** @typedef {import('../lib/json-ui-schema-models.js').JsonUiSchemeContext} JsonUiSchemeContext */
-/** @typedef {import('../lib/json-ui-schema-models.js').JsonUiSchemeControlContext} JsonUiSchemeControlContext */
-/** @typedef {import('../lib/json-ui-schema-models.js').JsonUiSchemaTemplate} JsonUiSchemaTemplate */
+/** @typedef {import('./json-ui-schema-models.js').JsonUiSchemeContext} JsonUiSchemeContext */
+/** @typedef {import('./json-ui-schema-models.js').JsonUiSchemeControlContext} JsonUiSchemeControlContext */
+/** @typedef {import('./json-ui-schema-models.js').JsonUiSchemaTemplate} JsonUiSchemaTemplate */
 
 /** @type {Map<string, JsonUiSchemaTemplate>} */
 // @ts-ignore

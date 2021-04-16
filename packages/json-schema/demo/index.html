@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>      
+        <script type="module">
+          import { schema, uiSchema, data } from './mock.js';
+          import {LitElement, html} from 'lit-element';
+          import "../src/components/json-schema-form.js";
+
+          customElements.define('test-json-ui-schema', class extends LitElement {
+            constructor() { super(); }
+            render() {
+              return html`
+                <json-schema-form .data=${data} .schema=${schema} .uiSchema=${uiSchema}></json-schema-form>
+                
+              ` }
+          })
+        </script>
+    </head>
+    <body>
+        <test-json-ui-schema></test-json-ui-schema>
+    </body>
+</html>

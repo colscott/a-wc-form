@@ -1,0 +1,31 @@
+{
+  "name": "a-wc-form-binder-material",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "colin scott",
+  "homepage": "",
+  "license": "ISC",
+  "main": "lib/material.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "main": "index.js",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "dependencies": {
+    "a-wc-form-binder": "file:../core"
+  },
+  "peerDependencies": {
+    "@material/mwc-checkbox": "^0.20.0",
+    "@material/mwc-formfield": "^0.20.0",
+    "@material/mwc-select": "^0.20.0",
+    "@material/mwc-slider": "^0.20.0",
+    "@material/mwc-switch": "^0.20.0",
+    "@material/mwc-textfield": "^0.20.0"
+  }
+}
