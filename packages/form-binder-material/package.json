@@ -1,0 +1,23 @@
+{
+  "name": "a-wc-form-binder-material",
+  "version": "0.0.0",
+  "description": "Material Web Component Binders and Templates for the form-binder",
+  "author": "colin scott",
+  "homepage": "",
+  "license": "MIT",
+  "main": "src/index.js",
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "a-wc-form-binder": "file:../form-binder"
+  },
+  "peerDependencies": {
+    "@material/mwc-checkbox": "^0.20.0",
+    "@material/mwc-formfield": "^0.20.0",
+    "@material/mwc-select": "^0.20.0",
+    "@material/mwc-slider": "^0.20.0",
+    "@material/mwc-switch": "^0.20.0",
+    "@material/mwc-textfield": "^0.20.0"
+  }
+}

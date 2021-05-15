@@ -1,83 +1,66 @@
-import { html } from "lit-html/lit-html.js";
+import { html, render } from "lit-html/lit-html.js";
 import { ifDefined } from "lit-html/directives/if-defined.js";
 import {
-  controlTemplates,
-  getControlTemplate,
-  getTemplate
-} from "../lib/template-registry.js";
-import { getValue, getSchema } from "../lib/json-schema-data-binder.js";
-import { horizontalTemplate } from "./layouts.js";
-import { notImplementedTemplate } from "./misc.js";
-import { getUiSchema } from "../lib/schema-generator.js";
+  getSchemaValue,
+  getValue
+} from "a-wc-form-binder/src/lib/json-pointer.js";
+import { controlBinder, getName } from "a-wc-form-binder";
+import { setComponentTemplate } from "a-wc-form-layout";
 
-/** @typedef {import('../lib/json-ui-schema-models.js').JsonUiSchemeControlContext} JsonUiSchemeControlContext */
-/** @typedef {import('../lib/json-ui-schema-models.js').JsonSchema} JsonSchema */
+/** @typedef {import('../lib/models.js').JsonSchema} JsonSchema */
 /** @typedef {import('lit-element').TemplateResult} TemplateResult */
 
-// TODO Use new control binders instead of valueChangedHandler
-// /**
-//  * @param {Event} changeEvent
-//  * @param {JsonUiSchemeControlContext} context
-//  */
-// export function valueChangedHandler(changeEvent, context) {
-//   const customEvent = new CustomEvent("formValueChanged", {
-//     bubbles: true,
-//     composed: true,
-//     detail: {
-//       originalEvent: changeEvent
-//     }
-//   });
-//   changeEvent.target.dispatchEvent(customEvent);
-//   changeEvent.stopPropagation();
-// }
-
 /**
- * @param {JsonUiSchemeControlContext} context
+ * @param {import("../lib/models").JsonSchema} schema to generate uiSchema for
+ * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
+ * @returns {boolean} if the schema field is required
  */
-export function isRequired(context) {
-  const currentSchema = getSchema(
-    context.rootSchema,
-    context.currentUiSchema.ref
-  );
-
-  if (currentSchema.readOnly === true) {
-    return true;
-  }
-
-  const { ref } = context.currentUiSchema;
+function isRequired(schema, ref) {
   const innerProperties = ref.substr(0, ref.lastIndexOf("/"));
-  /** @type {JsonSchema} */
-  const schema = getSchema(context.rootSchema, innerProperties);
+  /** @type {import("../lib/models").JsonSchema} */
+  const parentSchema = getSchemaValue(schema, innerProperties, true);
   const property = ref.substr(ref.lastIndexOf("/") + 1);
-  return schema.required != null && schema.required.indexOf(property) > -1;
+  return (
+    parentSchema.required != null &&
+    parentSchema.required.indexOf(property) > -1
+  );
 }
 
+const typeMapping = {
+  boolean: "checkbox",
+  number: "number",
+  integer: "number",
+  string: "text"
+};
+
+const formatMapping = {
+  "date-time": "datetime-local",
+  date: "date",
+  time: "time",
+  email: "email"
+};
+
 /**
- * @param {JsonUiSchemeControlContext} context
- * @param {string} type HTML5 input type
- * @returns {import('lit-html/lit-html').TemplateResult}
+ * @param {import("../lib/models").JsonSchema} schema to generate uiSchema for
+ * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
  */
-function genericInput(context, type) {
-  const currentSchema = getSchema(
-    context.rootSchema,
-    context.currentUiSchema.ref
-  );
+function controlTemplate(schema, ref) {
+  /** @type {import("../lib/models").JsonSchema} */
+  const currentSchema = getSchemaValue(schema, ref);
 
   return html`
     ${currentSchema.title
       ? html`
-          <label
-            for=${context.currentUiSchema.ref}
-            title=${ifDefined(currentSchema.description)}
+          <label for=${ref} title=${ifDefined(currentSchema.description)}
             >${currentSchema.title}</label
           >
         `
       : html``}
     <input
-      type="${type}"
-      name="${context.currentUiSchema.ref}"
-      value="${getValue(context.data, context.currentUiSchema.ref)}"
-      ?checked="${getValue(context.data, context.currentUiSchema.ref) === true}"
+      type="${currentSchema.type === "string"
+        ? formatMapping[currentSchema.format] || "text"
+        : typeMapping[currentSchema.type]}"
+      name="${ref}"
       aria-label=${ifDefined(currentSchema.title)}
       aria-description=${ifDefined(currentSchema.description)}
       minlength="${ifDefined(currentSchema.minLength)}"
@@ -95,125 +78,90 @@ function genericInput(context, type) {
         currentSchema.maximum || currentSchema.exclusiveMaximum
       )}
       step="${ifDefined(currentSchema.multipleOf)}"
-      ?required=${isRequired(context)}
+      ?required=${isRequired(currentSchema, ref)}
       aria-required="${!!currentSchema.required}"
       pattern=${ifDefined(currentSchema.pattern)}
       title="${ifDefined(currentSchema.description)}"
       aria-readonly="${ifDefined(currentSchema.readOnly)}"
       ?readonly=${currentSchema.readOnly === true}
-      @change=${e => valueChangedHandler(e, context)}
     />
   `;
 }
 
 /**
- * @param {JsonUiSchemeControlContext} context
- * @returns {Array<TemplateResult>}
+ * @param {import("../lib/models").JsonSchema} schema to generate uiSchema for
+ * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
+ * @returns {TemplateResult}
  */
-export function arrayTemplate(context) {
-  const { currentUiSchema } = context;
-  const currentSchema = getSchema(
-    context.rootSchema,
-    context.currentUiSchema.ref
-  );
+function arrayTemplate(schema, ref) {
+  // TODO this needs to be moved to a binder becasue it needs data reference
+  /** @type {import("../lib/models").JsonSchema} */
+  const currentSchema = getSchemaValue(schema, ref);
   const { minItems, maxItems, uniqueItems, items } = currentSchema;
 
   if (typeof items === "boolean") {
     return null;
   }
 
-  const itemDataArray = getValue(context.data, currentUiSchema.ref);
-
-  /** @type {Array<TemplateResult>} */
-  const templates = [];
-  // TODO abstract the array itteration logic away from the HTML mark-up so that it can be reused.
-
   // object of number - infinite array - iterate data output vertical
   // object of object - infinite array
-  // Array of object - finite array - iterate data same time output vertical with each obect in a horizontal row (grid)
+  // Array of object - finite array - iterate data same time output vertical with each object in a horizontal row (grid)
   // Array of Array?? - finite array - iterate uiSchema and data same time output horizontal
   if (items instanceof Array) {
+    // Tuple
     // items: [{type: number},{type: number}]
-    itemDataArray.forEach((dataItem, i) => {
-      const item = items[i];
-      if (typeof item !== "boolean") {
-        const uiSchema = getUiSchema(item, `${currentUiSchema.ref}/items/${i}`);
-        templates.push(
-          getTemplate({
-            ...context,
-            currentData: dataItem,
-            currentUiSchema: uiSchema
-          })
-        );
-      }
-    });
-  } else {
-    // items: { type: object }
-    // items: { type: number }
-    itemDataArray.forEach((dataItem, i) => {
-      const uiSchema = getUiSchema(items, `${currentUiSchema.ref}/items/${i}`);
-      templates.push(
-        getTemplate({
-          ...context,
-          currentData: dataItem,
-          currentUiSchema: uiSchema
-        })
-      );
-    });
+    return html`
+      <div>
+        ${items
+          .filter(item => typeof item !== "boolean")
+          .map((item, i) =>
+            controlTemplate(/** @type {JsonSchema} */ (item), `${ref}/${i}`)
+          )}
+      </div>
+    `;
   }
-  return templates;
-}
-
-/**
- * @param {JsonUiSchemeControlContext} context
- * @returns {import('lit-html/lit-html').TemplateResult}
- */
-export function booleanTemplate(context) {
-  return genericInput(context, "checkbox");
-}
-
-/**
- * @param {JsonUiSchemeControlContext} context
- * @returns {import('lit-html/lit-html').TemplateResult}
- */
-export function integerTemplate(context) {
-  return genericInput(context, "number");
-}
-
-/**
- * @param {JsonUiSchemeControlContext} context
- * @returns {import('lit-html/lit-html').TemplateResult}
- */
-export function numberTemplate(context) {
-  return genericInput(context, "number");
-}
-
-/**
- * @param {JsonUiSchemeControlContext} context
- * @returns {import('lit-html/lit-html').TemplateResult}
- */
-export function stringTemplate(context) {
-  const currentSchema = getSchema(
-    context.rootSchema,
-    context.currentUiSchema.ref
-  );
-  if (currentSchema.enum != null) {
-    return enumTemplate(context);
-  }
-  return genericInput(context, "text");
-}
-
-/**
- * @param {JsonUiSchemeControlContext} context
- * @returns {import('lit-html/lit-html').TemplateResult}
- */
-export function enumTemplate(context) {
-  const currentSchema = getSchema(
-    context.rootSchema,
-    context.currentUiSchema.ref
-  );
+  // List
+  // items: { type: object }
+  // items: { type: number|string|boolean }
+  const itemLength =
+    "properties" in items ? Object.keys(items.properties).length : 1;
   return html`
-    <select value="${getValue(context.data, context.currentUiSchema.ref)}">
+    <div
+      form-json-schema-list
+      name=${ref}
+      .schema=${schema}
+      minItems=${ifDefined(minItems)}
+      maxItems=${ifDefined(maxItems)}
+      uniqueItems=${ifDefined(uniqueItems)}
+      style="display: grid; grid-template-columns: repeat(${itemLength}, max-content)"
+    ></div>
+  `;
+}
+
+/**
+ * @param {import("../lib/models").JsonSchema} schema to generate uiSchema for
+ * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
+ * @returns {TemplateResult}
+ */
+function stringTemplate(schema, ref) {
+  /** @type {import("../lib/models").JsonSchema} schema to generate uiSchema for */
+  const currentSchema = getSchemaValue(schema, ref);
+  if (currentSchema.enum != null) {
+    return enumTemplate(schema, ref);
+  }
+  return controlTemplate(schema, ref);
+}
+
+/**
+ * @param {import("../lib/models").JsonSchema} schema to generate uiSchema for
+ * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
+ * @returns {TemplateResult}
+ */
+function enumTemplate(schema, ref) {
+  /** @type {import("../lib/models").JsonSchema} schema to generate uiSchema for */
+  const currentSchema = getSchemaValue(schema, ref);
+  return html`
+    <select name="${ref}">
       ${currentSchema.enum.map(
         e =>
           html`
@@ -225,53 +173,92 @@ export function enumTemplate(context) {
 }
 
 /**
- * @param {JsonUiSchemeControlContext} context
- * @returns {import('lit-html/lit-html').TemplateResult}
+ * @param {import("../lib/models").JsonSchema} schema to generate uiSchema for
+ * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
+ * @returns {TemplateResult}
  */
-export function dateTimeTemplate(context) {
-  return genericInput(context, "datetime-local");
+function objectTemplate(schema, ref) {
+  /** @type {import("../lib/models").JsonSchema} schema to generate uiSchema for */
+  const currentSchema = getSchemaValue(schema, ref);
+  return html`
+    ${Object.entries(currentSchema.properties).map(entry =>
+      jsonSchemaTemplate({
+        schema,
+        component: {
+          properties: {
+            ref: `${ref}/${entry[0]}`,
+            type: "text"
+          },
+          template: "Control"
+        }
+      })
+    )}
+  `;
 }
+
+const listBinder = {
+  controlSelector: "[form-json-schema-list]",
+  initializeEvents: () => {},
+  writeValue: (arrayElem, data) => {
+    const { schema } = arrayElem;
+    const ref = getName(arrayElem);
+    /** @type {JsonSchema} */
+    const currentSchema = getSchemaValue(schema, ref);
+    const { items } = currentSchema;
+    if (typeof items !== "boolean" && items instanceof Array === false) {
+      render(
+        html`
+          ${("properties" in items &&
+            Object.entries(/** @type {JsonSchema} */ (items).properties)
+              .filter(item => typeof item[1] !== "boolean")
+              .map(
+                /** @param {JsonSchema} item */ item =>
+                  html`
+                    <span
+                      >${("title" in item[1] && item[1].title) || item[0]}</span
+                    >
+                  `
+              )) ||
+            html``}
+          ${Object.entries(data).map((dataItem, i) =>
+            items.type === "object"
+              ? objectTemplate(schema, `${ref}/${i}`)
+              : jsonTypeMapping[items.type](schema, `${ref}/${i}`)
+          )}
+        `,
+        arrayElem
+      );
+    }
+  }
+};
+
+controlBinder.add(listBinder);
+
+/** @type {{[key: string]: (JsonSchema, string) => TemplateResult}} */
+export const jsonTypeMapping = {
+  string: stringTemplate,
+  integer: controlTemplate,
+  number: controlTemplate,
+  object: objectTemplate,
+  array: arrayTemplate,
+  boolean: controlTemplate
+};
 
 /**
- * @param {JsonUiSchemeControlContext} context
- * @returns {import('lit-html/lit-html').TemplateResult}
+ * @param {import("../lib/models.js").SchemaLayoutContext<import("a-wc-form-layout/src/lib/models").Control>} context
+ * @returns {TemplateResult}
  */
-export function dateTemplate(context) {
-  return genericInput(context, "date");
+function jsonSchemaTemplate(context) {
+  return html`
+    <json-schema-control
+      ref=${context.component.properties.ref}
+    ></json-schema-control>
+  `;
+  // const { ref } = context.component.properties;
+  // const { schema } = context;
+  // /** @type {import("../lib/models").JsonSchema} schema to generate uiSchema for */
+  // const currentSchema = getSchemaValue(schema, ref);
+  // return jsonTypeMapping[currentSchema.type](schema, ref);
 }
 
-/**
- * @param {JsonUiSchemeControlContext} context
- * @returns {import('lit-html/lit-html').TemplateResult}
- */
-export function timeTemplate(context) {
-  return genericInput(context, "time");
-}
-
-/**
- * @param {JsonUiSchemeControlContext} context
- * @returns {import('lit-html/lit-html').TemplateResult}
- */
-export function emailTemplate(context) {
-  return genericInput(context, "email");
-}
-
-/**
- * @param {JsonUiSchemeControlContext} context
- * @returns {import('lit-html/lit-html').TemplateResult}
- */
-export function objectTemplate(context) {
-  return html``;
-}
-
-controlTemplates.set("array", arrayTemplate);
-controlTemplates.set("boolean", booleanTemplate);
-controlTemplates.set("integer", integerTemplate);
-controlTemplates.set("null", notImplementedTemplate);
-controlTemplates.set("number", numberTemplate);
-controlTemplates.set("object", objectTemplate);
-controlTemplates.set("string", stringTemplate);
-controlTemplates.set("date", dateTemplate);
-controlTemplates.set("date-time", dateTimeTemplate);
-controlTemplates.set("time", timeTemplate);
-controlTemplates.set("email", emailTemplate);
+setComponentTemplate("JsonSchemaControl", jsonSchemaTemplate);

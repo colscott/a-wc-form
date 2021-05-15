@@ -1,7 +1,7 @@
 {
-  "name": "a-wc-form-json-schema",
+  "name": "a-wc-form-layout",
   "version": "0.0.0",
-  "description": "JSON Schema form binder and layout",
+  "description": "form binder and layout",
   "author": "colin scott",
   "homepage": "",
   "license": "MIT",
@@ -10,6 +10,6 @@
     "src"
   ],
   "dependencies": {
-    "a-wc-form-layout": "file:../form-layout"
+    "a-wc-form-binder": "file:../form-binder"
   }
 }

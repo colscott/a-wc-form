@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>      
+        <script type="module">
+          import { LitElement, html, css } from 'lit-element';
+          import { data } from 'a-wc-form-binder/demo/mock.js';
+          import { layout } from './mock.js';
+          import { controlBinder as binder, controlBinders as binders } from '../src/index.js';
+          
+          binder.add(...Object.values(binders));
+
+          customElements.define('test-form-layout', class extends LitElement {
+            static get styles() {
+              return css`
+                :host {
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+
+                }
+                :invalid {
+                  border: 1px solid red;
+                }
+              `;
+            }
+            static get properties() {
+              return {
+                data: { type: Object },
+              }; 
+            }
+
+            constructor() {
+              super();
+              this.data = data;
+            }
+
+            render() {
+              return html`
+                <section class="examples">
+                  <h2>form-layout layout provided</h2><br />
+                  <form-layout @form-binder:change=${e => {this.data = e.detail.data;this.requestUpdate();}} .data=${this.data} .layout=${layout}></form-layout><br/>
+                </section>
+                <section class="data"><pre>${JSON.stringify(this.data, null, 2)}</pre></section>
+              `;
+            }
+          })
+        </script>
+    </head>
+    <body>
+        <test-form-layout></test-form-layout>
+    </body>
+</html>

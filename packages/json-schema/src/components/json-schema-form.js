@@ -1,76 +1,52 @@
-import { LitElement, html } from "lit-element";
-import { getUiSchema } from "../lib/schema-generator.js";
-import { getTemplate } from "../lib/template-registry.js";
+import { FormLayout } from "a-wc-form-layout";
 import "../templates/controls.js";
-import "../templates/layouts.js";
 
-/** @typedef {import("../lib/json-ui-schema-models.js").JsonSchema} JsonSchema */
-/** @typedef {import("../lib/json-ui-schema-models.js").JsonUiSchemeContext} JsonUiSchemeContext */
+/** @typedef {import("../lib/models.js").JsonSchema} JsonSchema */
 
 /**  */
-class JsonSchemaForm extends LitElement {
-  /** @inheritdoc */
-  static get properties() {
+export class JsonSchemaForm extends FormLayout {
+  /** @returns {import("a-wc-form-layout/src/lib/models").Component} */
+  get layout() {
+    return (
+      this._layout || {
+        template: "JsonSchemaControl",
+        properties: {
+          ref: "#",
+          type: "text"
+        }
+      }
+    );
+  }
+
+  /** @param {import("a-wc-form-layout/src/lib/models").Control} component to use for form layout */
+  set layout(component) {
+    super.layout = component;
+  }
+
+  /** @returns {import("../lib/models.js").JsonSchema} JSON Schema in use */
+  get schema() {
+    return this._schema;
+  }
+
+  /** @param {import("../lib/models.js").JsonSchema} schema to use */
+  set schema(schema) {
+    this._schema = schema;
+    setTimeout(() => this.render);
+  }
+
+  /** @returns {import("../lib/models.js").SchemaLayoutContext<import("a-wc-form-layout/src/lib/models").Component>} */
+  get context() {
     return {
-      data: { type: Object },
-      schema: { type: Object },
-      uiSchema: { type: Object },
+      ...super.context,
+      schema: this.schema
     };
   }
 
-  /** @returns {import("../lib/json-ui-schema-models.js").JsonUiSchema} */
-  get uiSchema() {
-    if (!this._uiSchema) {
-      this.uiSchema = getUiSchema(this.schema);
-    }
-    return this._uiSchema;
-  }
-
-  /** @param {import("../lib/json-ui-schema-models.js").JsonUiSchema} uiSchema to use for form layout */
-  set uiSchema(uiSchema) {
-    this._uiSchema = uiSchema;
-  }
-
-  /** @inheritdoc */
-  constructor() {
-    super();
-
-    /** @type {import("../lib/json-ui-schema-models.js").JsonSchema} */
-    this.schema = null;
-
-    /** @type {import("../lib/json-ui-schema-models.js").JsonUiSchema} */
-    this.uiSchema = null;
-
-    /** @type {any} */
-    this.data = null;
-  }
-
-  /** @inheritdoc */
-  connectedCallback() {
-    this.setAttribute("role", "form");
-    super.connectedCallback();
-  }
-
-  /** @override to remove shadow DOM */
-  createRenderRoot() {
-    return this;
-  }
-
-  /** @returns {import('lit-element').TemplateResult} for UI */
+  /** Renders the UI based on schema */
   render() {
-    if (this.schema !== null && this.data !== null) {
-      /** @type {JsonUiSchemeContext} */
-      const context = {
-        currentUiSchema: this.uiSchema,
-        currentData: this.data,
-        rootSchema: this.schema,
-        rootUiSchema: this.uiSchema,
-        data: this.data
-      };
-
-      return getTemplate(context);
+    if (this.schema) {
+      super.render();
     }
-    return html``;
   }
 }
 
