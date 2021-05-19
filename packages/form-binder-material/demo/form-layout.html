@@ -5,6 +5,9 @@
           import { LitElement, html, css } from 'lit-element';
           import { data } from 'a-wc-form-binder/demo/mock.js';
           import { layout } from 'a-wc-form-layout/demo/mock.js';
+          import { schema } from "a-wc-form-json-schema/demo/mock.js";
+          import 'a-wc-form-json-schema'
+          import { formCss } from 'a-wc-form-binder';
           import { controlBinder as binder} from 'a-wc-form-layout/src/index.js';
           import { controlBinders as binders } from '../src/index.js';
           
@@ -12,16 +15,16 @@
 
           customElements.define('test-form-layout', class extends LitElement {
             static get styles() {
-              return css`
+              return [
+                css`
                 :host {
                   display: grid;
-                  grid-template-columns: 1fr 1fr;
+                  grid-template-columns: 1fr min-content;
 
                 }
-                :invalid {
-                  border: 1px solid red;
-                }
-              `;
+              `,
+              ...formCss.allCss
+              ];
             }
             static get properties() {
               return {

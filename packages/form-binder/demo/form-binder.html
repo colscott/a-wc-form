@@ -4,7 +4,7 @@
         <script type="module">
           import { data } from './mock.js';
           import { LitElement, html, css } from 'lit-element';
-          import { controlBinder as binder, controlBinders as binders } from '../src/index.js';
+          import { controlBinder as binder, controlBinders as binders, formCss } from '../src/index.js';
 
           binder.add(...Object.values(binders));
 
@@ -19,11 +19,16 @@
               this.data = data;
             }
             static get styles() {
-              return css`
-                :invalid {
-                  border: 1px solid red;
+              return [
+                css`
+                :host {
+                  display: grid;
+                  grid-template-columns: 1fr min-content;
+
                 }
-              `;
+              `,
+              ...formCss.allCss
+              ];
             }
             render() { return html`
               <form-binder @form-binder:change=${e => {this.data = e.detail.data;this.requestUpdate();}} .data=${this.data}>
