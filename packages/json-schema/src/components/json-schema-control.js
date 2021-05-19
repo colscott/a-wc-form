@@ -1,6 +1,9 @@
 import { getSchemaValue } from "a-wc-form-binder/src/lib/json-pointer";
+import { getComponentTemplate, setComponentTemplate } from "a-wc-form-layout";
 import { LitElement, html } from "lit-element";
-import { jsonTypeMapping } from "../templates/controls.js";
+// import { jsonTypeMapping } from "../templates/controls.js";
+import "../lib/layout-generator.js";
+import { getLayout } from "../lib/layout-generator.js";
 
 /**
  * @param {string} selector CSS selector to match
@@ -32,9 +35,10 @@ export class JsonSchemaControl extends LitElement {
   /** @returns {import('../lib/models').JsonSchema} */
   get schema() {
     if (!this._schema) {
-      const form = /** @type {import('./json-schema-form').JsonSchemaForm} */ (closest(
-        "json-schema-form",
-        this
+      const form = /** @type {Element&{schema: import("../lib/models").JsonSchema}} */ (closest(
+        "form-layout, form-binder",
+        this.parentElement ||
+          /** @type {ShadowRoot} */ (this.getRootNode()).host
       ));
       if (form) {
         this.schema = form.schema;
@@ -69,10 +73,33 @@ export class JsonSchemaControl extends LitElement {
     if (this.ref && this.schema) {
       /** @type {{type: string}} schema to generate uiSchema for */
       const currentSchema = getSchemaValue(this.schema, this.ref);
-      return jsonTypeMapping[currentSchema.type](this.schema, this.ref);
+      const layout = getLayout(this.schema, this.ref);
+      return getComponentTemplate(layout.template)({
+        component: layout
+      });
     }
     return html``;
   }
 }
 
 customElements.define("json-schema-control", JsonSchemaControl);
+
+/**
+ * @param {import("../lib/models.js").SchemaLayoutContext<import("../lib/models").JsonSchemaControl>} context
+ * @returns {import('lit-html').TemplateResult}
+ */
+function jsonSchemaTemplate(context) {
+  return html`
+    <json-schema-control
+      ref=${context.component.properties.ref}
+      .schema=${context.component.properties.schema}
+    ></json-schema-control>
+  `;
+  // const { ref } = context.component.properties;
+  // const { schema } = context;
+  // /** @type {import("../lib/models").JsonSchema} schema to generate uiSchema for */
+  // const currentSchema = getSchemaValue(schema, ref);
+  // return jsonTypeMapping[currentSchema.type](schema, ref);
+}
+
+setComponentTemplate("JsonSchemaControl", jsonSchemaTemplate);

@@ -22,5 +22,6 @@ export {};
  * @typedef {Object} JsonSchemaControlProperties
  * @property {object} properties
  * @property {string} properties.ref JSON pointer to the data value that will back this control
+ * @property {JsonSchema} properties.schema JSON Schema for validating the data structure
  * @typedef {JsonSchemaControlType & JsonSchemaControlProperties} JsonSchemaControl
  */

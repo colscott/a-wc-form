@@ -1,5 +1,5 @@
 import { FormLayout } from "a-wc-form-layout";
-import "../templates/controls.js";
+// import "../templates/controls.js";
 
 /** @typedef {import("../lib/models.js").JsonSchema} JsonSchema */
 
@@ -31,7 +31,7 @@ export class JsonSchemaForm extends FormLayout {
   /** @param {import("../lib/models.js").JsonSchema} schema to use */
   set schema(schema) {
     this._schema = schema;
-    setTimeout(() => this.render);
+    setTimeout(() => this.render());
   }
 
   /** @returns {import("../lib/models.js").SchemaLayoutContext<import("a-wc-form-layout/src/lib/models").Component>} */

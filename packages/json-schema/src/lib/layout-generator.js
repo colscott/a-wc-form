@@ -1,226 +1,183 @@
-// import { getValue } from "a-wc-form-binder/src/lib/json-pointer";
+import { getSchemaValue } from "a-wc-form-binder/src/lib/json-pointer.js";
 
-// /**
-//  * @param {import("./models").JsonSchema} schema to generate uiSchema for
-//  * @param {string} [startRef='#'] JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
-//  * @returns {import("a-wc-form-layout/src/lib/models").Component} for the schema passed in
-//  */
-// export function getLayout(schema, startRef) {
-//   return schema2Layout[schema.type](schema, startRef || "#");
-// }
+/** @typedef {import('../lib/models.js').JsonSchema} JsonSchema */
 
-// /**
-//  * @param {import("./models").JsonSchema} schema to generate uiSchema for
-//  * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
-//  * @returns {boolean} if the schema field is required
-//  */
-// function isRequired(schema, ref) {
-//   const innerProperties = ref.substr(0, ref.lastIndexOf("/"));
-//   /** @type {import("./models").JsonSchema} */
-//   const parentSchema = getValue(schema, innerProperties);
-//   const property = ref.substr(ref.lastIndexOf("/") + 1);
-//   return (
-//     parentSchema.required != null &&
-//     parentSchema.required.indexOf(property) > -1
-//   );
-// }
+/** @typedef {import("a-wc-form-layout/src/lib/models").Component} Component */
 
-// /**
-//  * @param {import("./models").JsonSchema} schema
-//  * @param {string} ref JSON pointer
-//  * @returns {import("a-wc-form-layout/src/lib/models").Control}
-//  */
-// const booleanControl = (schema, ref) => ({
-//   template: "Control",
-//   properties: {
-//     ref,
-//     type: "checkbox",
-//     description: schema.description,
-//     label: schema.title,
-//     readOnly: schema.readOnly,
-//     validation: {
-//       required: isRequired(schema, ref)
-//     }
-//   }
-// });
+/**
+ * @param {import("./models").JsonSchema} schema to generate uiSchema for
+ * @param {string} [startRef='#'] JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
+ * @returns {Component} for the schema passed in
+ */
+export function getLayout(schema, startRef) {
+  /** @type {import("../lib/models").JsonSchema} */
+  const currentSchema = getSchemaValue(schema, startRef);
+  return schema2Layout[currentSchema.type](schema, startRef || "#");
+}
 
-// /**
-//  * @param {import("./models").JsonSchema} schema
-//  * @param {string} ref JSON pointer
-//  * @returns {import("a-wc-form-layout/src/lib/models").Control}
-//  */
-// const integerControl = (schema, ref) => ({
-//   template: "Control",
-//   properties: {
-//     ref,
-//     type: "number",
-//     description: schema.description,
-//     label: schema.title,
-//     readOnly: schema.readOnly,
-//     validation: {
-//       required: isRequired(schema, ref),
-//       min: schema.minimum || schema.exclusiveMinimum,
-//       max: schema.maximum || schema.exclusiveMaximum,
-//       step: 1
-//     }
-//   }
-// });
+/**
+ * @param {import("./models").JsonSchema} schema to generate uiSchema for
+ * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
+ * @returns {boolean} if the schema field is required
+ */
+function isRequired(schema, ref) {
+  const innerProperties = ref.substr(0, ref.lastIndexOf("/"));
+  /** @type {import("./models").JsonSchema} */
+  const parentSchema = getSchemaValue(schema, innerProperties);
+  const property = ref.substr(ref.lastIndexOf("/") + 1);
+  return (
+    parentSchema.required != null &&
+    parentSchema.required.indexOf(property) > -1
+  );
+}
 
-// /**
-//  * @param {import("./models").JsonSchema} schema
-//  * @param {string} ref JSON pointer
-//  * @returns {import("a-wc-form-layout/src/lib/models").Control}
-//  */
-// const numberControl = (schema, ref) => ({
-//   template: "Control",
-//   properties: {
-//     ref,
-//     type: "number",
-//     description: schema.description,
-//     label: schema.title,
-//     readOnly: schema.readOnly,
-//     validation: {
-//       required: isRequired(schema, ref),
-//       min: schema.minimum || schema.exclusiveMinimum,
-//       max: schema.maximum || schema.exclusiveMaximum
-//     }
-//   }
-// });
+const typeMapping = {
+  boolean: "checkbox",
+  number: "number",
+  integer: "number",
+  string: "text"
+};
 
-// /**
-//  * @param {import("./models").JsonSchema} schema
-//  * @param {string} ref JSON pointer
-//  * @returns {import("a-wc-form-layout/src/lib/models").Control}
-//  */
-// const stringControl = (schema, ref) => ({
-//   template: "Control",
-//   properties: {
-//     ref,
-//     type: "text",
-//     description: schema.description,
-//     label: schema.title,
-//     readOnly: schema.readOnly,
-//     validation: {
-//       required: isRequired(schema, ref),
-//       minLength: schema.minLength,
-//       maxLength: schema.maxLength,
-//       pattern: schema.pattern
-//     }
-//   }
-// });
+const formatMapping = {
+  "date-time": "datetime-local",
+  date: "date",
+  time: "time",
+  duration: "text",
+  email: "email"
+};
 
-// /**
-//  * @param {import("./models").JsonSchema} schema
-//  * @param {string} ref JSON pointer
-//  * @returns {import("a-wc-form-layout/src/lib/models").Control}
-//  */
-// const arrayControl = (schema, ref) => {
-//   const { minItems, maxItems, uniqueItems, items } = schema;
+/**
+ * @param {import("../lib/models").JsonSchema} schema to generate uiSchema for
+ * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
+ * @returns {Component}
+ */
+function controlToLayout(schema, ref) {
+  /** @type {import("../lib/models").JsonSchema} */
+  const currentSchema = getSchemaValue(schema, ref);
 
-//   if (typeof items === "boolean") {
-//     return null;
-//   }
+  /** @type {Component} */
+  const component = {
+    template: "Control",
+    properties: {
+      ref,
+      type:
+        currentSchema.type === "string"
+          ? formatMapping[currentSchema.format] || "text"
+          : typeMapping[currentSchema.type],
+      description: currentSchema.description,
+      label: currentSchema.title,
+      possibleValues: currentSchema.enum?.map(e => e.toString()),
+      readOnly: currentSchema.readOnly === true,
+      validation: {
+        max: currentSchema.maximum || currentSchema.exclusiveMaximum,
+        min: currentSchema.minimum || currentSchema.exclusiveMinimum,
+        maxLength: currentSchema.maxLength,
+        minLength: currentSchema.minLength,
+        required: isRequired(schema, ref),
+        step:
+          currentSchema.multipleOf ||
+          (currentSchema.type === "integer" && 1) ||
+          undefined,
+        pattern: currentSchema.pattern
+      }
+    }
+  };
+  return component;
+}
 
-//   const itemDataArray = getValue(context.data, currentUiSchema.ref);
+/**
+ * @param {import("../lib/models").JsonSchema} schema to generate uiSchema for
+ * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
+ * @returns {import("a-wc-form-layout/src/lib/models").HorizontalLayout|import("a-wc-form-layout/src/lib/models").VerticalLayout}
+ */
+function objectToLayout(schema, ref) {
+  /** @type {import("../lib/models").JsonSchema} schema to generate uiSchema for */
+  const currentSchema = getSchemaValue(schema, ref);
+  const arrayItemIndex = ref.match(/\/(\d+)$/);
+  return {
+    template:
+      arrayItemIndex && arrayItemIndex[1]
+        ? "HorizontalLayout"
+        : "VerticalLayout",
+    properties: {
+      components: Object.entries(currentSchema.properties).map(entry =>
+        schema2Layout[typeof entry[1] !== "boolean" && entry[1].type](
+          schema,
+          `${ref}/${entry[0]}`
+        )
+      ),
+      label: currentSchema.title
+    }
+  };
+}
 
-//   /** @type {Array<TemplateResult>} */
-//   const components = [];
-//   // TODO abstract the array iteration logic away from the HTML mark-up so that it can be reused.
+/**
+ * @param {import("./models").JsonSchema} schema
+ * @param {string} ref JSON pointer
+ * @returns {import("a-wc-form-layout/src/lib/models").GridLayout | import("a-wc-form-layout/src/lib/models").HorizontalLayout | import("a-wc-form-layout/src/lib/models").ArrayLayout}
+ */
+const arrayToLayout = (schema, ref) => {
+  /** @type {import("../lib/models").JsonSchema} */
+  const currentSchema = getSchemaValue(schema, ref);
+  const { minItems, maxItems, uniqueItems, items } = currentSchema;
+  if (typeof items === "boolean") {
+    return null;
+  }
 
-//   // object of number - infinite array - iterate data output vertical
-//   // object of object - infinite array
-//   // Array of object - finite array - iterate data same time output vertical with each obect in a horizontal row (grid)
-//   // Array of Array?? - finite array - iterate uiSchema and data same time output horizontal
-//   if (items instanceof Array) {
-//     // items: [{type: number},{type: number}]
-//     itemDataArray.forEach((dataItem, i) => {
-//       const item = items[i];
-//       if (typeof item !== "boolean") {
-//         const uiSchema = getLayout(item, `${ref}/items/${i}`);
-//       }
-//     });
-//   } else {
-//     // items: { type: object }
-//     // items: { type: number }
-//     itemDataArray.forEach((dataItem, i) => {
-//       const uiSchema = getLayout(items, `${ref}/items/${i}`);
-//       templates.push(
-//         getTemplate({
-//           ...context,
-//           currentData: dataItem,
-//           currentUiSchema: uiSchema
-//         })
-//       );
-//     });
-//   }
-//   return templates;
-// };
+  if (typeof items === "boolean") {
+    return null;
+  }
 
-// const schema2Layout = {
-//   boolean: booleanControl,
-//   integer: (schema, ref) => ({
-//     type: "Control",
-//     ref
-//   }),
-//   number: (schema, ref) => ({
-//     type: "Control",
-//     ref
-//   }),
-//   string: (schema, ref) => ({
-//     type: "Control",
-//     ref
-//   }),
-//   array: (schema, ref) => ({
-//     type: "Control",
-//     ref
-//   }),
-//   object: (schema, ref) => {
-//     const innerScope = ref;
-//     const arrayItemIndex = ref.match(/\/(\d+)$/);
-//     return {
-//       type:
-//         arrayItemIndex && arrayItemIndex[1]
-//           ? "HorizontalLayout"
-//           : "VerticalLayput",
-//       elements: Object.entries(schema.properties).map(entry =>
-//         schema2Layout[entry[1].type](entry[1], `${innerScope}/${entry[0]}`)
-//       )
-//     };
-//   }
-// };
+  // object of number - infinite array - iterate data output vertical
+  // object of object - infinite array
+  // Array of object - finite array - iterate data same time output vertical with each object in a horizontal row (grid)
+  // Array of Array?? - finite array - iterate uiSchema and data same time output horizontal
+  if (items instanceof Array) {
+    // Tuple
+    // items: [{type: number},{type: number}]
+    return {
+      template: "HorizontalLayout",
+      properties: {
+        label: currentSchema.title,
+        components: items
+          .filter(item => typeof item !== "boolean")
+          .map((item, i) =>
+            getLayout(/** @type {JsonSchema} */ (item), `${ref}/${i}`)
+          )
+      }
+    };
+  }
+  // List
+  // items: { type: object }
+  // items: { type: number|string|boolean }
+  // List needs access to data, layout is not known yet as it depends on the amount of data
+  if (items.properties) {
+    return {
+      template: "GridLayout",
+      properties: {
+        ref,
+        label: currentSchema.title,
+        components: Object.entries(items.properties).map(entry =>
+          getLayout(schema, `${ref}/items/${entry[0]}`)
+        )
+      }
+    };
+  }
+  return {
+    template: "ArrayLayout",
+    properties: {
+      ref,
+      label: currentSchema.title,
+      component: getLayout(schema, `${ref}/items`)
+    }
+  };
+};
 
-// /**
-//  * Generates JSON schema from plain data
-//  * @param {Object} data to generate the JSONSchema for
-//  * @returns {import("./models").JsonSchema}
-//  */
-// export function getSchema(data) {
-//   return obj2Schema[typeof data](data);
-// }
-
-// const obj2Schema = {
-//   boolean: data => ({ type: "boolean" }),
-//   number: data => ({ type: "number" }),
-//   string: data => ({ type: "string" }),
-//   array: data => {
-//     const schema = {
-//       type: "array",
-//       items: data.length ? getSchema(data[0]) : { type: "string" }
-//     };
-//     return schema;
-//   },
-//   object: data => {
-//     if (data instanceof Array) {
-//       return obj2Schema.array(data);
-//     }
-
-//     const schema = {
-//       type: "object",
-//       properties: {}
-//     };
-//     Object.entries(data).forEach(entry => {
-//       schema.properties[entry[0]] = getSchema(entry[1]);
-//     });
-//     return schema;
-//   }
-// };
+const schema2Layout = {
+  boolean: controlToLayout,
+  integer: controlToLayout,
+  number: controlToLayout,
+  string: controlToLayout,
+  array: arrayToLayout,
+  object: objectToLayout
+};
