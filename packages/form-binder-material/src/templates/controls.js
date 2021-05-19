@@ -72,7 +72,10 @@ export function enumTemplate(context) {
  * @returns {TemplateResult} matching the context passed in
  */
 function controlTemplate(context) {
-  if ("possibleValues" in context.component.properties) {
+  if (
+    "possibleValues" in context.component.properties &&
+    context.component.properties.possibleValues
+  ) {
     return enumTemplate(context);
   }
   if (context.component.properties.type === "checkbox") {
