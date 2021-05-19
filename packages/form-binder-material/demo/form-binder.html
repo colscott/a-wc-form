@@ -3,7 +3,7 @@
     <head>
         <script type="module">
           import { LitElement, html, css } from 'lit-element';
-          import { controlBinder as binder, formBinderCss } from 'a-wc-form-binder';
+          import { controlBinder as binder, formCss } from 'a-wc-form-binder';
           import { data } from 'a-wc-form-binder/demo/mock.js';
           import { schema } from "a-wc-form-json-schema/demo/mock.js";
           import 'a-wc-form-json-schema'
@@ -24,7 +24,7 @@
                   grid-template-columns: 1fr min-content;
                 }
               `,
-              formBinderCss
+              ...formCss.allCss
               ];
             }
 
