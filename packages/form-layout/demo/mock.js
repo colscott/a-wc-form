@@ -1,10 +1,12 @@
 export const layout = {
   template: "VerticalLayout",
+  label: "Person",
   properties: {
     components: [
       {
         template: "HorizontalLayout",
         properties: {
+          label: "Personal",
           components: [
             {
               // String input
@@ -53,6 +55,7 @@ export const layout = {
       {
         template: "HorizontalLayout",
         properties: {
+          label: "Personal",
           components: [
             {
               // Select
@@ -79,7 +82,7 @@ export const layout = {
         template: "GridLayout",
         properties: {
           ref: "#/comments",
-          label: "",
+          label: "Comments",
           components: [
             // components to use for each object entry in the Array
             {
@@ -105,6 +108,7 @@ export const layout = {
         // Array primitives
         template: "ArrayLayout",
         properties: {
+          label: "Telephone numbers",
           ref: "#/telephoneNumbers",
           component: {
             // The component to use for each entry
@@ -120,6 +124,7 @@ export const layout = {
         // Tuple
         template: "HorizontalLayout",
         properties: {
+          label: "Address",
           components: [
             {
               template: "Control",

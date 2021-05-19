@@ -3,48 +3,33 @@ import { html } from "lit-html/lit-html.js";
 import {
   getComponentTemplate,
   setComponentTemplate
-} from "../lib/template-registry.js";
+} from "a-wc-form-layout/src/index.js";
 import "./array-layout.js";
 
 /**
  * @template TComponent
- * @typedef {import('../lib/models.js').LayoutContext<TComponent>} LayoutContext
+ * @typedef {import('a-wc-form-layout/src/lib/models').LayoutContext<TComponent>} LayoutContext
  */
 
 /**
- * @param {LayoutContext<import("../lib/models.js").HorizontalLayout>} context
+ * @param {LayoutContext<import('a-wc-form-layout/src/lib/models').HorizontalLayout>} context
  * @returns {import('lit-html/lit-html').TemplateResult}
  */
 function horizontalTemplate(context) {
   const { components } = context.component.properties;
 
   return html`
-    <div style="display:flex ">
-      ${context.component.properties?.label
-        ? html`
-            <span>${context.component.properties.label}</span>
-          `
-        : html``}
-      ${components.map(component =>
-        getComponentTemplate(component.template)({ component })
-      )}
-    </div>
-  `;
-}
-
-/**
- * @param {LayoutContext<import("../lib/models.js").VerticalLayout>} context
- * @returns {import('lit-html/lit-html').TemplateResult}
- */
-function verticalTemplate(context) {
-  const { components } = context.component.properties;
-  return html`
-    <div aria-label=${ifDefined(context.component.properties?.label)}>
-      ${context.component.properties?.label
-        ? html`
-            <span>${context.component.properties.label}</span>
-          `
-        : html``}
+    ${context.component.properties?.label
+      ? html`
+          <div class="horizontal-title">
+            ${context.component.properties.label}
+          </div>
+        `
+      : html``}
+    <div
+      class="horizontal-layout"
+      aria-label=${ifDefined(context.component.properties?.label)}
+    >
       ${components.map(component =>
         getComponentTemplate(component.template)({ component })
       )}
@@ -53,4 +38,30 @@ function verticalTemplate(context) {
 }
 
 setComponentTemplate("HorizontalLayout", horizontalTemplate);
+
+/**
+ * @param {LayoutContext<import('a-wc-form-layout/src/lib/models').VerticalLayout>} context
+ * @returns {import('lit-html/lit-html').TemplateResult}
+ */
+function verticalTemplate(context) {
+  const { components } = context.component.properties;
+  return html`
+    ${context.component.properties?.label
+      ? html`
+          <div class="vertical-title">
+            ${context.component.properties.label}
+          </div>
+        `
+      : html``}
+    <div
+      class="vertical-layout"
+      aria-label=${ifDefined(context.component.properties?.label)}
+    >
+      ${components.map(component =>
+        getComponentTemplate(component.template)({ component })
+      )}
+    </div>
+  `;
+}
+
 setComponentTemplate("VerticalLayout", verticalTemplate);

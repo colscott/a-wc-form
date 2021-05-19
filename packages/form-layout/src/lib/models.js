@@ -35,6 +35,7 @@ export {};
  * @property {'GridLayout'} template
  * @property {object} properties
  * @property {string} properties.ref JSON pointer to the data value that will back this control
+ * @property {string} [properties.label] 
  * @property {Array<Component>} properties.components The JSON pointer on the child components should be relative to the GridLayout
  */
 

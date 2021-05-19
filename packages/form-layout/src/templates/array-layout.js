@@ -17,7 +17,7 @@ const gridBinder = {
         ${components.map(
           c =>
             html`
-              <span
+              <span class="grid-header"
                 >${("label" in c.properties && c.properties.label) || ""}</span
               >
             `
@@ -48,12 +48,18 @@ controlBinder.add(gridBinder);
  */
 function gridTemplate(context) {
   return html`
+    ${context.component.properties?.label
+      ? html`
+          <div class="grid-title">${context.component.properties.label}</div>
+        `
+      : html``}
     <div
       form-layout-grid
+      class="grid-layout"
       name=${context.component.properties.ref}
       .context=${context}
-      style="display: grid; grid-template-columns: repeat(${context.component
-        .properties.components.length}, max-content)"
+      style="--form-grid-columns:${context.component.properties.components
+        .length}"
     ></div>
   `;
 }
@@ -92,8 +98,14 @@ controlBinder.add(arrayBinder);
  */
 function arrayTemplate(context) {
   return html`
+    ${context.component.properties?.label
+      ? html`
+          <div class="array-title">${context.component.properties.label}</div>
+        `
+      : html``}
     <div
       form-layout-array
+      class="array-layout"
       name=${context.component.properties.ref}
       .context=${context}
     ></div>
