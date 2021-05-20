@@ -4,23 +4,30 @@
         <script type="module">
           import { LitElement, html, css } from 'lit-element';
           import { data } from 'a-wc-form-binder/demo/mock.js';
+          import { formCss } from 'a-wc-form-binder';
           import { layout } from './mock.js';
-          import { controlBinder as binder, controlBinders as binders } from '../src/index.js';
+          import {
+            controlBinder as binder,
+            controlBinders as binders,
+          } from '../src/index.js';
           
           binder.add(...Object.values(binders));
 
           customElements.define('test-form-layout', class extends LitElement {
             static get styles() {
-              return css`
+              return [
+                css`
                 :host {
                   display: grid;
-                  grid-template-columns: 1fr 1fr;
+                  grid-template-columns: 1fr max-content;
 
                 }
                 :invalid {
                   border: 1px solid red;
                 }
-              `;
+              `,
+              ...formCss.allCss
+              ];
             }
             static get properties() {
               return {
