@@ -18,8 +18,8 @@ async function createFormBinder() {
   <mwc-textfield id="age" min="18" max="65" type="number" name="#/personalData/age"></mwc-textfield>
   <mwc-textfield id="tel" name="#/telephoneNumbers/1"></mwc-textfield>
   <mwc-textfield id="message" name="#/comments/1/message"></mwc-textfield>
-  <mwc-switch id="vegetarian" name="#/vegetarian"></mwc-switch>
-  <mwc-checkbox id="vegetarian2" name="#/vegetarian"></mwc-checkbox>
+  <mwc-switch id="student" name="#/student"></mwc-switch>
+  <mwc-checkbox id="vegetarian2" name="#/student"></mwc-checkbox>
   `;
   await formBinder.updateComplete;
   return formBinder;
@@ -65,7 +65,7 @@ describe("form-binder binding tests", () => {
     expect(document.getElementById("age").value).to.equal("34");
     expect(document.getElementById("tel").value).to.equal("123-8901234");
     expect(document.getElementById("message").value).to.equal("Thdsdfsdfsdf");
-    expect(document.getElementById("vegetarian").checked).to.be.true;
+    expect(document.getElementById("student").checked).to.be.true;
     expect(document.getElementById("vegetarian2").checked).to.be.true;
   });
   it("Should not change value when invalid", async () => {
@@ -78,25 +78,25 @@ describe("form-binder binding tests", () => {
     inputValue("name", "Fred");
     inputValue("age", "20");
     expect(formBinder.data.name).to.equal("Fred");
-    getControl("vegetarian")
+    getControl("student")
       .shadowRoot.querySelector("input")
       .click();
     await getControl("name").updateComplete;
     await formBinder.updateComplete;
     expect(formBinder.data.name).to.equal("Fred");
     expect(formBinder.data.personalData.age).to.equal(20);
-    expect(formBinder.data.vegetarian).to.be.false;
+    expect(formBinder.data.student).to.be.false;
   });
   it("Should reflect changes to data", async () => {
     const formBinder = await createFormBinder();
     const dataCopy = JSON.parse(JSON.stringify(formBinder.data));
     dataCopy.name = "fred123";
     dataCopy.personalData.age = 62;
-    dataCopy.vegetarian = false;
+    dataCopy.student = false;
     formBinder.data = dataCopy;
     await formBinder.updateComplete;
     expect(document.getElementById("name").value).to.equal("fred123");
     expect(document.getElementById("age").value).to.equal("62");
-    expect(document.getElementById("vegetarian").checked).to.be.false;
+    expect(document.getElementById("student").checked).to.be.false;
   });
 });

@@ -1,6 +1,6 @@
 export const data = {
   name: "Johnny Five",
-  vegetarian: true,
+  student: true,
   birthDate: "1985-06-02",
   time: "18:55",
   occupation: "Engineer",

@@ -90,7 +90,7 @@ customElements.define(
             ></json-schema-control>
             <json-schema-control
               .schema=${schema}
-              ref="/vegetarian"
+              ref="/student"
             ></json-schema-control>
             <json-schema-control
               .schema=${schema}

@@ -33,7 +33,7 @@ const formBinder = document.querySelector('form-layout');
 // Give the form-layout the data
 formBinder.data = {
   name: "Johnny Five", // Will require a text input
-  vegetarian: true, // Will require a checkbox
+  student: true, // Will require a checkbox
   birthDate: "1985-06-02", // Will require a date input
   occupation: "Engineer", // Will require select from a list of values
   personalData: { // Nested data example
@@ -117,7 +117,7 @@ formBinder.layout = {
               // Boolean input
               template: "Control",
               properties: {
-                ref: "#/vegetarian",
+                ref: "#/student",
                 type: "checkbox"
               }
             }

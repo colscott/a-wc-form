@@ -9,9 +9,9 @@ export const schema = {
       description: "Please enter your name",
       title: "Full name"
     },
-    vegetarian: {
+    student: {
       type: "boolean",
-      title: "Vegetarian"
+      title: "Student"
     },
     birthDate: {
       type: "string",

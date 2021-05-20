@@ -18,7 +18,7 @@ async function createFormBinder() {
     <input id="age" min="18" max="65" type="number" name="#/personalData/age" />
     <input id="tel" name="#/telephoneNumbers/1" />
     <input id="message" name="#/comments/1/message" />
-    <input id="vegetarian" name="#/vegetarian" type="checkbox" />
+    <input id="student" name="#/student" type="checkbox" />
   `;
   await formBinder.updateComplete;
   return formBinder;
@@ -71,7 +71,7 @@ describe("form-binder binding tests", () => {
     expect(document.getElementById("age").value).to.equal("34");
     expect(document.getElementById("tel").value).to.equal("123-8901234");
     expect(document.getElementById("message").value).to.equal("Thdsdfsdfsdf");
-    expect(document.getElementById("vegetarian").checked).to.equal(true);
+    expect(document.getElementById("student").checked).to.equal(true);
   });
   it("Should not change value when value is invalid", async () => {
     binder.add(...Object.values(binders));
@@ -93,12 +93,12 @@ describe("form-binder binding tests", () => {
     const dataCopy = JSON.parse(JSON.stringify(formBinder.data));
     dataCopy.name = "fred123";
     dataCopy.personalData.age = 62;
-    dataCopy.vegetarian = false;
+    dataCopy.student = false;
     formBinder.data = dataCopy;
     await formBinder.updateComplete;
     expect(document.getElementById("name").value).to.equal("fred123");
     expect(document.getElementById("age").value).to.equal("62");
-    expect(document.getElementById("vegetarian").checked).to.equal(false);
+    expect(document.getElementById("student").checked).to.equal(false);
   });
 
   it("Should use custom validation", async () => {

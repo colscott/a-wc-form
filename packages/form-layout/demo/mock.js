@@ -45,7 +45,7 @@ export const layout = {
               // Boolean input
               template: "Control",
               properties: {
-                ref: "#/vegetarian",
+                ref: "#/student",
                 type: "checkbox"
               }
             }
