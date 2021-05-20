@@ -3,7 +3,7 @@ import { html } from "lit-html/lit-html.js";
 import {
   getComponentTemplate,
   setComponentTemplate
-} from "a-wc-form-layout/src/index.js";
+} from "../lib/template-registry.js";
 import "./array-layout.js";
 
 /**
