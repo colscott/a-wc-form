@@ -27,6 +27,7 @@ export const layout = {
               properties: {
                 ref: "#/personalData/age",
                 type: "number",
+                label: "Age",
                 min: 18, // min value
                 max: 150, // max value
                 step: 1, // incremental step size
@@ -38,7 +39,8 @@ export const layout = {
               template: "Control",
               properties: {
                 ref: "#/birthDate",
-                type: "date"
+                type: "date",
+                label: "Date of Birth"
               }
             },
             {
@@ -46,7 +48,8 @@ export const layout = {
               template: "Control",
               properties: {
                 ref: "#/student",
-                type: "checkbox"
+                type: "checkbox",
+                label: "Student"
               }
             }
           ]
@@ -62,6 +65,7 @@ export const layout = {
               template: "Control",
               properties: {
                 ref: "#/occupation",
+                label: "Occupation",
                 possibleValues: [
                   "Accountant",
                   "Engineer",
@@ -115,6 +119,7 @@ export const layout = {
             template: "Control",
             properties: {
               type: "text",
+              label: "Tel #",
               pattern: "\\d{3}-\\d{3}-\\d{4}"
             }
           }
@@ -130,7 +135,7 @@ export const layout = {
               template: "Control",
               properties: {
                 ref: "#/address/0",
-                label: "",
+                label: "Unit",
                 type: "number"
               }
             },
@@ -138,13 +143,15 @@ export const layout = {
               template: "Control",
               properties: {
                 ref: "#/address/1",
-                type: "text"
+                type: "text",
+                label: "Street"
               }
             },
             {
               template: "Control",
               properties: {
                 ref: "#/address/2",
+                label: "Type",
                 possibleValues: ["Street", "Avenue", "Boulevard"]
               }
             },
@@ -152,6 +159,7 @@ export const layout = {
               template: "Control",
               properties: {
                 ref: "#/address/3",
+                label: "Direction",
                 possibleValues: ["NW", "NE", "SW", "SE"]
               }
             }
