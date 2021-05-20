@@ -2,7 +2,8 @@ import { LitElement, html, css } from "lit-element";
 import { data } from "a-wc-form-binder/demo/mock.js";
 import {
   controlBinder as binder,
-  controlBinders as binders
+  controlBinders as binders,
+  formCss
 } from "a-wc-form-binder";
 import "a-wc-form-layout";
 import { schema, layout } from "./mock.js";
@@ -16,15 +17,18 @@ customElements.define(
   class extends LitElement {
     /** @inheritdoc */
     static get styles() {
-      return css`
-        :host {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-        }
-        :invalid {
-          border: 1px solid red;
-        }
-      `;
+      return [
+        css`
+          :host {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+          }
+          :invalid {
+            border: 1px solid red;
+          }
+        `,
+        ...formCss.allCss
+      ];
     }
 
     /** @inheritdoc */
