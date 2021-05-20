@@ -86,7 +86,7 @@ export const layout = {
         template: "GridLayout",
         properties: {
           ref: "#/comments",
-          label: "Comments",
+          label: "Comments (Array<Object>)",
           components: [
             // components to use for each object entry in the Array
             {
@@ -112,7 +112,7 @@ export const layout = {
         // Array primitives
         template: "ArrayLayout",
         properties: {
-          label: "Telephone numbers",
+          label: "Telephone numbers (Array<Primitive>)",
           ref: "#/telephoneNumbers",
           component: {
             // The component to use for each entry
@@ -129,7 +129,7 @@ export const layout = {
         // Tuple
         template: "HorizontalLayout",
         properties: {
-          label: "Address",
+          label: "Address (Tuple)",
           components: [
             {
               template: "Control",

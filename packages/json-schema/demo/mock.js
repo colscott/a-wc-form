@@ -65,7 +65,7 @@ export const schema = {
     comments: {
       // Grid
       type: "array",
-      title: "Comments",
+      title: "Comments (Array<Object>)",
       items: {
         // Should be horizontal layout
         type: "object",
@@ -86,7 +86,7 @@ export const schema = {
     telephoneNumbers: {
       // Array
       type: "array",
-      title: "Telephone numbers",
+      title: "Telephone numbers (Array<Primitive>)",
       items: {
         type: "string"
       }
@@ -94,7 +94,7 @@ export const schema = {
     address: {
       // Tuple
       type: "array",
-      title: "Addresses",
+      title: "Address (Tuple)",
       items: [
         {
           type: "number",
