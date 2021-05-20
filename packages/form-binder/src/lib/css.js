@@ -25,7 +25,10 @@ export const structureCss = css`
 
   [form-layout-grid] {
     display: grid;
-    grid-template-columns: repeat(var(--form-grid-columns), max-content);
+    grid-template-columns: repeat(
+      var(--form-grid-columns),
+      minmax(max-content, 1fr)
+    );
     grid-gap: var(--form-pad, 8px);
     align-items: center;
   }
@@ -34,7 +37,7 @@ export const structureCss = css`
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
-    align-items: flex-start;
+    align-content: stretch;
     gap: var(--form-pad, 8px);
   }
 `;
