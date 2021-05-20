@@ -19,6 +19,8 @@ export const structureCss = css`
     display: flex;
     align-items: center;
     gap: var(--form-pad, 8px);
+    flex-wrap: wrap;
+    flex-basis: 100%;
   }
 
   [form-layout-grid] {
@@ -49,6 +51,7 @@ export const titleCss = css`
   .grid-title,
   .array-title {
     font-size: 1.2rem;
+    flex-basis: 100%;
   }
 
   .grid-header {
