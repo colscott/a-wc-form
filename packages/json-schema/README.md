@@ -16,13 +16,15 @@ npm i -save a-wc-form-json-schema
 
 Example excluding using ui schema:
 ```html
-<json-schema-form>
+<form-binder>
   <!-- Each json-schema-control will create the control for the data type from a set  -->
-  <json-schema-control jsonPointer="/name/first"></json-schema-control>
-  <json-schema-control jsonPointer="/name/second"></json-schema-control>
+  <json-schema-control ref="/name/first"></json-schema-control>
+  <json-schema-control ref="/name/second"></json-schema-control>
+  <!-- json-schema-control can also render branches or even the whole schema -->
+  <json-schema-control ref="#"></json-schema-control>
   <!-- Bypass json-schema-form completely but still take advantage of a-wc-form-binder data binding and validation -->
   <input type="text" name="/name/middle">
-</json-schema-form>
+</form-binder>
 ```
 ```js
 import {
@@ -33,29 +35,32 @@ import {
 // add the control binders to bind data to controls
 binder.add(...Object.values(binders));
 
-const jsonSchemaForm = document.querySelector('json-schema-form');
+const jsonSchemaForm = document.querySelector('form-binder');
 
 // Give json-schema-form the data
 jsonSchemaForm.data = {
   firstName: 'foo', lastName: 'bar', middleName: '' }
 }
 
-// Give json-schema-form the json schema
-jsonSchemaForm.schema = {
+// Defined the schema
+const schema = {
   type: "object",
   properties: {
     firstName: {
       type: "string",
+      title: "First Name",
       minLength: 3,
       description: "Please enter your first name"
     },
     lastName: {
       type: "string",
+      title: "Last Name",
       minLength: 3,
       description: "Please enter your last name"
     },
     middleName: {
       type: "string",
+      title: "Middle Name",
       minLength: 3,
       description: "Please enter your middle name"
     }
@@ -63,13 +68,18 @@ jsonSchemaForm.schema = {
   required: ["firstName", "lastName"]
 }
 
+// Give the json schema to each json-schema-control
+document.querySelectorAll('json-schema-control').forEach(control => {
+  control.schema = schema;
+});
+
 // Listen for changes to the data
 jsonSchemaForm.addEventListener('form-binder:change', e => console.info(e.detail.data));
 ```
 
-Example using ui schema:
+Example using layout and schema:
 ```html
-<json-schema-form></json-schema-form>
+<form-layout></form-layout>
 ```
 ```js
 import {
@@ -80,42 +90,30 @@ import {
 // add the control binders to bind data to controls
 binder.add(...Object.values(binders));
 
-const jsonSchemaForm = document.querySelector('json-schema-form');
+const formLayout = document.querySelector('form-layout');
 
 // Give json-schema-form the data
-jsonSchemaForm.data = {
+formLayout.data = {
   firstName: 'foo', lastName: 'bar', middleName: '' }
 }
 
-// Give json-schema-form the json schema
-jsonSchemaForm.schema = {
-  type: "object",
-  properties: {
-    firstName: {
-      type: "string"
-    },
-    lastName: {
-      type: "string"
-    }
-  }
-}
-
-jsonSchemaForm.uiSchema = {
+formLayout.layout = {
   type: "VerticalLayout",
   elements: [
     {
-      type: "Control",
+      // Specify the JsonSchemaControl as the component
+      type: "JsonSchemaControl",
       ref: "#/firstName"
     },
     {
-      type: "Control",
+      type: "JsonSchemaControl",
       ref: "#/lastName"
     }
   ]
 }
 
 // Listen for changes to the data
-jsonSchemaForm.addEventListener('form-binder:change', e => console.info(e.detail.data));
+formLayout.addEventListener('form-binder:change', e => console.info(e.detail.data));
 ```
 ## UI Schema
 The UI Schema is a lot like the ui schema definition in [JSONForms](https://jsonforms.io/docs/uischema).
