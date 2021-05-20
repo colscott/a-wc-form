@@ -10,7 +10,7 @@ import { setComponentTemplate } from "../lib/template-registry.js";
  * @param {ControlLayoutContext} context
  * @returns {TemplateResult}
  */
-function genericInput(context) {
+function label(context) {
   const { properties } = context.component;
   return html`
     ${context.component.template && properties.label
@@ -21,7 +21,18 @@ function genericInput(context) {
             >${properties.label}</label
           >
         `
-      : html``}<input
+      : html``}
+  `;
+}
+
+/**
+ * @param {ControlLayoutContext} context
+ * @returns {TemplateResult}
+ */
+function genericInput(context) {
+  const { properties } = context.component;
+  return html`
+    ${label(context)}<input
       type="${properties.type}"
       name="${properties.ref}"
       aria-label=${ifDefined(properties.label)}
@@ -49,7 +60,7 @@ function genericInput(context) {
  */
 function enumTemplate(context) {
   return html`
-    <select name="${context.component.properties.ref}">
+    ${label(context)}<select name="${context.component.properties.ref}">
       ${context.component.properties.possibleValues.map(
         e =>
           html`
