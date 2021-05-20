@@ -1,6 +1,7 @@
 import { html } from "lit-html/lit-html.js";
 import { ifDefined } from "lit-html/directives/if-defined.js";
 import "@material/mwc-checkbox/mwc-checkbox.js";
+import "@material/mwc-formfield/mwc-formfield.js";
 import "@material/mwc-textfield/mwc-textfield.js";
 import "@material/mwc-select/mwc-select.js";
 import "@material/mwc-list/mwc-list-item.js";
@@ -40,8 +41,11 @@ function genericInput(context) {
  * @returns {TemplateResult}
  */
 export function checkboxTemplate(context) {
+  const { properties } = context.component;
   return html`
-    <mwc-checkbox name="${context.component.properties.ref}"></mwc-checkbox>
+    <mwc-formfield label=${ifDefined(properties.label)}>
+      <mwc-checkbox name="${context.component.properties.ref}"></mwc-checkbox>
+    </mwc-formfield>
   `;
 }
 
