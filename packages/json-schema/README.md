@@ -14,7 +14,7 @@ Controls used for JSON schema data types can be customized.
 npm i -save a-wc-form-json-schema
 ```
 
-Example excluding using ui schema:
+Example of binding data to JSON Schema generated form controls:
 ```html
 <form-binder>
   <!-- Each json-schema-control will create the control for the data type from a set  -->
@@ -77,7 +77,7 @@ document.querySelectorAll('json-schema-control').forEach(control => {
 jsonSchemaForm.addEventListener('form-binder:change', e => console.info(e.detail.data));
 ```
 
-Example using layout and schema:
+Example of enerating a form layout from JSON Schema to create a form:
 ```html
 <form-layout></form-layout>
 ```
@@ -114,155 +114,4 @@ formLayout.layout = {
 
 // Listen for changes to the data
 formLayout.addEventListener('form-binder:change', e => console.info(e.detail.data));
-```
-## UI Schema
-The UI Schema is a lot like the ui schema definition in [JSONForms](https://jsonforms.io/docs/uischema).
-### Layouts
-Example that has a a vertical layout containing two horizontal layouts:
-```js
-const uiSchema = {
-  // Layouts are of type 'Horizontal'|'Vertical'|'Label' or you can create custom Layout types
-  type: "Vertical", // Key to find the layout template for rendering. Custom layouts types can be added and used
-  parameters: { // Parameters can be used to pass custom data to the template
-    foobar: 'example parameter'
-  },
-  elements: [ // Nested templates to render in this layout
-    {
-      type: "Horizontal",
-      elements: [
-        {
-          type: "Control", // Type Control is defers the template used to the schema data type
-          ref: "#/firstName" // JSON pointer to the data 
-        },
-        {
-          type: "Control",
-          ref: "#/lastName"
-        },
-      ],
-      parameters: { // Parameters can be used to pass data to the template
-        className: '' // This is a custom 
-      }
-    },
-    {
-      type: "Horizontal",
-      elements: [
-        {
-          type: "Control",
-          ref: "#/nationality"
-        },
-        {
-          type: "Control",
-          ref: "#/occupation",
-          parameters: {
-            suggestion: [
-              "Accountant",
-              "Engineer",
-              "Freelancer",
-              "Journalism",
-              "Physician",
-              "Student",
-              "Teacher",
-              "Other"
-            ]
-          }
-        }
-      ]
-    },
-}
-```
-
-### Control
-
-## Customizing the controls
-Control UI is defined using lit-html templates which are mapped to JSON schema data types. To override a template for a given data type, create a lit-html template and update the registry map.
-
-Example mapping mwc-textfield to the data type string:
-```js
-import "@material/mwc-textfield/mwc-textfield.js";
-import { getSchema, isRequired, controlTemplates } from "a-wc-form-json-schema";
-
-/**
- * @param {import('a-wc-form-binder/src/lib/json-ui-schema-models').JsonUiSchemeControlContext} context
- * @returns {import('lit-html').TemplateResult}
- */
-function stringControl(context) {
-  const currentSchema = getSchema(
-    context.rootSchema,
-    context.currentUiSchema.ref
-  );
-  const isRequired = isRequired();
-  return html`
-    <mwc-textfield
-      type="text"
-      name="${context.currentUiSchema.ref}"
-      minlength="${ifDefined(currentSchema.minLength)}"
-      maxlength="${ifDefined(currentSchema.maxLength)}"
-      ?required=${isRequired(context)}
-      pattern=${ifDefined(currentSchema.pattern)}
-      label=${ifDefined(currentSchema.title)}
-      ?readonly=${currentSchema.readOnly === true}
-    ></mwc-textfield>
-  `;
-}
-
-controlTemplates.set("string", stringControl);
-```
-
-## Customizing layouts
-Layout UI is defined using lit-html templates which are mapped to ui schema types. To override a template for a given data type, create a lit-html template and update the registry map.
-
-Example overriding the horizontal layout:
-```js
-import { layoutTemplates } from "a-wc-form-json-schema";
-
-/**
- * @param {import('a-wc-form-binder/src/lib/json-ui-schema-models').JsonUiSchemeLayoutContext} context
- * @returns {import('lit-html').TemplateResult}
- */
-function horizontalTemplate(context) {
-  return html`
-    <div style="display:flex;">
-      <span>${context.currentUiSchema.label || ''}</span>
-      ${context.currentUiSchema.elements.map(element =>
-        getTemplate({
-          currentData: context.data,
-          currentUiSchema: element,
-          data: context.data,
-          rootSchema: context.rootSchema,
-          rootUiSchema: context.rootUiSchema
-        })
-      )}
-    </div>
-  `;
-}
-
-layoutTemplates.set("Horizontal", horizontalLayout);
-```
-
-## Extending ui schema layouts
-It's possible to easily add more layouts.
-
-Example grid layout
-```js
-import { layoutTemplates } from "a-wc-form-json-schema";
-
-/**
- * @param {import('a-wc-form-binder/src/lib/json-ui-schema-models').JsonUiSchemeLayoutContext} context
- * @returns {import('lit-html').TemplateResult}
- */
-function gridTemplate(context) {
-  // the context gives you access to schema
-  const currentUiSchema = context.currentUiSchema;
-
-  return html`
-    <div style="display:grid;">
-      ${currentUiSchema.element.map(element => {
-        return html`...implementation here`
-      })}
-    </div>
-  `;
-}
-
-// Add custom ui templates to the layoutTemplates
-layoutTemplates.set("Grid", gridLayout);
 ```
