@@ -6,7 +6,7 @@ a-wc-form-json-binder is responsible for binding and validating data to form con
 a-wc-form-json-schema extends a-wc-form-json-binder and is responsible for rendering controls based on JSON schema and JSON ui Schema.
 
 Extends a-wc-form-binder to use a [JSON Schema](https://json-schema.org/) to automatically create inputs based on the schema data types. Validation defined in the JSON schema can also applied to the form controls.
-uiSchema JSON can be provided (similar to [JSONForms](https://jsonforms.io/docs/uischema)) which is a set of instructions on how a-wc-form-json-schema should layout the form.
+Layout can be provided which is a set of instructions on how a-wc-form-json-schema should layout the form. Or you can create the form with normal HTML.
 Controls used for JSON schema data types can be customized.
 
 
