@@ -2,21 +2,20 @@
 
 A JSON Schema form binder web component. Can be used anywhere you can use web components.
 
-Generate controls, binders and layouts for a-wc-form-binders from a JSON Schema.
+Generates form controls, and optionally form layout, from [JSON Schema](https://json-schema.org/) data.
 
-a-wc-form-json-binder is responsible for binding and validating data to form controls.
-a-wc-form-json-schema extends a-wc-form-json-binder and is responsible for rendering controls based on JSON schema and JSON ui Schema.
-
-Extends a-wc-form-binder to use a [JSON Schema](https://json-schema.org/) to automatically create inputs based on the schema data types. Validation defined in the JSON schema can also applied to the form controls.
+Extends a-wc-form-binder to use a [JSON Schema](https://json-schema.org/) to automatically create form controls based on the schema data types. Validation defined in the JSON schema is also applied to the form controls.
 Layout can be provided which is a set of instructions on how a-wc-form-json-schema should layout the form. Or you can create the form with normal HTML.
 Controls used for JSON schema data types can be customized.
 
-
+## Usage
 ```cmd
 npm i -save a-wc-form-json-schema
 ```
 
-Example of binding data to JSON Schema generated form controls:
+### Using form-binder
+Example of binding data to JSON Schema generated form controls. This example does not use a-wc-form-layout and instead relies on you to manually create the form control structure.
+#### HTML
 ```html
 <form-binder>
   <!-- Each json-schema-control will create the control for the data type from a set  -->
@@ -24,23 +23,26 @@ Example of binding data to JSON Schema generated form controls:
   <json-schema-control ref="/name/second"></json-schema-control>
   <!-- json-schema-control can also render branches or even the whole schema -->
   <json-schema-control ref="#"></json-schema-control>
-  <!-- Bypass json-schema-form completely but still take advantage of a-wc-form-binder data binding and validation -->
+  <!-- Opt out of json-schema-form but still take advantage of a-wc-form-binder data binding and validation -->
   <input type="text" name="/name/middle">
 </form-binder>
 ```
+#### Javascript
+See a-wc-form-binder package for more info on binders and validation.
 ```js
 import {
   controlBinder as binder
   controlBinders as binders,
-} from "a-wc-form-json-schema";
+} from "a-wc-form-binder";
+import "a-wc-form-json-schema/src/components/json-schema-control.js";
 
 // add the control binders to bind data to controls
 binder.add(...Object.values(binders));
 
-const jsonSchemaForm = document.querySelector('form-binder');
+const formBinder = document.querySelector('form-binder');
 
-// Give json-schema-form the data
-jsonSchemaForm.data = {
+// Give form-binder the data
+formBinder.data = {
   firstName: 'foo', lastName: 'bar', middleName: '' }
 }
 
@@ -74,32 +76,42 @@ const schema = {
 document.querySelectorAll('json-schema-control').forEach(control => {
   control.schema = schema;
 });
+// OR set the schema once on the form-binder
+formBinder.schema = schema;
 
 // Listen for changes to the data
 jsonSchemaForm.addEventListener('form-binder:change', e => console.info(e.detail.data));
 ```
 
-Example of enerating a form layout from JSON Schema to create a form:
+### Using form-layout
+Example showing the use of a-wc-form-layout to layout out the form controls.
+#### HTML
 ```html
-<form-layout></form-layout>
+<!-- json-schema-from extends form-layout -->
+<json-schema-form></json-schema-form>
 ```
+
+#### Javascript
 ```js
 import {
   controlBinder as binder
   controlBinders as binders,
-} from "a-wc-form-json-schema";
+} from "a-wc-form-binder";
+import "a-wc-form-json-schema/src/components/json-schema-form.js";
 
 // add the control binders to bind data to controls
 binder.add(...Object.values(binders));
 
-const formLayout = document.querySelector('form-layout');
+const jsonSchemaForm = document.querySelector('json-schema-form');
 
 // Give json-schema-form the data
 formLayout.data = {
   firstName: 'foo', lastName: 'bar', middleName: '' }
 }
 
-formLayout.layout = {
+// Give the json-schema-form the layout
+// Optional - if not supplied then a layout will be generated from the schema
+jsonSchemaForm.layout = {
   type: "VerticalLayout",
   elements: [
     {
@@ -114,6 +126,32 @@ formLayout.layout = {
   ]
 }
 
+// Give json-schema-form the schema
+jsonSchemaForm.schema = {
+  type: "object",
+  properties: {
+    firstName: {
+      type: "string",
+      title: "First Name",
+      minLength: 3,
+      description: "Please enter your first name"
+    },
+    lastName: {
+      type: "string",
+      title: "Last Name",
+      minLength: 3,
+      description: "Please enter your last name"
+    },
+    middleName: {
+      type: "string",
+      title: "Middle Name",
+      minLength: 3,
+      description: "Please enter your middle name"
+    }
+  },
+  required: ["firstName", "lastName"]
+}
+
 // Listen for changes to the data
-formLayout.addEventListener('form-binder:change', e => console.info(e.detail.data));
+jsonSchemaForm.addEventListener('form-binder:change', e => console.info(e.detail.data));
 ```
