@@ -54,8 +54,13 @@ export function checkboxTemplate(context) {
  * @returns {TemplateResult}
  */
 export function enumTemplate(context) {
+  const { properties } = context.component;
   return html`
-    <mwc-select name="${context.component.properties.ref}">
+    <mwc-select
+      name="${context.component.properties.ref}"
+      label=${ifDefined(properties.label)}
+      ?required=${!!properties.validation?.required}
+    >
       ${!context.component.properties.validation?.required
         ? html`
             <mwc-list-item></mwc-list-item>
