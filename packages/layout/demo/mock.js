@@ -6,7 +6,7 @@ export const layout = {
       {
         template: "HorizontalLayout",
         properties: {
-          label: "Personal",
+          label: "Personal (Horizontal Layout)",
           components: [
             {
               // String input
@@ -14,7 +14,7 @@ export const layout = {
               properties: {
                 ref: "#/name", // JSON pointer to data backing this control
                 type: "text", // Input type
-                label: "First Name", // Input label
+                label: "First Name (Text Control)", // Input label
                 description: "Please enter your name", // Input description
                 minLength: 3, // min text length
                 maxLength: 30, // max text length
@@ -27,7 +27,7 @@ export const layout = {
               properties: {
                 ref: "#/personalData/age",
                 type: "number",
-                label: "Age",
+                label: "Age (Number Control)",
                 min: 18, // min value
                 max: 150, // max value
                 step: 1, // incremental step size
@@ -40,7 +40,7 @@ export const layout = {
               properties: {
                 ref: "#/birthDate",
                 type: "date",
-                label: "Date of Birth"
+                label: "Date of Birth (Date Control)"
               }
             },
             {
@@ -49,7 +49,7 @@ export const layout = {
               properties: {
                 ref: "#/student",
                 type: "checkbox",
-                label: "Student"
+                label: "Student (Boolean Control)"
               }
             }
           ]
@@ -58,14 +58,14 @@ export const layout = {
       {
         template: "HorizontalLayout",
         properties: {
-          label: "Personal",
+          label: "Personal (Horizontal Control)",
           components: [
             {
               // Select
               template: "Control",
               properties: {
                 ref: "#/occupation",
-                label: "Occupation",
+                label: "Occupation (Enum Control)",
                 possibleValues: [
                   "Accountant",
                   "Engineer",
