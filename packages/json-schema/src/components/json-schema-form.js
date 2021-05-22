@@ -1,5 +1,5 @@
 import { FormLayout } from "a-wc-form-layout";
-// import "../templates/controls.js";
+import "./json-schema-control.js";
 
 /** @typedef {import("../lib/models.js").JsonSchema} JsonSchema */
 
@@ -18,7 +18,7 @@ export class JsonSchemaForm extends FormLayout {
     );
   }
 
-  /** @param {import("../../../layout/src/lib/models").Control} component to use for form layout */
+  /** @param {import("../../../layout/src/lib/models").Component} component to use for form layout */
   set layout(component) {
     super.layout = component;
   }
