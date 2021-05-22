@@ -5,7 +5,7 @@ import { FormLayout } from "a-wc-form-layout";
 
 /**  */
 export class JsonSchemaForm extends FormLayout {
-  /** @returns {import("a-wc-form-layout/src/lib/models").Component} */
+  /** @returns {import("../../../layout/src/lib/models").Component} */
   get layout() {
     return (
       this._layout || {
@@ -18,7 +18,7 @@ export class JsonSchemaForm extends FormLayout {
     );
   }
 
-  /** @param {import("a-wc-form-layout/src/lib/models").Control} component to use for form layout */
+  /** @param {import("../../../layout/src/lib/models").Control} component to use for form layout */
   set layout(component) {
     super.layout = component;
   }
@@ -34,7 +34,7 @@ export class JsonSchemaForm extends FormLayout {
     setTimeout(() => this.render());
   }
 
-  /** @returns {import("../lib/models.js").SchemaLayoutContext<import("a-wc-form-layout/src/lib/models").Component>} */
+  /** @returns {import("../lib/models.js").SchemaLayoutContext<import("../../../layout/src/lib/models").Component>} */
   get context() {
     return {
       ...super.context,

@@ -1,8 +1,7 @@
-import { getSchemaValue } from "a-wc-form-binder/src/lib/json-pointer";
+import { getSchemaValue } from "a-wc-form-binder/src/lib/json-pointer.js";
 import { getComponentTemplate, setComponentTemplate } from "a-wc-form-layout";
 import { LitElement, html } from "lit-element";
 // import { jsonTypeMapping } from "../templates/controls.js";
-import "../lib/layout-generator.js";
 import { getLayout } from "../lib/layout-generator.js";
 
 /**

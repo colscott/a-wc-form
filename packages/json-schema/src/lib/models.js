@@ -3,7 +3,7 @@ export {};
 /** @typedef {import("json-schema").JSONSchema7} JsonSchema */
 /**
  * @template TComponent
- * @typedef {import("a-wc-form-layout/src/lib/models").LayoutContext<TComponent> & {schema: JsonSchema}} SchemaLayoutContext
+ * @typedef {import("../../../layout/src/lib/models").LayoutContext<TComponent> & {schema: JsonSchema}} SchemaLayoutContext
  */
 
 /**

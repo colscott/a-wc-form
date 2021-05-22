@@ -1,5 +1,5 @@
 /* global describe, beforeAll, afterAll, jasmine, it, expect */
-import { getSchema, getUiSchema } from "../../src/lib/schema-generator.js";
+import { getSchema, getUiSchema } from "../../src/lib/schema-generator.js.js";
 
 const obj = {
   name: "Homer",

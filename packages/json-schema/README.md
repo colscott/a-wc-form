@@ -2,6 +2,8 @@
 
 A JSON Schema form binder web component. Can be used anywhere you can use web components.
 
+Generate controls, binders and layouts for a-wc-form-binders from a JSON Schema.
+
 a-wc-form-json-binder is responsible for binding and validating data to form controls.
 a-wc-form-json-schema extends a-wc-form-json-binder and is responsible for rendering controls based on JSON schema and JSON ui Schema.
 

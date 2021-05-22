@@ -1,10 +1,10 @@
 import { LitElement, html, css } from "lit-element";
-import { data } from "a-wc-form-binder/demo/mock.js";
 import {
   controlBinder as binder,
   controlBinders as binders,
   formCss
 } from "a-wc-form-binder";
+import { data } from "a-wc-form-binder/demo/mock.js";
 import "a-wc-form-layout";
 import { schema, layout } from "./mock.js";
 import "../src/components/json-schema-form.js";

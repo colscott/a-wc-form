@@ -10,6 +10,7 @@
     "src"
   ],
   "dependencies": {
-    "a-wc-form-layout": "file:../form-layout"
+    "a-wc-form-binder": "file:../binder",
+    "a-wc-form-layout": "file:../layout"
   }
 }

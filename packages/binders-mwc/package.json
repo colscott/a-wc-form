@@ -1,5 +1,5 @@
 {
-  "name": "a-wc-form-binder-material",
+  "name": "a-wc-form-binders-mwc",
   "version": "0.0.5",
   "description": "Material Web Component Binders and Templates for the form-binder",
   "author": "colin scott",
@@ -10,7 +10,9 @@
     "src"
   ],
   "dependencies": {
-    "a-wc-form-binder": "file:../form-binder"
+    "a-wc-form-binder": "file:../binder",
+    "a-wc-form-layout": "file:../layout",
+    "a-wc-form-json-schema": "file:../json-schema"
   },
   "peerDependencies": {
     "@material/mwc-checkbox": "^0.20.0",
