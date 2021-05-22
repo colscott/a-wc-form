@@ -1,4 +1,4 @@
-# a-wc-form-json-schema
+# AWC JSON Schema Form
 
 A JSON Schema form binder web component. Can be used anywhere you can use web components.
 
