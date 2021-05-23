@@ -155,3 +155,27 @@ jsonSchemaForm.schema = {
 // Listen for changes to the data
 jsonSchemaForm.addEventListener('form-binder:change', e => console.info(e.detail.data));
 ```
+
+## API - json-schema-form
+### Attributes and properties
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| data | property | The JSON data to bind controllers to |
+| layout | property | The JSON layout containing the component definitions |
+| schema | property | JSON Schema data which will be used for determining controls and validation to use. |
+
+## Events
+| Name | Detail | Description |
+| ---- | ------ | ----------- |
+| form-binder:change | data | event.detail.data references a copy of the original data that has new values applied to it. |
+
+## API - json-schema-control
+### Attributes and properties
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| schema | property | JSON Schema data which will be used for determining controls and validation to use. Optional. If missing the control will look for a parent form-binder or form-layout and look for a schema property on it to use. |
+
+## Events
+| Name | Detail | Description |
+| ---- | ------ | ----------- |
+| form-binder:change | data | event.detail.data references a copy of the original data that has new values applied to it. |

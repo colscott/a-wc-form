@@ -1,7 +1,9 @@
-# a-wc-form-binder material web component binders
+# a-wc-form-binders-mwc
+
+Material Web Component support 
 
 ```cmd
-npm i -save a-wc-form-binder-material
+npm i -save a-wc-form-binders-mwc
 ```
 
 Form binders
@@ -10,7 +12,7 @@ Form binders
 import { controlBinder as binder } from "a-wc-form-binder";
 
 // import Material Web Component control binders
-import { controlBinder as binders } 'a-wc-form-binder-material';
+import { controlBinder as binders } 'a-wc-form-binders-mwc';
 
 // add the binders
 binder.add(...Object.values(binders));

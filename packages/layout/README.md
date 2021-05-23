@@ -1,11 +1,9 @@
 # AWC Form Layout
-Form layout using a JSON schema.
-
-Simple to use web component that extends awc form binder's ability to bind data to form controls with the ability to layout forms using a JSON as a layout schema.
+Simple to use web component that extends a-wc-form-binder's ability to bind data to form controls with a JSON object to define the form layout and controls used.
 
 ## Usage
 
-Install the form layout package which include basic layout templates that can be customized with CSS:
+Install the a-wc-form-layout package which includes basic layout templates that can be customized with CSS:
 ```cmd
 npm i -save a-wc-form-layout
 ```
@@ -53,7 +51,7 @@ formBinder.data = {
       message: "Message three"
     }
   ],
-  // Array of basic type
+  // Array of primitive type
   telephoneNumbers: ["123-456-7890", "123-8901234"],
   // Tuple
   address: [12, "Place", "Street", "SW"]
@@ -81,20 +79,20 @@ formBinder.layout = {
           // The HorizontalLayout template takes an array of components that it will render horizontally
           components: [
             {
-              // The Control component is used to render inputs
+              // The Control component is used to render controls
               template: "Control",
               properties: {
                 ref: "#/name", // JSON pointer to data backing this control
-                type: "text", // Input type
-                label: "First Name", // Input label
-                description: "Please enter your name", // Input description
+                type: "text", // Control type (HTMLInputElement type in this case)
+                label: "First Name", // Control label
+                description: "Please enter your name", // Control description
                 minLength: 3, // min text length
                 maxLength: 30, // max text length
                 pattern: "^[a-z|A-Z]+$" // Regex validation pattern
               }
             },
             {
-              // Number input
+              // Number control
               template: "Control",
               properties: {
                 ref: "#/personalData/age",
@@ -106,7 +104,7 @@ formBinder.layout = {
               }
             },
             {
-              // Date input
+              // Date control
               template: "Control",
               properties: {
                 ref: "#/birthDate",
@@ -114,7 +112,7 @@ formBinder.layout = {
               }
             },
             {
-              // Boolean input
+              // Boolean control
               template: "Control",
               properties: {
                 ref: "#/student",
@@ -132,7 +130,7 @@ formBinder.layout = {
               template: "Control",
               properties: {
                 ref: "#/occupation",
-                possibleValues: [ // When possibleValues are supplied a select input is rendered
+                possibleValues: [ // When possibleValues are supplied a select input is rendered by the included templates
                   "Accountant",
                   "Engineer",
                   "Freelancer",
@@ -267,7 +265,7 @@ setComponentTemplate("Toggle", toggleTemplate);
 ```
 In the above code, if there was already a template called Toggle registered it would be overwritten with the new one.
 
-Set up data binding using awc form binder
+Set up data binding using a-wc-form-binder
 ```js
 import { controlBinder as binder } from "a-wc-form-layout";
 
