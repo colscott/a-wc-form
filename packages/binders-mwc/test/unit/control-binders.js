@@ -6,7 +6,7 @@ import "@material/mwc-switch";
 import { controlBinder as binder } from "a-wc-form-binder";
 import { expect } from "@esm-bundle/chai/esm/chai.js";
 import { data } from "a-wc-form-binder/demo/mock.js";
-import { controlBinders as binders } from "a-wc-form-binder-material";
+import { controlBinders as binders } from "a-wc-form-binders-mwc";
 
 /** @returns {import('../../../src/components/form-binder.js').FormBinder} */
 async function createFormBinder() {
