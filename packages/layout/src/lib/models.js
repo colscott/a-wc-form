@@ -1,15 +1,15 @@
 export {};
 
-/**
- * @template TControl
- * @typedef {function(LayoutContext<TControl>):import('lit-html').TemplateResult|Array<import('lit-html').TemplateResult>} ComponentTemplate
- */
+// /**
+//  * @template TControl
+//  * @typedef {function(LayoutContext<TControl>):import('lit-html').TemplateResult|Array<import('lit-html').TemplateResult>} ComponentTemplate
+//  */
 
 /**
  * @typedef {object} HorizontalLayout
  * @property {'HorizontalLayout'} template
  * @property {object} properties
- * @property {Array<Component>} properties.components 
+ * @property {Array<ComponentTemplate>} properties.components 
  * @property {string} [properties.label] 
  */
 
@@ -17,7 +17,7 @@ export {};
  * @typedef {object} VerticalLayout
  * @property {'VerticalLayout'} template
  * @property {object} properties
- * @property {Array<Component>} properties.components 
+ * @property {Array<ComponentTemplate>} properties.components 
  * @property {string} [properties.label] 
  */
 
@@ -25,7 +25,7 @@ export {};
  * @typedef {object} ArrayLayout
  * @property {'ArrayLayout'} template
  * @property {object} properties
- * @property {Array<Component>} properties.component 
+ * @property {Array<ComponentTemplate>} properties.component 
  * @property {string} properties.ref JSON pointer to the data value that will back this control
  * @property {string} [properties.label] 
  */
@@ -36,7 +36,7 @@ export {};
  * @property {object} properties
  * @property {string} properties.ref JSON pointer to the data value that will back this control
  * @property {string} [properties.label] 
- * @property {Array<Component>} properties.components The JSON pointer on the child components should be relative to the GridLayout
+ * @property {Array<ComponentTemplate>} properties.components The JSON pointer on the child components should be relative to the GridLayout
  */
 
 /**
@@ -72,7 +72,7 @@ export {};
  * @typedef {ControlType & ControlProperties} Control
  */
 
-/** @typedef {HorizontalLayout | VerticalLayout | GridLayout | Label | Control} Component */
+/** @typedef {HorizontalLayout | VerticalLayout | GridLayout | Label | Control} ComponentTemplate */
 
 // /**
 //  * @typedef {Object} LayoutContext

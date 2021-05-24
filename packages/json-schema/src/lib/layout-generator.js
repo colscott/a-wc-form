@@ -2,16 +2,16 @@ import { getSchemaValue } from "a-wc-form-binder/src/lib/json-pointer.js";
 
 /** @typedef {import('../lib/models.js').JsonSchema} JsonSchema */
 
-/** @typedef {import("../../../layout/src/lib/models").Component} Component */
+/** @typedef {import("../../../layout/src/lib/models").ComponentTemplate} ComponentTemplate */
 
 /**
  * @param {import("./models").JsonSchema} schema to generate uiSchema for
  * @param {string} [startRef='#'] JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
- * @returns {Component} for the schema passed in
+ * @returns {ComponentTemplate} for the schema passed in
  */
 export function getLayout(schema, startRef) {
   /** @type {import("../lib/models").JsonSchema} */
-  const currentSchema = getSchemaValue(schema, startRef);
+  const currentSchema = getSchemaValue(schema, startRef || "#");
   return schema2Layout[currentSchema.type](schema, startRef || "#");
 }
 
@@ -49,13 +49,13 @@ const formatMapping = {
 /**
  * @param {import("../lib/models").JsonSchema} schema to generate uiSchema for
  * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
- * @returns {Component}
+ * @returns {ComponentTemplate}
  */
 function controlToLayout(schema, ref) {
   /** @type {import("../lib/models").JsonSchema} */
   const currentSchema = getSchemaValue(schema, ref);
 
-  /** @type {Component} */
+  /** @type {ComponentTemplate} */
   const component = {
     template: "Control",
     properties: {

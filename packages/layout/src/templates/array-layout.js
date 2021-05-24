@@ -24,7 +24,7 @@ const gridBinder = {
         )}
         ${data.map((item, i) => {
           return components.map(c => {
-            /** @type {import("../lib/models.js").Component & {properties: {ref: string, label: string}}} context */
+            /** @type {import("../lib/models.js").ComponentTemplate & {properties: {ref: string, label: string}}} context */
             const component = JSON.parse(JSON.stringify(c));
             component.properties.label = "";
             component.properties.ref = `${ref}/${i}/${component.properties.ref}`;
@@ -75,7 +75,7 @@ const arrayBinder = {
         ${data.map((item, i) => {
           // @ts-ignore
           const arrayContext = arrayElem.context;
-          /** @type {import("../lib/models.js").Component & {properties: {ref: string}}} context */
+          /** @type {import("../lib/models.js").ComponentTemplate & {properties: {ref: string}}} context */
           const component = JSON.parse(
             JSON.stringify(arrayContext.component.properties.component)
           );
