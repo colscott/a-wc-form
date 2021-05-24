@@ -9,7 +9,7 @@ npm i -save a-wc-form-layout
 ```
 Optional Material Web Component layout templates:
 ```cmd
-npm i -save a-wc-form-binder-material
+npm i -save a-wc-form-binders-mwc
 ```
 
 Example:
@@ -246,7 +246,7 @@ formBinder.layout = {
 import { controlBinder as binder } from "a-wc-form-binder";
 
 // import Material Web Component control binders
-import 'a-wc-form-binder-material/src/lib/control-binders.js';
+import 'a-wc-form-binders-mwc/src/lib/control-binders.js';
 ``` -->
 
 ## Custom components and templates
@@ -254,7 +254,7 @@ import 'a-wc-form-binder-material/src/lib/control-binders.js';
 Create a template. Here's a div being used as a checkbox.
 
 ```js
-import { setComponentTemplate } from 'a-wc-form-layout/src/index.js';
+import { setComponentTemplate, html } from 'a-wc-form-layout';
 
 // Templates are lit-html
 const toggleTemplate = (context) => html`

@@ -22,7 +22,7 @@ binder.add(...Object.values(binders));
 Form layout templates are included and registered when you import form binder material
 
 ```js
-import 'a-wc-form-binder-material';
+import 'a-wc-form-binders-mwc';
 ```
 
 For styling and customizing the Material Web Component see the [mwc documentation](https://github.com/material-components/material-components-web-components)

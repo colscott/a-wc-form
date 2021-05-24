@@ -69,7 +69,7 @@ The process of binding is performed by control binders. These need to be registe
 import { controlBinder as binder } from "a-wc-form-binder";
 
 // import Material Web Component control binders
-import { controlBinders as binders } from 'a-wc-form-binder-material';
+import { controlBinders as binders } from 'a-wc-form-binders-mwc';
 
 binder.add(...Object.values(binders));
 
