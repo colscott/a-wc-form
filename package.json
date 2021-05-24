@@ -12,16 +12,17 @@
     "@material/mwc-switch": "^0.20.0",
     "@material/mwc-textfield": "^0.20.0",
     "@types/json-schema": "^7.0.3",
+    "@web/dev-server": "^0.1.17",
     "@web/test-runner": "^0.12.17",
     "dev-lib-colscott": "^1.1.8",
     "lerna": "^3.22.1"
   },
   "scripts": {
-    "start": "es-dev-server --node-resolve --preserve-symlinks",
+    "start": "web-dev-server --node-resolve --preserve-symlinks",
     "test": "npm run test:unit",
     "test:coverage": "npm run test:unit -- --coverage",
     "test:watch": "npm run test:unit -- --watch",
-    "test:unit": "web-test-runner \"packages/**/test/unit/**/*.js\" --node-resolve"
+    "test:unit": "web-test-runner \"packages/**/test/unit/**/*.js\" --node-resolve --preserve-symlinks"
   },
   "author": "",
   "license": "MIT",
