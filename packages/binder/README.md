@@ -144,11 +144,11 @@ import { controlValidator as validator } from "a-wc-form-binder";
 // Define the validator
 const validateLowerCase = {
   controlSelector: "[lower-case]",
-  checkValidity: (control, value) => {
+  checkValidity: (control, value, data) => {
     // Test if value is valid
     return /^[a-z]*$/.test(value);
   },
-  reportValidity: (control, value) => {
+  reportValidity: (control, value, data) => {
     const isValid = /^[a-z]*$/.test(value);
     // Some logic to present any validation errors to the user.
     control.setCustomValidity(isValid ? '' : `Needs to be lower-case`);

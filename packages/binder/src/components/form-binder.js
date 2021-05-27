@@ -162,7 +162,7 @@ export class FormBinder extends HTMLElement {
       : true;
     return (
       nativeIsValid &&
-      matchingValidators(control).every(v => v.checkValidity(control, value))
+      matchingValidators(control).every(v => v.checkValidity(control, value, this.data))
     );
   }
 
@@ -173,7 +173,7 @@ export class FormBinder extends HTMLElement {
    */
   reportValidityForControl(control, value) {
     const customIsValid = matchingValidators(control).every(v =>
-      v.reportValidity(control, value)
+      v.reportValidity(control, value, this.data)
     );
     const nativeIsValid = control.reportValidity
       ? control.reportValidity()
