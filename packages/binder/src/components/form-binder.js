@@ -129,7 +129,7 @@ export class FormBinder extends HTMLElement {
       const value = getValue(this.data, getName(control));
       binder.binder.writeValue(control, value);
       // Run validity check as task to give custom controls chance to initialize (e.g. MWC)
-      setTimeout(() => this.checkValidityForControl(control, value));
+      setTimeout(() => this.validityForControl(control, value, false));
     }
   }
 
@@ -138,7 +138,7 @@ export class FormBinder extends HTMLElement {
    * @param {any} newValue
    */
   controlValueChanged(control, newValue) {
-    if (this.checkValidityForControl(control, newValue) === true) {
+    if (this.validityForControl(control, newValue, true) === true) {
       const name = getName(control);
       setValue(this.data, name, newValue);
       this.dispatchEvent(
@@ -149,6 +149,34 @@ export class FormBinder extends HTMLElement {
         })
       );
     }
+  }
+
+  /**
+   * @param {Element} control
+   * @param {any} value
+   * @param {boolean} userChange
+   * @returns {boolean} if valid
+   */
+   validityForControl(control, value, userChange) {
+    if (this.hasAttribute('validate')) {
+      if (this.getAttribute('validate').toLowerCase() === 'none') {
+        return true;
+      }
+
+      if (this.getAttribute('validate').toLowerCase() === 'show') {
+        return this.reportValidityForControl(control, value);
+      }
+
+      if (this.getAttribute('validate').toLowerCase() === 'hide') {
+        return this.checkValidityForControl(control, value);
+      }
+    }
+
+    if (userChange) {
+      return this.reportValidityForControl(control, value);
+    }
+
+    return this.checkValidityForControl(control, value);
   }
 
   /**
