@@ -1,8 +1,8 @@
 /**
  * @typedef {Object} Validator
  * @property {string} controlSelector css selector associated with this control validator
- * @property {function(Element, any):boolean} checkValidity responsible for returning whether the control is valid
- * * @property {function(Element, any):boolean} reportValidity responsible for applying validation UI to the control and returning whether the control is valid
+ * @property {function(Element, any, any):boolean} checkValidity responsible for returning whether the control is valid
+ * * @property {function(Element, any, any):boolean} reportValidity responsible for applying validation UI to the control and returning whether the control is valid
  */
 
 /** @type {Array<Validator>} */
