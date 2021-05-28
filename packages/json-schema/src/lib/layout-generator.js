@@ -141,9 +141,7 @@ const arrayToLayout = (schema, ref) => {
         label: currentSchema.title,
         components: items
           .filter(item => typeof item !== "boolean")
-          .map((item, i) =>
-            getLayout(/** @type {JsonSchema} */ (item), `${ref}/${i}`)
-          )
+          .map((item, i) => getLayout(schema, `${ref}/${i}`))
       }
     };
   }
