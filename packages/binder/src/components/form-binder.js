@@ -1,7 +1,7 @@
 import { initialize } from "../lib/control-binder.js";
 import { matchingValidators } from "../lib/control-validator.js";
 import { getValue, setValue } from "../lib/json-pointer.js";
-import { ShadowDomMuationObserver } from "../lib/observer.js";
+import { ShadowDomMutationObserver } from "../lib/observer.js";
 
 /**
  * @param {Element} element to get the name for
@@ -80,7 +80,7 @@ export class FormBinder extends HTMLElement {
       });
     };
 
-    this.mutationObserver = new ShadowDomMuationObserver(callback);
+    this.mutationObserver = new ShadowDomMutationObserver(callback);
 
     this.mutationObserver.observe(this, config);
 

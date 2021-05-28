@@ -16,7 +16,7 @@ function observeShadowRoots(node, observer, config) {
 }
 
 /** */
-export class ShadowDomMuationObserver {
+export class ShadowDomMutationObserver {
   /** @param {MutationCallback} callback */
   constructor(callback) {
     this.observer = new MutationObserver(callback);
