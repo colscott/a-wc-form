@@ -119,12 +119,36 @@ NOTE: Binders are evaluated in the order they are added. The first binder with a
 
 ## Validation
 
-form-binder implements the HTML5 constraint validation methods checkValidity and reportValidity. If there are native HTML form controls in the form the native constraint validation API will be used.
+form-binder implements most of the HTML5 constraint validation methods checkValidity and reportValidity.
 
 ```js
 const formBinder = document.querySelector('form-binder');
-formBinder.checkValidity(); // Returns a boolean
-formBinder.reportValidity(); // Returns a boolean and give a message to the user if invalid
+formBinder.checkValidity(); // Returns a boolean if form is valid or not
+formBinder.reportValidity(); // Returns a FormValidationResult and give a message to the user if invalid
+```
+
+## Handling and displaying errors
+
+form-binder doesn't display errors on the screen. This has to be implemented by localizing the errors and displaying them to the user.
+
+```js
+const formBinder = document.querySelector('form-binder');
+formBinder.addEventListener('form-binder:report-validity', event => {
+  /** @type {import('a-wc-form-binder/src/lib/control-validator').FormValidationResult} */
+  const { errors, isValid, result } = event.detail;
+  errors
+  // Optionally only show errors for controls the user has visited
+  // .filter(controlValidationResult => controlValidationResult.visited)
+    .forEach(controlValidationResult => {
+      const { control, controlValidationResults, visited } = controlValidationResult;
+      // Here you would translate the errors and output them somewhere in the UI
+      // The example outputs in UI using the native API, setCustomValidity
+      control.setCustomValidity(controlValidationResults
+          .filter()
+          .map(controlValidator => translate(controlValidator.name)) // Translate here
+          .join(","));
+    });
+});
 ```
 
 ## Custom Validation
@@ -133,32 +157,65 @@ As well as trying to use native constraint validation, form-binder allows for cu
 
 A single control validator is made up of the following parts:
 - CSS Selector that maps the binder to the controllers to validate
-- A function (checkValidity) to check if the control value is valid or not
-- A function (reportValidity) to check if a value is valid or not and report any invalid value to the user
+- A function (validate) to check if the control value is valid or not and return error objects
 
 Example validator:
 
 ```js
 import { controlValidator as validator } from "a-wc-form-binder";
+import { ValidationResult } from "a-wc-form-binder/src/lib/control-validator";
 
 // Define the validator
 const validateLowerCase = {
   controlSelector: "[lower-case]",
-  checkValidity: (control, value, data) => {
-    // Test if value is valid
-    return /^[a-z]*$/.test(value);
-  },
-  reportValidity: (control, value, data) => {
-    const isValid = /^[a-z]*$/.test(value);
-    // Some logic to present any validation errors to the user.
-    control.setCustomValidity(isValid ? '' : `Needs to be lower-case`);
-    return isValid;
+  validate: (control, value) => {
+    const result = /^[a-z]*$/.test(value);
+    return new validator.ValidationResult("lower-case", true, result, result);
   }
 };
 
 // register the validator
-validator.add(validateTextInput);
+validator.add(validateLowerCase);
 
 // unregister the validator if required
-validator.remove(validateTextInput);
+validator.remove(validateLowerCase);
+```
+## Custom cross-field validation
+Example:
+```js
+import { controlValidator as validator } from "a-wc-form-binder";
+import { ValidationResult } from "a-wc-form-binder/src/lib/control-validator";
+
+// Define the greater than validator
+const greaterThanValidator = {
+  controlSelector: "[greater-than]",
+  validate: (control, value, data) => {
+    const otherField = control.getAttribute("greater-than");
+    let isValid = false;
+    const otherValue = getValue(data, otherField);
+    if (typeof value === "number") {
+      isValid = value > otherValue;
+    }
+    if (isIsoDate(value) && isIsoDate(otherValue)) {
+      isValid = new Date(value) > new Date(otherValue);
+    }
+
+    return new ValidationResult(
+      "greater-than",
+      otherField,
+      value,
+      isValid
+    );
+  }
+};
+
+// register the validator
+validator.add(greaterThanValidator);
+
+```
+
+Usage:
+```html
+<input type="number" name="#/from" />
+<input type="number" name="#/to" greater-than="#/from" />
 ```

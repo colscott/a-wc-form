@@ -9,6 +9,8 @@ export const data = {
     height: 82
   },
   postalCode: "12345",
+  start: "2009-06-02T13:35",
+  end: "2009-09-02T06:19",
   comments: [
     {
       date: "2001-09-11T05:45",

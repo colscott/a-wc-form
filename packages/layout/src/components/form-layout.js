@@ -14,8 +14,10 @@ export class FormLayout extends FormBinder {
 
   /** @param {import("../lib/models.js").ComponentTemplate} component to use for form layout */
   set layout(component) {
-    this._layout = component;
-    setTimeout(() => this.render());
+    if (this._layout !== component) {
+      this._layout = component;
+      setTimeout(() => this.render());
+    }
   }
 
   /** @inheritdoc */

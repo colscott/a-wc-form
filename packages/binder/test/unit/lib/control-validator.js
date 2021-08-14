@@ -7,55 +7,88 @@ import {
   controlValidator as validator
 } from "../../../src/index.js";
 import { data } from "../../../demo/mock.js";
+import { ValidationResult } from "../../../src/lib/control-validator";
+
+const errorText = {
+  "lower-case": "Needs to be one of lower-case"
+};
 
 /** @returns {import('../../../src/components/form-binder.js').FormBinder} */
-async function createFormBinder() {
+export async function createFormBinder() {
   const formBinder = document.createElement("form-binder");
   formBinder.data = JSON.parse(JSON.stringify(data));
   document.body.appendChild(formBinder);
   formBinder.innerHTML = `
     <input id="name" type="text" name="#/name" />
+    <input id="age" type="number" name="#/personalData/age" />
+    <input id="height" type="number" name="#/personalData/height" />
   `;
+  formBinder.addEventListener("form-binder:report-validity", e => {
+    /** @type {import('../../../src/lib/control-validator').FormValidationResult} */
+    const { errors, isValid, result } = e.detail;
+    errors
+      .filter(controlValidationResult => controlValidationResult.visited)
+      .forEach(controlValidationResult => {
+        const {
+          control,
+          controlValidationResults,
+          visited
+        } = controlValidationResult;
+        control.setCustomValidity(
+          controlValidationResults
+            .map(controlValidator => errorText[controlValidator.name])
+            .join(",")
+        );
+      });
+  });
   await formBinder.updateComplete;
   return formBinder;
 }
 
+/** @type {import('../../../src/lib/control-validator').Validator} */
 const validateLowerCase = {
   controlSelector: "[lower-case]",
-  checkValidity: (control, value) => {
-    return /^[a-z]*$/.test(value);
-  },
-  reportValidity: (control, value) => {
-    control.setCustomValidity(`Needs to be one of lower-case`);
+  validate: (control, value) => {
+    const result = /^[a-z]*$/.test(value);
+    return new ValidationResult("lower-case", true, result, result);
   }
 };
 
+/** @type {import('../../../src/lib/control-validator').Validator} */
 const validateVowelsOnly = {
   controlSelector: "[vowels-only]",
-  checkValidity: (control, value) => {
-    return /^[a|e|i|o|u]*$/.test(value);
-  },
-  reportValidity: (control, value) => {
-    control.setCustomValidity(`Needs to be one of only vowels`);
+  validate: (control, value) => {
+    const result = /^[a|e|i|o|u]*$/.test(value);
+    return new ValidationResult("vowels-only", true, result, result);
   }
 };
 
-describe("Custom validators", () => {
+/**
+ * @param {...import('../../../src/lib/control-validator').Validator} validatorsToTest being tested
+ */
+export function standupValidatorTest(...validatorsToTest) {
   after(() => {
-    validator.remove(validateLowerCase);
-    validator.remove(validateVowelsOnly);
+    validatorsToTest.forEach(validatorToTest =>
+      validator.remove(validatorToTest)
+    );
   });
 
   beforeEach(() => {
+    binder.add(binders.numberInputBinder);
     binder.add(binders.textInputBinder);
   });
 
   afterEach(() => {
     binder.remove(binders.textInputBinder);
+    binder.remove(binders.numberInputBinder);
     document
       .querySelectorAll("form-binder")
       .forEach(e => e.parentElement.removeChild(e));
   });
+}
+
+describe("Custom validators", () => {
+  standupValidatorTest(validateLowerCase, validateVowelsOnly);
 
   it("Should correctly report valid state", async () => {
     const formBinder = await createFormBinder();

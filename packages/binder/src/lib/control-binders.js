@@ -1,14 +1,20 @@
+/** @typedef {import('./control-binder').Binder} Binder */
+
+/** @type {Binder} */
 export const textInputBinder = {
   controlSelector: "input, textarea",
-  initializeEvents: (control, onChange) =>
+  initializeEvents: (control, onChange, onTouch) => {
     control.addEventListener("change", e => {
       onChange(e.target.value);
-    }),
+    });
+    control.addEventListener("blur", () => onTouch());
+  },
   writeValue: (control, value) => {
     control.value = value;
   }
 };
 
+/** @type {Binder} */
 export const numberInputBinder = {
   controlSelector: "input[type=number]",
   initializeEvents: (control, onChange) =>
@@ -20,6 +26,7 @@ export const numberInputBinder = {
   }
 };
 
+/** @type {Binder} */
 export const checkboxInputBinder = {
   controlSelector: "input[type='checkbox']",
   initializeEvents: (control, onChange) =>
@@ -31,6 +38,7 @@ export const checkboxInputBinder = {
   }
 };
 
+/** @type {Binder} */
 export const selectBinder = {
   controlSelector: "select",
   initializeEvents: (control, onChange) =>

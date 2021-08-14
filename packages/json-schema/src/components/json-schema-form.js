@@ -30,8 +30,10 @@ export class JsonSchemaForm extends FormLayout {
 
   /** @param {import("../lib/models.js").JsonSchema} schema to use */
   set schema(schema) {
-    this._schema = schema;
-    setTimeout(() => this.render());
+    if (this._schema !== schema) {
+      this._schema = schema;
+      setTimeout(() => this.render());
+    }
   }
 
   /** @returns {import("../lib/models.js").SchemaLayoutContext<import("../../../layout/src/lib/models").ComponentTemplate>} */

@@ -3,13 +3,18 @@
 import "@material/mwc-textfield";
 import "@material/mwc-slider";
 import "@material/mwc-switch";
-import { controlBinder as binder } from "a-wc-form-binder";
+import {
+  controlBinder as binder,
+  controlValidator as validator,
+  controlValidators as validators
+} from "a-wc-form-binder";
 import { expect } from "@esm-bundle/chai/esm/chai.js";
-import { data } from "a-wc-form-binder/demo/mock.js";
+import { data as mockData } from "a-wc-form-binder/demo/mock.js";
 import { controlBinders as binders } from "a-wc-form-binders-mwc";
 
 /** @returns {import('../../../src/components/form-binder.js').FormBinder} */
 async function createFormBinder() {
+  const data = JSON.parse(JSON.stringify(mockData));
   const formBinder = document.createElement("form-binder");
   formBinder.data = data;
   document.body.appendChild(formBinder);
@@ -21,8 +26,12 @@ async function createFormBinder() {
   <mwc-switch id="student" name="#/student"></mwc-switch>
   <mwc-checkbox id="vegetarian2" name="#/student"></mwc-checkbox>
   `;
+  const changes = { data };
+  formBinder.addEventListener("form-binder:change", e => {
+    changes.data = e.detail.data;
+  });
   await formBinder.updateComplete;
-  return formBinder;
+  return { formBinder, changes };
 }
 
 /** @param {string} controlId . */
@@ -69,27 +78,31 @@ describe("form-binder binding tests", () => {
     expect(document.getElementById("vegetarian2").checked).to.be.true;
   });
   it("Should not change value when invalid", async () => {
-    const formBinder = await createFormBinder();
+    const { formBinder, changes } = await createFormBinder();
+    validator.add(validators.patternValidator, true);
+    validator.add(validators.maxValidator, true);
     inputValue("name", "Bert");
     inputValue("age", "300");
     await formBinder.updateComplete;
-    expect(formBinder.data.name).to.equal("Johnny Five");
-    expect(formBinder.data.personalData.age).to.equal(34);
+    expect(changes.data.name).to.equal("Johnny Five");
+    expect(changes.data.personalData.age).to.equal(34);
+    validator.remove(validators.patternValidator);
+    validator.remove(validators.maxValidator);
     inputValue("name", "Fred");
     inputValue("age", "20");
-    expect(formBinder.data.name).to.equal("Fred");
+    expect(changes.data.name).to.equal("Fred");
     getControl("student")
       .shadowRoot.querySelector("input")
       .click();
     await getControl("name").updateComplete;
     await formBinder.updateComplete;
-    expect(formBinder.data.name).to.equal("Fred");
-    expect(formBinder.data.personalData.age).to.equal(20);
-    expect(formBinder.data.student).to.be.false;
+    expect(changes.data.name).to.equal("Fred");
+    expect(changes.data.personalData.age).to.equal(20);
+    expect(changes.data.student).to.be.false;
   });
   it("Should reflect changes to data", async () => {
-    const formBinder = await createFormBinder();
-    const dataCopy = JSON.parse(JSON.stringify(formBinder.data));
+    const { formBinder, changes } = await createFormBinder();
+    const dataCopy = JSON.parse(JSON.stringify(changes.data));
     dataCopy.name = "fred123";
     dataCopy.personalData.age = 62;
     dataCopy.student = false;
