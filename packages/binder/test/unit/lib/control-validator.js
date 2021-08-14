@@ -27,7 +27,7 @@ export async function createFormBinder() {
     /** @type {import('../../../src/lib/control-validator').FormValidationResult} */
     const { errors, isValid, result } = e.detail;
     errors
-      .filter(controlValidationResult => controlValidationResult.visited)
+      // .filter(controlValidationResult => controlValidationResult.visited)
       .forEach(controlValidationResult => {
         const {
           control,

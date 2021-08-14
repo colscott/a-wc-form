@@ -22,7 +22,7 @@ describe("validation - greater than", () => {
     expect(formBinder.checkValidity()).to.be.true;
     validator.add(greaterThanValidator);
     expect(formBinder.checkValidity()).to.be.true;
-    inputAge.setAttribute("greaterthan", "#/personalData/height");
+    inputAge.setAttribute("greater-than", "#/personalData/height");
     expect(formBinder.checkValidity()).to.be.false;
     inputAge.value = 60;
     inputAge.dispatchEvent(new Event("change"));
