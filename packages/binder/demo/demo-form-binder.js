@@ -9,12 +9,14 @@ import {
 binder.add(...Object.values(binders));
 
 const errorText = {
-  patternMismatch: error => `${error.field} must begin with fred`,
+  pattern: error => `${error.field} must begin with fred`,
+  min: error => `${error.field} but be greater than ${error.expected}`,
+  max: error => `${error.field} but be less than ${error.expected}`,
   rangeUnderflow: error => ""
 };
 
 customElements.define(
-  "test-form-binder",
+  "demo-form-binder",
   class extends LitElement {
     /** @inheritdoc */
     static get properties() {
@@ -28,6 +30,7 @@ customElements.define(
     constructor() {
       super();
       this.data = data;
+      /** @type {import('a-wc-form-binder/src/lib/control-validator').ValidationResults} */
       this.errors = [];
     }
 
@@ -72,13 +75,13 @@ customElements.define(
             <div>
               <ul>
                 ${this.errors.map(controlErrorEntry => {
-                  const { control, errors } = controlErrorEntry;
+                  const { controlValidationResults } = controlErrorEntry;
                   return html`
                     <ui
-                      >${Object.keys(errors).map(
+                      >${controlValidationResults.map(
                         k =>
                           html`
-                            ${errorText[k](errors[k])}
+                            ${errorText[k.name](k)}
                           `
                       )}</ui
                     >
@@ -105,13 +108,14 @@ customElements.define(
      * @param {CustomEvent} event
      */
     handleValidation(event) {
-      const { isValid, errors } = event.detail;
+      /** @type {import('a-wc-form-binder/src/lib/control-validator').FormValidationResult} */
+      const { errors } = event.detail;
       errors.forEach(controlErrorEntry => {
-        const { control, errors } = controlErrorEntry;
+        const { control, controlValidationResults } = controlErrorEntry;
         // Here you would translate the errors and output them somewhere in the UI
         control.setCustomValidity(
-          Object.keys(errors) // The example outputs in UI using the native API, setCustomValidity
-            .map(k => errorText[k](errors[k])) // Translate here
+          controlValidationResults // The example outputs in UI using the native API, setCustomValidity
+            .map(k => errorText[k.name](k)) // Translate here
             .join(",")
         );
       });

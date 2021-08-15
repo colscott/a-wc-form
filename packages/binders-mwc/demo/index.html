@@ -2,15 +2,22 @@
 <html>
     <head>
       <script type="module">
-        import { schema, layout, data } from 'a-wc-form-binder/demo/mock.js';
+        import { data } from 'a-wc-form-binder/demo/mock.js';
+        import { schema } from 'a-wc-form-json-schema/demo/mock.js';
+        import { layout } from 'a-wc-form-layout/demo/mock.js';
         import { LitElement, html } from 'lit-element';
         import "a-wc-form-binder/src/components/form-binder.js";
         import "a-wc-form-binders-mwc/src/templates/controls.js";
+        import "a-wc-form-json-schema/src/components/json-schema-form.js";
+        import { controlBinder as binder} from 'a-wc-form-layout';
+        import { controlBinders as binders } from '../src/index.js';
+          
+          binder.add(...Object.values(binders));
 
         customElements.define('test-json-ui-schema', class extends LitElement {
           constructor() { super(); }
           render() { return html`
-            <json-schema-form .data=${data}></json-schema-form>
+            <json-schema-form .data=${data} .layout=${layout} .schema=${schema}></json-schema-form>
           `}
         })
       </script>
