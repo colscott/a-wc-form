@@ -112,7 +112,12 @@ export class FormBinder extends HTMLElement {
     this.data = null;
   }
 
-  /** @param {Element} controlCandidate */
+  /** @returns {Array<Element>} controls that have been bound to the form */
+  getControls() {
+    return Array.from(this.registeredControlBinders.keys());
+  }
+
+  /** @param {Element} controlCandidate to bind to the form data */
   addControl(controlCandidate) {
     if (controlCandidate instanceof HTMLElement) {
       const binder = initialize(
