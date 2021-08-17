@@ -12,6 +12,9 @@ const errorText = {
   pattern: error => `${error.field} must begin with fred`,
   min: error => `${error.field} but be greater than ${error.expected}`,
   max: error => `${error.field} but be less than ${error.expected}`,
+  "less-than": error => `${error.field} must be less than ${error.expected}`,
+  "greater-than": error =>
+    `${error.field} must be greater than ${error.expected}`,
   rangeUnderflow: error => ""
 };
 
@@ -54,24 +57,24 @@ customElements.define(
           @form-binder:change=${e => {
             this.data = e.detail.data;
             this.requestUpdate();
+            this.clearErrors();
           }}
-          @form-binder:report-validity=${e => this.handleValidation(e)}
+          @form-binder:report-validity=${e =>
+            this.handleValidation(e.detail.errors)}
         >
           <section>
-            <input type="text" pattern="fred.*" name="#/name" />
-            <input type="text" pattern="fred.*" name="#/name" />
             <input type="text" pattern="fred.*" name="#/name" />
             <input
               type="number"
               min="40"
-              max="150"
+              max="50"
               step="1"
               name="#/personalData/age"
             />
-            <input type="number" max="50" name="/personalData/age" />
-            <input type="number" name="personalData/age" />
             <input name="#/telephoneNumbers/1" />
             <input type="checkbox" id="student" name="/student" />
+            <input type="date" name="/birthDate" less-than="/retireDate" />
+            <input type="date" name="/retireDate" greater-than="/birthDate" />
             <div>
               <ul>
                 ${this.errors.map(controlErrorEntry => {
@@ -105,21 +108,31 @@ customElements.define(
     }
 
     /**
-     * @param {CustomEvent} event
+     * @param {import('a-wc-form-binder/src/lib/control-validator').FormValidationResult} errors
      */
-    handleValidation(event) {
-      /** @type {import('a-wc-form-binder/src/lib/control-validator').FormValidationResult} */
-      const { errors } = event.detail;
-      errors.forEach(controlErrorEntry => {
-        const { control, controlValidationResults } = controlErrorEntry;
-        // Here you would translate the errors and output them somewhere in the UI
-        control.setCustomValidity(
-          controlValidationResults // The example outputs in UI using the native API, setCustomValidity
-            .map(k => errorText[k.name](k)) // Translate here
-            .join(",")
-        );
-      });
+    handleValidation(errors) {
+      errors
+        .filter(c => c.visited)
+        .forEach(controlErrorEntry => {
+          const { control, controlValidationResults } = controlErrorEntry;
+          // Here you would translate the errors and output them somewhere in the UI
+          control.setCustomValidity(
+            controlValidationResults // The example outputs in UI using the native API, setCustomValidity
+              .map(k => errorText[k.name](k)) // Translate here
+              .join(",")
+          );
+        });
       this.errors = errors;
+    }
+
+    /** */
+    clearErrors() {
+      const form = /** @type {import('a-wc-form-binder/src/components/form-binder').FormBinder} */ (this.shadowRoot.querySelector(
+        "form-binder"
+      ));
+      Array.from(form.registeredControlBinders.keys()).forEach(control =>
+        control.setCustomValidity("")
+      );
     }
   }
 );

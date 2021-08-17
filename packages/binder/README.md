@@ -30,6 +30,7 @@ import {
 } from "a-wc-form-binder";
 
 // And the control binders you wish to use. These can be custom.
+// Here we're adding the binders for native HTML Form controls (INPUT, SELECT, etc.)
 binder.add(...Object.values(binders));
 
 const formBinder = document.querySelector('form-binder');
@@ -46,22 +47,11 @@ formBinder.addEventListener('form-binder:change', e => console.info(e.detail.dat
 Form-binder takes a JSON data object as input and outputs a CustomEvent (form-binder:change) that contains a copy of the data with any changes made it.
 Form controls are bound to the data by setting the name of the form control as a JSON pointer to the data.
 
-NOTE: The data input must serialize to valid JSON. The form binder works on a copy of the data. The copy is made using the native JSON API (stringify/parse).
+NOTE: The data input must serialize to valid JSON. The form binder works on a copy of the data. The copy is made using the native JSON API (stringify+parse).
 
 ## Binders
 
 The process of binding is performed by control binders. These need to be registered. When a binder is registered it is done so with a CSS selector. Any control that matches the selector will use that binder for binding (see Custom control binders below for examples). a-wc-form-binder package contains binders for standard HTML form elements (input, select, text-area). To bind other controls you'll need custom binders. See the a-wc-binders-mwc for Material Web Component binders.
-
-## API
-### Attributes and properties
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| data | property | The JSON data to bind controllers to |
-
-## Events
-| Name | Detail | Description |
-| ---- | ------ | ----------- |
-| form-binder:change | data | event.detail.data references a copy of the original data that has new values applied to it. |
 
 ## Material Web Component control binders
 
@@ -71,6 +61,7 @@ import { controlBinder as binder } from "a-wc-form-binder";
 // import Material Web Component control binders
 import { controlBinders as binders } from 'a-wc-form-binders-mwc';
 
+// Register all of the MWC control binders
 binder.add(...Object.values(binders));
 
 // Or just add specific binders
@@ -119,7 +110,7 @@ NOTE: Binders are evaluated in the order they are added. The first binder with a
 
 ## Validation
 
-form-binder implements most of the HTML5 constraint validation methods checkValidity and reportValidity.
+form-binder loosely implements the HTML5 constraint validation methods checkValidity and reportValidity.
 
 ```js
 const formBinder = document.querySelector('form-binder');
@@ -137,7 +128,7 @@ formBinder.addEventListener('form-binder:report-validity', event => {
   /** @type {import('a-wc-form-binder/src/lib/control-validator').FormValidationResult} */
   const { errors, isValid, result } = event.detail;
   errors
-  // Optionally only show errors for controls the user has visited
+  // Optionally only show errors for controls the user has visited/touched
   // .filter(controlValidationResult => controlValidationResult.visited)
     .forEach(controlValidationResult => {
       const { control, controlValidationResults, visited } = controlValidationResult;
@@ -153,11 +144,11 @@ formBinder.addEventListener('form-binder:report-validity', event => {
 
 ## Custom Validation
 
-As well as trying to use native constraint validation, form-binder allows for custom validation. Just like the control binders, validators can be registered that target controls by CSS selector:
+As well as trying to use native constraint validation, form-binder allows for custom validation. Just like the control binders, validators can be registered that target controls by CSS selector.
 
 A single control validator is made up of the following parts:
 - CSS Selector that maps the binder to the controllers to validate
-- A function (validate) to check if the control value is valid or not and return error objects
+- A function (validate) to check if the control value is valid or not and returns a ValidationResult
 
 Example validator:
 
@@ -177,11 +168,11 @@ const validateLowerCase = {
 // register the validator
 validator.add(validateLowerCase);
 
-// unregister the validator if required
+// unregister the validator if no longer needed
 validator.remove(validateLowerCase);
 ```
 ## Custom cross-field validation
-Example:
+Below is an example of validation that uses another field in calculating validity:
 ```js
 import { controlValidator as validator } from "a-wc-form-binder";
 import { ValidationResult } from "a-wc-form-binder/src/lib/control-validator";
@@ -219,3 +210,28 @@ Usage:
 <input type="number" name="#/from" />
 <input type="number" name="#/to" greater-than="#/from" />
 ```
+## API
+### Attributes and properties
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| data | property | The JSON data to bind controllers to |
+
+### Methods
+| Name | Return type | Description |
+| ---- | ---- | ----------- |
+| getControls | Array<Element> | Gets the controls that have been bound to the form |
+| addControl | void | Can be called to manually bind a control to a form. |
+| updateControlValue | void | Manually updates a control with the value in the data. Triggers reportValidity if the user has visited/touched the control. |
+| updateControlValues | void | Manually updates all bound controls with the value in the data. Triggers reportValidity if the user has visited/touched the control. |
+| validateControlValue | import("a-wc-form-binder/src/lib/control-validator.js").ValidationControlResult | Starts a validity check of a controller. No reporting is performed. |
+| validate | import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult | Starts a validity check of all bound controllers. No reporting is performed. |
+| checkValidity | boolean | Starts a validity check of all bound controllers. No reporting is performed. |
+| reportValidity | import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult | Starts a validity check of all bound controllers. Reporting is performed. |
+| reportErrors | void | Given a import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult will dispatch a form-binder:report-validity event |
+
+## Events
+| Name | Detail | Description |
+| ---- | ------ | ----------- |
+| form-binder:change          | data              | event.detail.data references a copy of the original data that has new values applied to it. |
+|                             | validationResults | event.detail.validationResults validation was performed as part of the change process.      |
+| form-binder:report-validity | import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult | Should be listened to to update the UI with messages. |
