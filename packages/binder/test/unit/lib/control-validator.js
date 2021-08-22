@@ -8,6 +8,7 @@ import {
 } from "../../../src/index.js";
 import { data } from "../../../demo/mock.js";
 import { ValidationResult } from "../../../src/lib/control-validator";
+import { wait } from "../components/form-binder.js";
 
 const errorText = {
   "lower-case": "Needs to be one of lower-case"
@@ -93,32 +94,36 @@ describe("Custom validators", () => {
   it("Should correctly report valid state", async () => {
     const formBinder = await createFormBinder();
     const input = document.getElementById("name");
-    expect(formBinder.checkValidity()).to.be.true;
+    expect(await formBinder.checkValidity()).to.be.true;
     validator.add(validateLowerCase);
-    expect(formBinder.checkValidity()).to.be.true;
+    expect(await formBinder.checkValidity()).to.be.true;
     input.setAttribute("lower-case", "");
-    expect(formBinder.checkValidity()).to.be.false;
+    expect(await formBinder.checkValidity()).to.be.false;
     input.removeAttribute("lower-case");
-    expect(formBinder.checkValidity()).to.be.true;
+    expect(await formBinder.checkValidity()).to.be.true;
     input.setAttribute("lower-case", "");
-    expect(formBinder.checkValidity()).to.be.false;
+    expect(await formBinder.checkValidity()).to.be.false;
     validator.remove(validateLowerCase);
-    expect(formBinder.checkValidity()).to.be.true;
+    expect(await formBinder.checkValidity()).to.be.true;
     input.setAttribute("lower-case", "");
     validator.add(validateVowelsOnly);
-    expect(formBinder.checkValidity()).to.be.true;
+    expect(await formBinder.checkValidity()).to.be.true;
     validator.remove(validateVowelsOnly);
   });
 
   it("Should correctly report invalid state", async () => {
     const formBinder = await createFormBinder();
     const input = document.getElementById("name");
+    await wait();
     expect(input.validationMessage).to.equal("");
     validator.add(validateLowerCase);
+    await wait();
     expect(input.validationMessage).to.equal("");
     input.setAttribute("lower-case", "");
+    await wait();
     expect(input.validationMessage).to.equal("");
     formBinder.reportValidity();
+    await wait();
     expect(input.validationMessage).to.equal("Needs to be one of lower-case");
   });
 });

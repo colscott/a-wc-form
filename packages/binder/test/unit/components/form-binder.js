@@ -10,6 +10,11 @@ import { patternValidator } from "../../../src/lib/validators/pattern.js";
 import { maxValidator } from "../../../src/lib/validators/max.js";
 import { data as mockData } from "../../../demo/mock.js";
 
+/** @returns {Promise} that resolves when the form-binder:change event fires */
+export function wait() {
+  return new Promise(res => setTimeout(res, 0));
+}
+
 /** @returns {{formBinder: import('../../../src/components/form-binder.js').FormBinder, change: {data: any}}} */
 async function createFormBinder() {
   const data = JSON.parse(JSON.stringify(mockData));
@@ -87,14 +92,14 @@ describe("form-binder binding tests", () => {
     validator.add(maxValidator, true);
     inputValue("name", "Bert");
     inputValue("age", "300");
-    await formBinder.updateComplete;
+    await wait();
     expect(changes.data.name).to.equal("Johnny Five");
     expect(changes.data.personalData.age).to.equal(34);
     validator.remove(patternValidator);
     validator.remove(maxValidator);
     inputValue("name", "Fred");
     inputValue("age", "20");
-    await formBinder.updateComplete;
+    await wait();
     expect(changes.data.name).to.equal("Fred");
     expect(changes.data.personalData.age).to.equal(20);
   });
@@ -116,16 +121,16 @@ describe("form-binder binding tests", () => {
     binder.add(...Object.values(binders));
     const { formBinder, changes } = await createFormBinder();
     inputValue("whitelist", "Bert");
-    await formBinder.updateComplete;
+    await wait();
     expect(changes.data.name).to.equal("Johnny Five");
     inputValue("whitelist", "bill");
-    await formBinder.updateComplete;
+    await wait();
     expect(changes.data.name).to.equal("bill");
     inputValue("whitelist", "ray");
-    await formBinder.updateComplete;
+    await wait();
     expect(changes.data.name).to.equal("bill");
     inputValue("whitelist", "rob");
-    await formBinder.updateComplete;
+    await wait();
     expect(changes.data.name).to.equal("rob");
   });
   // Not currently supported as the binders get initialized with events when the control is added to the form

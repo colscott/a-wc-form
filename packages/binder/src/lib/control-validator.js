@@ -15,7 +15,7 @@
 /**
  * @typedef {Object} Validator
  * @property {string} controlSelector css selector associated with this control validator
- * @property {function(ValidationElement, any, any):ValidationResult} validate against a control returning an empty string for valid value and non-empty string for invalid value
+ * @property {function(ValidationElement, any, any):ValidationResult|Promise<ValidationResult>} validate against a control returning an empty string for valid value and non-empty string for invalid value
  */
 
 /** @type {Array<Validator>} */

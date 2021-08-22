@@ -19,13 +19,13 @@ describe("validation - greater than", () => {
     const inputHeight = document.getElementById("height");
     inputHeight.value = 50;
     inputHeight.dispatchEvent(new Event("change"));
-    expect(formBinder.checkValidity()).to.be.true;
+    expect(await formBinder.checkValidity()).to.be.true;
     validator.add(greaterThanValidator);
-    expect(formBinder.checkValidity()).to.be.true;
+    expect(await formBinder.checkValidity()).to.be.true;
     inputAge.setAttribute("greater-than", "#/personalData/height");
-    expect(formBinder.checkValidity()).to.be.false;
+    expect(await formBinder.checkValidity()).to.be.false;
     inputAge.value = 60;
     inputAge.dispatchEvent(new Event("change"));
-    expect(formBinder.checkValidity()).to.be.true;
+    expect(await formBinder.checkValidity()).to.be.true;
   });
 });

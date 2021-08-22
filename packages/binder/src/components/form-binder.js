@@ -8,6 +8,13 @@ import * as validators from "../lib/validators/index.js";
 import { getValue, setValue } from "../lib/json-pointer.js";
 import { ShadowDomMutationObserver } from "../lib/observer.js";
 
+/** @typedef {import('../lib/control-binder.js').ControlBinding} ControlBinding */
+/** @typedef {import("../lib/control-binder.js").ControlElement} ControlElement */
+/** @typedef {import("../lib/control-validator.js").ValidationControlResult} ValidationControlResult */
+/** @typedef {import("../lib/control-validator.js").ValidationElement} ValidationElement */
+/** @typedef {import("../lib/control-validator.js").ValidationResults} ValidationResults */
+/** @typedef {import("../lib/control-validator.js").FormValidationResult} FormValidationResult */
+
 // Add built-in validators
 // eslint-disable-next-line guard-for-in,no-restricted-syntax
 for (const validator in validators) {
@@ -99,7 +106,7 @@ export class FormBinder extends HTMLElement {
   /** Initialize */
   constructor() {
     super();
-    /** @type {Map<Element, import('../lib/control-binder.js').ControlBinding>} */
+    /** @type {Map<Element, ControlBinding>} */
     this.registeredControlBinders = new Map();
 
     /** @type {Set<Element>} controls the user has interacted with */
@@ -155,7 +162,7 @@ export class FormBinder extends HTMLElement {
   }
 
   /**
-   * @param {import("../lib/control-binder.js").ControlElement} control
+   * @param {ControlElement} control
    * @param {any} newValue
    */
   handleControlValueChange(control, newValue) {
@@ -164,22 +171,25 @@ export class FormBinder extends HTMLElement {
       this._dirtyControls.set(control, newValue);
       setValue(this.data, name, newValue);
       const validationResults = this.controlVisited(control);
-      if (this.checkValidity([control])) {
-        this.dispatchEvent(
-          new CustomEvent("form-binder:change", {
-            detail: {
-              data: JSON.parse(JSON.stringify(this.data)),
-              validationResults
-            }
-          })
-        );
-      }
+      const data = JSON.parse(JSON.stringify(this.data));
+      this.checkValidity([control]).then(async isValid => {
+        if (isValid) {
+          this.dispatchEvent(
+            new CustomEvent("form-binder:change", {
+              detail: {
+                data,
+                validationResults: await validationResults
+              }
+            })
+          );
+        }
+      });
     }
   }
 
   /**
-   * @param {import("../lib/control-binder.js").ControlElement} controlElement that was visited
-   * @returns {import("../lib/control-validator.js").FormValidationResult} form validity result
+   * @param {ControlElement} controlElement that was visited
+   * @returns {Promise<FormValidationResult>} form validity result
    */
   controlVisited(controlElement) {
     this._visitedControls.add(controlElement);
@@ -187,29 +197,45 @@ export class FormBinder extends HTMLElement {
   }
 
   /**
-   * @param {import("../lib/control-validator.js").ValidationElement} control
+   * @param {ValidationElement} control
    * @param {any} [value] to validate against the control. If not supplied then the value is taken from the backing data.
-   * @returns {import("../lib/control-validator.js").ValidationControlResult} if valid
+   * @returns {Promise<ValidationControlResult>} if valid
    */
-  validateControlValue(control, value) {
-    /** @type {import("../lib/control-validator.js").ValidationResults} */
-    const controlValidationResults = [];
+  async validateControlValue(control, value) {
     const controlName = getName(control);
-    matchingValidators(control).forEach(validator => {
-      const validatorResult = validator.validate(
+    const t = matchingValidators(control).map(validator => {
+      const result = validator.validate(
         control,
         value === undefined ? getValue(this.data, controlName) : value,
         this.data
       );
-      controlValidationResults.push(validatorResult);
+      return result instanceof Promise ? result : Promise.resolve(result);
     });
 
-    // Add 'field' property if missing
-    controlValidationResults.forEach(validatorResult => {
-      if (!validatorResult.field) {
-        validatorResult.field = controlName;
+    /** @type {ValidationResults} */
+    const controlValidationResults = (await Promise.allSettled(t)).map(
+      promiseSettled => {
+        if (promiseSettled.status === "fulfilled") {
+          return promiseSettled.value;
+        }
+        console.error(
+          "Validation validator failed",
+          control,
+          value,
+          promiseSettled.reason
+        );
+        return null;
       }
-    });
+    );
+
+    // Add 'field' property if missing
+    controlValidationResults
+      .filter(validatorResult => validatorResult !== null)
+      .forEach(validatorResult => {
+        if (!validatorResult.field) {
+          validatorResult.field = controlName;
+        }
+      });
 
     return {
       control,
@@ -219,16 +245,15 @@ export class FormBinder extends HTMLElement {
   }
 
   /**
-   * @param {Array<import("../lib/control-binder.js").ControlElement>} [controls] to validate. if not supplied then all controls are validated.
-   * @returns {import("../lib/control-validator.js").FormValidationResult} errors that that delegating to be displayed
+   * @param {Array<ControlElement>} [controls] to validate. if not supplied then all controls are validated.
+   * @returns {Promise<FormValidationResult>} result of the forms current validity
    */
-  validate(controls) {
-    /** @type {Array<import("../lib/control-validator.js").ValidationControlResult>} */
-    const result = (
-      controls || Array.from(this.registeredControlBinders.keys())
-    )
-      .map(c => this.validateControlValue(c))
-      .filter(e => e.controlValidationResults.length > 0);
+  async validate(controls) {
+    const result = await Promise.all(
+      (controls || Array.from(this.registeredControlBinders.keys()))
+        .map(async c => this.validateControlValue(c))
+        .filter(async e => (await e).controlValidationResults.length > 0)
+    );
 
     const errors = filterValidationResults(
       result,
@@ -243,24 +268,24 @@ export class FormBinder extends HTMLElement {
   }
 
   /**
-   * @param {Array<import("../lib/control-binder.js").ControlElement>} [controls] to validate. if not supplied then all controls are validated.
-   * @returns {boolean} if the control/controls in the form are all valid
+   * @param {Array<ControlElement>} [controls] to validate. if not supplied then all controls are validated.
+   * @returns {Promise<boolean>} if the control/controls in the form are all valid
    */
-  checkValidity(controls) {
-    return this.validate(controls).isValid;
+  async checkValidity(controls) {
+    return (await this.validate(controls)).isValid;
   }
 
   /**
-   * @param {Array<import("../lib/control-binder.js").ControlElement>} [controls] to validate. if not supplied then all controls are validated.
-   * @returns {import("../lib/control-validator.js").FormValidationResult} if the control/controls in the form are all valid
+   * @param {Array<ControlElement>} [controls] to validate. if not supplied then all controls are validated.
+   * @returns {Promise<FormValidationResult>} if the control/controls in the form are all valid
    */
-  reportValidity(controls) {
-    const validationResults = this.validate(controls);
+  async reportValidity(controls) {
+    const validationResults = await this.validate(controls);
     this.reportErrors(validationResults);
     return validationResults;
   }
 
-  /** @param {import("../lib/control-validator.js").FormValidationResult} validationResults that to be displayed */
+  /** @param {FormValidationResult} validationResults that to be displayed */
   reportErrors(validationResults) {
     this.dispatchEvent(
       new CustomEvent("form-binder:report-validity", {

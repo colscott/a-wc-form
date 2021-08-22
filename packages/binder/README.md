@@ -210,6 +210,33 @@ Usage:
 <input type="number" name="#/from" />
 <input type="number" name="#/to" greater-than="#/from" />
 ```
+
+## Asynchronous validator example
+form-binder also supports asynchronous validator results. Simply return a Promise from Validator validate function.
+Example that asynchronously checks the value equals 'foobar'.
+```js
+import { controlValidator } from "a-wc-form-binder";
+
+// Define the greater than validator
+const asyncValidator = {
+  controlSelector: "[async-validator-foobar]",
+  validate: (control, value, data) => {
+    return new Promise(resolve => {
+      resolve(new control.Validator.ValidationResult(
+      "async-validator-foobar",
+      "foobar",
+      value,
+      "foobar" === value
+    ));
+    });
+  }
+};
+
+// register the validator
+validator.add(asyncValidator);
+
+```
+
 ## API
 ### Attributes and properties
 | Name | Type | Description |
@@ -223,10 +250,10 @@ Usage:
 | addControl | void | Can be called to manually bind a control to a form. |
 | updateControlValue | void | Manually updates a control with the value in the data. Triggers reportValidity if the user has visited/touched the control. |
 | updateControlValues | void | Manually updates all bound controls with the value in the data. Triggers reportValidity if the user has visited/touched the control. |
-| validateControlValue | import("a-wc-form-binder/src/lib/control-validator.js").ValidationControlResult | Starts a validity check of a controller. No reporting is performed. |
-| validate | import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult | Starts a validity check of all bound controllers. No reporting is performed. |
-| checkValidity | boolean | Starts a validity check of all bound controllers. No reporting is performed. |
-| reportValidity | import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult | Starts a validity check of all bound controllers. Reporting is performed. |
+| validateControlValue | Promise/<import("a-wc-form-binder/src/lib/control-validator.js").ValidationControlResult> | Starts a validity check of a controller. No reporting is performed. |
+| validate | Promise\<import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult> | Starts a validity check of all bound controllers. No reporting is performed. |
+| checkValidity | Promise\<boolean> | Starts a validity check of all bound controllers. No reporting is performed. |
+| reportValidity | Promise\<import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult> | Starts a validity check of all bound controllers. Reporting is performed. |
 | reportErrors | void | Given a import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult will dispatch a form-binder:report-validity event |
 
 ## Events
