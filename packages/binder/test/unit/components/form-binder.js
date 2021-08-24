@@ -5,7 +5,6 @@ import {
   controlBinder as binder,
   controlValidator as validator
 } from "../../../src/index.js";
-import { ValidationResult } from "../../../src/lib/control-validator.js";
 import { patternValidator } from "../../../src/lib/validators/pattern.js";
 import { maxValidator } from "../../../src/lib/validators/max.js";
 import { data as mockData } from "../../../demo/mock.js";
@@ -43,7 +42,12 @@ const validateTextInput = {
   validate: (control, value, data) => {
     const whitelist = control.getAttribute("whitelist").split(",");
     const isValid = whitelist.some(v => v === value);
-    return new ValidationResult("whitelist", whitelist, value, isValid);
+    return new validator.ValidationResult(
+      "whitelist",
+      whitelist,
+      value,
+      isValid
+    );
   }
 };
 
@@ -87,7 +91,7 @@ describe("form-binder binding tests", () => {
   });
   it("Should not change value when value is invalid", async () => {
     binder.add(...Object.values(binders));
-    const { formBinder, changes } = await createFormBinder();
+    const { changes } = await createFormBinder();
     validator.add(patternValidator, true);
     validator.add(maxValidator, true);
     inputValue("name", "Bert");
@@ -119,7 +123,7 @@ describe("form-binder binding tests", () => {
 
   it("Should use custom validation", async () => {
     binder.add(...Object.values(binders));
-    const { formBinder, changes } = await createFormBinder();
+    const { changes } = await createFormBinder();
     inputValue("whitelist", "Bert");
     await wait();
     expect(changes.data.name).to.equal("Johnny Five");

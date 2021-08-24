@@ -7,7 +7,6 @@ import {
   controlValidator as validator
 } from "../../../src/index.js";
 import { data } from "../../../demo/mock.js";
-import { ValidationResult } from "../../../src/lib/control-validator";
 import { wait } from "../components/form-binder.js";
 
 const errorText = {
@@ -51,7 +50,7 @@ const validateLowerCase = {
   controlSelector: "[lower-case]",
   validate: (control, value) => {
     const result = /^[a-z]*$/.test(value);
-    return new ValidationResult("lower-case", true, result, result);
+    return new validator.ValidationResult("lower-case", true, result, result);
   }
 };
 
@@ -60,7 +59,7 @@ const validateVowelsOnly = {
   controlSelector: "[vowels-only]",
   validate: (control, value) => {
     const result = /^[a|e|i|o|u]*$/.test(value);
-    return new ValidationResult("vowels-only", true, result, result);
+    return new validator.ValidationResult("vowels-only", true, result, result);
   }
 };
 

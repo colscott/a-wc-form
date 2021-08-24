@@ -1,5 +1,6 @@
-import { ValidationResult } from "../control-validator.js";
 import { getValue } from "../json-pointer.js";
+import { controlValidator } from "../../index.js";
+
 /**
  * @param {string} string to test is date
  * @returns {boolean} f string is date like
@@ -13,7 +14,7 @@ export const greaterThanValidator = {
   validate: (control, value, data) => {
     const otherField = control.getAttribute("greater-than");
 
-    return new ValidationResult(
+    return new controlValidator.ValidationResult(
       "greater-than",
       otherField,
       value,

@@ -1,11 +1,11 @@
-import { ValidationResult } from "../control-validator.js";
+import { controlValidator } from "../../index.js";
 
 /** @type {import('../control-validator').Validator} */
 export const maxValidator = {
   controlSelector: "[max]",
   validate: (control, value, data) => {
     const maxValue = parseInt(control.getAttribute("max"), 10);
-    return new ValidationResult(
+    return new controlValidator.ValidationResult(
       "max",
       maxValue,
       value,

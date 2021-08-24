@@ -1,4 +1,4 @@
-import { ValidationResult } from "../control-validator.js";
+import { controlValidator } from "../../index.js";
 import { getValue } from "../json-pointer.js";
 
 /**
@@ -14,7 +14,7 @@ export const lessThanValidator = {
   validate: (control, value, data) => {
     const otherField = control.getAttribute("less-than");
 
-    return new ValidationResult(
+    return new controlValidator.ValidationResult(
       "less-than",
       otherField,
       value,
