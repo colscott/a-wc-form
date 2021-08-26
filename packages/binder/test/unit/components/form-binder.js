@@ -11,7 +11,7 @@ import { data as mockData } from "../../../demo/mock.js";
 
 /** @returns {Promise} that resolves when the form-binder:change event fires */
 export function wait() {
-  return new Promise(res => setTimeout(res, 0));
+  return new Promise(res => setTimeout(res));
 }
 
 /** @returns {{formBinder: import('../../../src/components/form-binder.js').FormBinder, change: {data: any}}} */
@@ -136,6 +136,39 @@ describe("form-binder binding tests", () => {
     inputValue("whitelist", "rob");
     await wait();
     expect(changes.data.name).to.equal("rob");
+  });
+
+  it("Should be abe to patch values with object", async () => {
+    binder.add(...Object.values(binders));
+    const { formBinder, changes } = await createFormBinder();
+    inputValue("whitelist", "Bert");
+    inputValue("age", "30");
+    await wait();
+    formBinder.patch({ personalData: { age: 35 }, student: false });
+    await wait();
+    inputValue("whitelist", "bob");
+    await wait();
+    expect(changes.data.name).to.equal("bob");
+    expect(changes.data.personalData.age).to.equal(35);
+    expect(changes.data.student).to.equal(false);
+  });
+
+  it("Should be abe to patch values with Map", async () => {
+    binder.add(...Object.values(binders));
+    const { formBinder, changes } = await createFormBinder();
+    inputValue("whitelist", "Bert");
+    inputValue("age", "30");
+    await wait();
+    const patchValues = new Map();
+    patchValues.set("/personalData/age", 40);
+    patchValues.set("#/student", false);
+    formBinder.patch(patchValues);
+    await wait();
+    inputValue("whitelist", "rob");
+    await wait();
+    expect(changes.data.name).to.equal("rob");
+    expect(changes.data.personalData.age).to.equal(40);
+    expect(changes.data.student).to.equal(false);
   });
   // Not currently supported as the binders get initialized with events when the control is added to the form
   // it("Should not change value when binder is removed", async () => {

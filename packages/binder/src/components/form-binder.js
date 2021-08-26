@@ -5,7 +5,12 @@ import {
   add
 } from "../lib/control-validator.js";
 import * as validators from "../lib/validators/index.js";
-import { getValue, setValue } from "../lib/json-pointer.js";
+import {
+  getValue,
+  normalize,
+  objectToJsonPointers,
+  setValue
+} from "../lib/json-pointer.js";
 import { ShadowDomMutationObserver } from "../lib/observer.js";
 
 /** @typedef {import('../lib/control-binder.js').ControlBinding} ControlBinding */
@@ -125,6 +130,32 @@ export class FormBinder extends HTMLElement {
 
     /** @type {object} */
     this.data = null;
+
+    this._reportValidityRequested = false;
+  }
+
+  /** @param {object|Map<string, unknown>} partialData that will be used to update the current form data. Can be a partial object of a Map or JSON pointers and new values. */
+  patch(partialData) {
+    const jsonPointers =
+      partialData instanceof Map
+        ? /** @type {Map<String, unknown>} */ (partialData)
+        : objectToJsonPointers(partialData);
+    const registeredControlBinders = Array.from(
+      this.registeredControlBinders.entries()
+    ).map(entry => ({
+      name: normalize(getName(entry[0])),
+      control: entry[0],
+      binding: entry[1]
+    }));
+
+    // For each value, update the data and update the control
+    jsonPointers.forEach((value, key) => {
+      setValue(this.data, key, value);
+      const binderEntry = registeredControlBinders.find(
+        entry => entry.name === normalize(key)
+      );
+      this.updateControlValue(binderEntry.control);
+    });
   }
 
   /** @returns {Array<Element>} controls that have been bound to the form */
@@ -155,7 +186,11 @@ export class FormBinder extends HTMLElement {
     if (binder) {
       const value = getValue(this.data, getName(control));
       binder.binder.writeValue(control, value);
-      if (this._visitedControls.has(control)) {
+      if (
+        this._reportValidityRequested === false &&
+        this._visitedControls.has(control)
+      ) {
+        this._reportValidityRequested = true;
         // Run validity check as task to give custom controls chance to initialize (e.g. MWC)
         setTimeout(() => this.reportValidity());
       }
@@ -290,6 +325,7 @@ export class FormBinder extends HTMLElement {
   async reportValidity(controls) {
     const validationResults = await this.validate(controls);
     this.reportErrors(validationResults);
+    this._reportValidityRequested = false;
     return validationResults;
   }
 
