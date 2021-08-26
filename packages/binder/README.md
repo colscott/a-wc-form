@@ -246,6 +246,7 @@ controlValidator.add(asyncValidator);
 | ---- | ---- | ----------- |
 | getControls | Array<Element> | Gets the controls that have been bound to the form |
 | patch | void | Can be passed partial data to update parts of the data model. Pass an Object that has the same structure as the data model to be changed bu only the properties you want to update are present. Alternatively, you can pass a Map\<string, unknown> where the key is JSON pointer to the data item and the key is the value to set. |
+| reset | void | Resets the form data back to its initial value. |
 | addControl | void | Can be called to manually bind a control to a form. |
 | updateControlValue | void | Manually updates a control with the value in the data. Triggers reportValidity if the user has visited/touched the control. |
 | updateControlValues | void | Manually updates all bound controls with the value in the data. Triggers reportValidity if the user has visited/touched the control. |

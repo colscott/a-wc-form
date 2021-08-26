@@ -67,6 +67,9 @@ export class FormBinder extends HTMLElement {
   /** @param {object} data to bind to the form controls. A copy of the data is taken. */
   set data(data) {
     this._data = JSON.parse(JSON.stringify(data));
+    if (!this._originalData) {
+      this._originalData = JSON.parse(JSON.stringify(data));
+    }
     this.updateControlValues();
   }
 
@@ -129,6 +132,9 @@ export class FormBinder extends HTMLElement {
     this._dirtyControls = new Map();
 
     /** @type {object} */
+    this._originalData = null;
+
+    /** @type {object} */
     this.data = null;
 
     this._reportValidityRequested = false;
@@ -156,6 +162,13 @@ export class FormBinder extends HTMLElement {
       );
       this.updateControlValue(binderEntry.control);
     });
+  }
+
+  /** Clears the data to the initial data value set */
+  reset() {
+    if (this._originalData) {
+      this.data = this._originalData;
+    }
   }
 
   /** @returns {Array<Element>} controls that have been bound to the form */

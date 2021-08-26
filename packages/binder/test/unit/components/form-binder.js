@@ -138,7 +138,7 @@ describe("form-binder binding tests", () => {
     expect(changes.data.name).to.equal("rob");
   });
 
-  it("Should be abe to patch values with object", async () => {
+  it("Should be able to patch values with object", async () => {
     binder.add(...Object.values(binders));
     const { formBinder, changes } = await createFormBinder();
     inputValue("whitelist", "Bert");
@@ -153,7 +153,7 @@ describe("form-binder binding tests", () => {
     expect(changes.data.student).to.equal(false);
   });
 
-  it("Should be abe to patch values with Map", async () => {
+  it("Should be able to patch values with Map", async () => {
     binder.add(...Object.values(binders));
     const { formBinder, changes } = await createFormBinder();
     inputValue("whitelist", "Bert");
@@ -169,6 +169,24 @@ describe("form-binder binding tests", () => {
     expect(changes.data.name).to.equal("rob");
     expect(changes.data.personalData.age).to.equal(40);
     expect(changes.data.student).to.equal(false);
+  });
+
+  it("Should be able to reset data", async () => {
+    binder.add(...Object.values(binders));
+    const { formBinder, changes } = await createFormBinder();
+    inputValue("whitelist", "Bert");
+    inputValue("age", "30");
+    await wait();
+    const patchValues = new Map();
+    patchValues.set("/personalData/age", 40);
+    patchValues.set("#/student", false);
+    formBinder.patch(patchValues);
+    await wait();
+    inputValue("whitelist", "rob");
+    await wait();
+    formBinder.reset();
+    await wait();
+    expect(formBinder.data).to.eql(mockData);
   });
   // Not currently supported as the binders get initialized with events when the control is added to the form
   // it("Should not change value when binder is removed", async () => {
