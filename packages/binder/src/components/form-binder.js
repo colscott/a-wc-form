@@ -27,7 +27,15 @@ for (const validator in validators) {
  */
 export function getName(element) {
   // @ts-ignore
-  return element.name || element.getAttribute("name");
+  const binderName =
+    element.bind ||
+    element.getAttribute("bind") ||
+    element.name ||
+    element.getAttribute("name");
+  if (!binderName) {
+    console.error("No binder name found for element", element);
+  }
+  return binderName;
 }
 
 /**

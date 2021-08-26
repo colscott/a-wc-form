@@ -40,12 +40,12 @@
               <section>
                 <h2>Using manual binding</h2>
                 <form-binder @form-binder:change=${e => {this.data = e.detail.data;this.requestUpdate();}} .data=${this.data}>
-                  <mwc-textfield label="Full name" type="text" name="#/name"></mwc-textfield>
-                  <mwc-textfield label="Age" type="number" name="#/personalData/age" min="0" max="120" step="1"></mwc-textfield>
-                  <mwc-slider label="Age Slider" name="personalData/age" min="0" max="120" step="1"></mwc-slider>
-                  <mwc-textfield label="Telephone" name="#/telephoneNumbers/1"></mwc-textfield>
-                  <mwc-switch label="Student" id="student" name="student"></mwc-switch>
-                  <mwc-checkbox label="Student" id="student" name="student"></mwc-checkbox>
+                  <mwc-textfield label="Full name" type="text" bind="#/name"></mwc-textfield>
+                  <mwc-textfield label="Age" type="number" bind="#/personalData/age" min="0" max="120" step="1"></mwc-textfield>
+                  <mwc-slider label="Age Slider" bind="personalData/age" min="0" max="120" step="1"></mwc-slider>
+                  <mwc-textfield label="Telephone" bind="#/telephoneNumbers/1"></mwc-textfield>
+                  <mwc-switch label="Student" id="student" bind="student"></mwc-switch>
+                  <mwc-checkbox label="Student" id="student" bind="student"></mwc-checkbox>
                 </form-binder>
                 <h2>Using JSON Schema</h2>
                 <form-binder

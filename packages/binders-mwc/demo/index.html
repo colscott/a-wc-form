@@ -5,7 +5,7 @@
         import { data } from 'a-wc-form-binder/demo/mock.js';
         import { schema } from 'a-wc-form-json-schema/demo/mock.js';
         import { layout } from 'a-wc-form-layout/demo/mock.js';
-        import { LitElement, html } from 'lit-element';
+        import { LitElement, html, css } from 'lit-element';
         import "a-wc-form-binder/src/components/form-binder.js";
         import "a-wc-form-binders-mwc/src/templates/controls.js";
         import "a-wc-form-json-schema/src/components/json-schema-form.js";
@@ -15,10 +15,85 @@
           binder.add(...Object.values(binders));
 
         customElements.define('test-json-ui-schema', class extends LitElement {
-          constructor() { super(); }
+          /** @inheritdoc */
+          static get properties() {
+            return {
+              data: { type: Object },
+              errors: { type: Array }
+            };
+          }
+          
+          /** @inheritdoc */
+          static get styles() {
+            return [
+              css`
+                :host {
+                  display: grid;
+                  grid-template-columns: 1fr min-content;
+                }
+              `,
+            ];
+          }
+
+          /** @inheritdoc */
+          constructor() {
+            super();
+            this.data = data;
+            /** @type {import('a-wc-form-binder/src/lib/control-validator').ValidationResults} */
+            this.errors = [];
+          }
+
           render() { return html`
-            <json-schema-form .data=${data} .layout=${layout} .schema=${schema}></json-schema-form>
+            <section>
+              <json-schema-form
+                .layout=${layout}
+                .schema=${schema}
+                @form-binder:change=${e => {
+                  this.data = e.detail.data;
+                  this.requestUpdate();
+                  this.clearErrors();
+                }}
+                @form-binder:report-validity=${e =>
+                  this.handleValidation(e.detail.errors)}
+            ></json-schema-form>
+            </section>
+            <section><pre>${JSON.stringify(this.data, null, 2)}</pre>
+            </section>
           `}
+
+          /** @inheritdoc */
+          firstUpdated() {
+            super.firstUpdated();
+            this.shadowRoot.querySelector("json-schema-form").data = data;
+          }
+
+          /**
+           * @param {import('a-wc-form-binder/src/lib/control-validator').FormValidationResult} errors
+           */
+          handleValidation(errors) {
+            errors
+              .filter(c => c.visited)
+              .forEach(controlErrorEntry => {
+                const { control, controlValidationResults } = controlErrorEntry;
+                // Here you would translate the errors and output them somewhere in the UI
+                control.setCustomValidity(
+                  controlValidationResults // The example outputs in UI using the native API, setCustomValidity
+                    .map(k => errorText[k.name](k)) // Translate here
+                    .join(",")
+                );
+              });
+            this.errors = errors;
+          }
+
+          /** */
+          clearErrors() {
+            const form = /** @type {import('a-wc-form-binder/src/components/form-binder').FormBinder} */ (this.shadowRoot.querySelector(
+              "json-schema-form"
+            ));
+            Array.from(form.registeredControlBinders.keys()).forEach(control =>
+             control.setCustomValidity && control.setCustomValidity("")
+            );
+          }
         })
       </script>
   </head>

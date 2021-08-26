@@ -16,10 +16,10 @@ Example:
 ```html
 <form-binder>
   <!-- controls are bound to data by assigning JSON pointers to the name of the control -->
-  <input name="/name/first" />
-  <input name="/name/second" />
+  <input bind="/name/first" />
+  <input bind="/name/second" />
   <!-- Even custom controls can be bound to data by name so long as a custom binder is defined to handle the case. More on custom control binders later. -->
-  <div name="/name/first"></div>
+  <div bind="/name/first"></div>
 </form-binder>
 ```
 ```js
@@ -205,8 +205,8 @@ controlValidator.add(greaterThanValidator);
 
 Usage:
 ```html
-<input type="number" name="#/from" />
-<input type="number" name="#/to" greater-than="#/from" />
+<input type="number" bind="#/from" />
+<input type="number" bind="#/to" greater-than="#/from" />
 ```
 
 ## Asynchronous validator example

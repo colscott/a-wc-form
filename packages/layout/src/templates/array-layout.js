@@ -57,6 +57,7 @@ function gridTemplate(context) {
       form-layout-grid
       class="grid-layout"
       name=${context.component.properties.ref}
+      bind=${context.component.properties.ref}
       .context=${context}
       style="--form-grid-columns:${context.component.properties.components
         .length}"
@@ -107,6 +108,7 @@ function arrayTemplate(context) {
       form-layout-array
       class="array-layout"
       name=${context.component.properties.ref}
+      bind=${context.component.properties.ref}
       .context=${context}
     ></div>
   `;

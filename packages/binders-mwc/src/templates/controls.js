@@ -22,6 +22,7 @@ function genericInput(context) {
     <mwc-textfield
       type="${properties.type}"
       name="${properties.ref}"
+      bind="${properties.ref}"
       minlength="${ifDefined(properties.validation?.minLength)}"
       maxlength="${ifDefined(properties.validation?.maxLength)}"
       min="${ifDefined(properties.validation?.min)}"
@@ -44,7 +45,10 @@ export function checkboxTemplate(context) {
   const { properties } = context.component;
   return html`
     <mwc-formfield label=${ifDefined(properties.label)}>
-      <mwc-checkbox name="${context.component.properties.ref}"></mwc-checkbox>
+      <mwc-checkbox
+        name="${context.component.properties.ref}"
+        bind="${context.component.properties.ref}"
+      ></mwc-checkbox>
     </mwc-formfield>
   `;
 }
@@ -58,6 +62,7 @@ export function enumTemplate(context) {
   return html`
     <mwc-select
       name="${context.component.properties.ref}"
+      bind="${context.component.properties.ref}"
       label=${ifDefined(properties.label)}
       ?required=${!!properties.validation?.required}
     >

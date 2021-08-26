@@ -258,7 +258,7 @@ import { setComponentTemplate, html } from 'a-wc-form-layout';
 
 // Templates are lit-html
 const toggleTemplate = (context) => html`
-  <div name=${context.component.properties.ref} class="my-toggle" style="border: 1px solid black;"></div>
+  <div bind=${context.component.properties.ref} class="my-toggle" style="border: 1px solid black;"></div>
 `;
 // Register the template so that it can be used in a component in the layout
 setComponentTemplate("Toggle", toggleTemplate);

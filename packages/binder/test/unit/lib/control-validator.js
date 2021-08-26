@@ -19,9 +19,9 @@ export async function createFormBinder() {
   formBinder.data = JSON.parse(JSON.stringify(data));
   document.body.appendChild(formBinder);
   formBinder.innerHTML = `
-    <input id="name" type="text" name="#/name" />
-    <input id="age" type="number" name="#/personalData/age" />
-    <input id="height" type="number" name="#/personalData/height" />
+    <input id="name" type="text" bind="#/name" />
+    <input id="age" type="number" bind="#/personalData/age" />
+    <input id="height" type="number" bind="#/personalData/height" />
   `;
   formBinder.addEventListener("form-binder:report-validity", e => {
     /** @type {import('../../../src/lib/control-validator').FormValidationResult} */

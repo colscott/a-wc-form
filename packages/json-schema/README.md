@@ -24,7 +24,7 @@ Example of binding data to JSON Schema generated form controls. This example doe
   <!-- json-schema-control can also render branches or even the whole schema -->
   <json-schema-control ref="#"></json-schema-control>
   <!-- Opt out of json-schema-form but still take advantage of a-wc-form-binder data binding and validation -->
-  <input type="text" name="/name/middle">
+  <input type="text" bind="/name/middle">
 </form-binder>
 ```
 #### Javascript

@@ -21,12 +21,12 @@ async function createFormBinder() {
   formBinder.data = data;
   document.body.appendChild(formBinder);
   formBinder.innerHTML = `
-    <input id="name" required pattern="Fred.*" type="text" name="#/name" />
-    <input id="whitelist" whitelist="bill,bob,rob" type="text" name="#/name" />
-    <input id="age" min="18" max="65" type="number" name="#/personalData/age" />
-    <input id="tel" name="#/telephoneNumbers/1" />
-    <input id="message" name="#/comments/1/message" />
-    <input id="student" name="#/student" type="checkbox" />
+    <input id="name" required pattern="Fred.*" type="text" bind="#/name" />
+    <input id="whitelist" whitelist="bill,bob,rob" type="text" bind="#/name" />
+    <input id="age" min="18" max="65" type="number" bind="#/personalData/age" />
+    <input id="tel" bind="#/telephoneNumbers/1" />
+    <input id="message" bind="#/comments/1/message" />
+    <input id="student" bind="#/student" type="checkbox" />
   `;
   const changes = { data };
   formBinder.addEventListener("form-binder:change", e => {

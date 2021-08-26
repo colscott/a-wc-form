@@ -35,6 +35,7 @@ function genericInput(context) {
     ${label(context)}<input
       type="${properties.type}"
       name="${properties.ref}"
+      bind="${properties.ref}"
       aria-label=${ifDefined(properties.label)}
       aria-description=${ifDefined(properties.description)}
       minlength="${ifDefined(properties.validation?.minLength)}"
@@ -60,7 +61,10 @@ function genericInput(context) {
  */
 function enumTemplate(context) {
   return html`
-    ${label(context)}<select name="${context.component.properties.ref}">
+    ${label(context)}<select
+      name="${context.component.properties.ref}"
+      bind="${context.component.properties.ref}"
+    >
       ${context.component.properties.possibleValues.map(
         e =>
           html`

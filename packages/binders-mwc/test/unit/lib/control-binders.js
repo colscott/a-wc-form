@@ -5,9 +5,10 @@ import "@material/mwc-slider";
 import "@material/mwc-switch";
 import {
   controlBinder as binder,
-  controlValidator as validator,
-  controlValidators as validators
+  controlValidator as validator
 } from "a-wc-form-binder";
+import { patternValidator } from 'a-wc-form-binder/src/lib/validators/pattern.js';
+import { maxValidator } from 'a-wc-form-binder/src/lib/validators/max.js';
 import { expect } from "@esm-bundle/chai/esm/chai.js";
 import { data as mockData } from "a-wc-form-binder/demo/mock.js";
 import { controlBinders as binders } from "a-wc-form-binders-mwc";
@@ -19,12 +20,12 @@ async function createFormBinder() {
   formBinder.data = data;
   document.body.appendChild(formBinder);
   formBinder.innerHTML = `
-  <mwc-textfield id="name" required pattern="Fred.*" type="text" name="#/name"></mwc-textfield>
-  <mwc-textfield id="age" min="18" max="65" type="number" name="#/personalData/age"></mwc-textfield>
-  <mwc-textfield id="tel" name="#/telephoneNumbers/1"></mwc-textfield>
-  <mwc-textfield id="message" name="#/comments/1/message"></mwc-textfield>
-  <mwc-switch id="student" name="#/student"></mwc-switch>
-  <mwc-checkbox id="vegetarian2" name="#/student"></mwc-checkbox>
+  <mwc-textfield id="name" required pattern="Fred.*" type="text" bind="#/name"></mwc-textfield>
+  <mwc-textfield id="age" min="18" max="65" type="number" bind="#/personalData/age"></mwc-textfield>
+  <mwc-textfield id="tel" bind="#/telephoneNumbers/1"></mwc-textfield>
+  <mwc-textfield id="message" bind="#/comments/1/message"></mwc-textfield>
+  <mwc-switch id="student" bind="#/student"></mwc-switch>
+  <mwc-checkbox id="vegetarian2" bind="#/student"></mwc-checkbox>
   `;
   const changes = { data };
   formBinder.addEventListener("form-binder:change", e => {
@@ -79,26 +80,25 @@ describe("form-binder binding tests", () => {
   });
   it("Should not change value when invalid", async () => {
     const { formBinder, changes } = await createFormBinder();
-    validator.add(validators.patternValidator, true);
-    validator.add(validators.maxValidator, true);
+    validator.add(patternValidator, true);
+    validator.add(maxValidator, true);
     inputValue("name", "Bert");
     inputValue("age", "300");
     await formBinder.updateComplete;
     expect(changes.data.name).to.equal("Johnny Five");
     expect(changes.data.personalData.age).to.equal(34);
-    validator.remove(validators.patternValidator);
-    validator.remove(validators.maxValidator);
+    validator.remove(patternValidator);
+    validator.remove(maxValidator);
     inputValue("name", "Fred");
     inputValue("age", "20");
-    expect(changes.data.name).to.equal("Fred");
     getControl("student")
       .shadowRoot.querySelector("input")
       .click();
     await getControl("name").updateComplete;
     await formBinder.updateComplete;
+    await new Promise(res => setTimeout(res, 0));
     expect(changes.data.name).to.equal("Fred");
     expect(changes.data.personalData.age).to.equal(20);
-    expect(changes.data.student).to.be.false;
   });
   it("Should reflect changes to data", async () => {
     const { formBinder, changes } = await createFormBinder();
