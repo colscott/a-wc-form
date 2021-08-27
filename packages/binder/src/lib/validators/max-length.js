@@ -4,12 +4,18 @@ import { controlValidator } from "../../index.js";
 export const maxLengthValidator = {
   controlSelector: "[maxlength],[max-length]",
   validate: (control, value, data) => {
-    const maxLengthValue = parseInt(control.getAttribute("maxlength"), 10);
-    const result = new ValidationResult(
+    const maxLengthValue = parseInt(
+      control.hasAttribute("max-length")
+        ? control.getAttribute("max-length")
+        : control.getAttribute("maxlength"),
+      10
+    );
+    const valueLength = value.toString().length;
+    const result = new controlValidator.ValidationResult(
       "max-length",
       maxLengthValue,
-      value,
-      value <= maxLengthValue
+      valueLength,
+      valueLength <= maxLengthValue
     );
     return result;
   }

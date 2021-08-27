@@ -4,6 +4,11 @@ import { controlValidator } from "../../index.js";
 export const requiredValidator = {
   controlSelector: "[required]",
   validate: (control, value, data) => {
-    return new controlValidator.ValidationResult("required", true, value, !!value);
+    return new controlValidator.ValidationResult(
+      "required",
+      true,
+      value,
+      !!value
+    );
   }
 };

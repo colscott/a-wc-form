@@ -142,6 +142,64 @@ formBinder.addEventListener('form-binder:report-validity', event => {
 });
 ```
 
+## Validators
+
+### Greater than
+Validates that a controls value is greater than another property in the data.
+
+```js
+<input type="date" bind="/date/to" greater-than="/date/from" />
+```
+
+### Less than
+Validates that a controls value is less than another property in the data.
+
+```js
+<input type="date" bind="/date/from" less-than="/date/to" />
+```
+
+### Max length
+Validates that a controls value has no more characters than the value of this validator.
+
+```js
+<input bind="/name" max-length="30" />
+```
+
+### Min length
+Validates that a controls value has at least the number of characters as the value of this validator.
+
+```js
+<input bind="/name" min-length="30" />
+```
+
+### Max
+Validates that a controls value is no more than the value of this validator.
+
+```js
+<input type="number" bind="/age" max="20" />
+```
+
+### Min
+Validates that a controls value is no less than the value of this validator.
+
+```js
+<input type="number" bind="/age" min="18" />
+```
+
+### Pattern
+Validates that a controls value matches the Regular Expression value of this validator.
+
+```js
+<input bind="/lowercaseName" pattern="^[a-z]*$" />
+```
+
+### Required
+Validates that a controls value is required and can not be falsy.
+
+```js
+<input bind="/lastName" required />
+```
+
 ## Custom Validation
 
 As well as trying to use native constraint validation, form-binder allows for custom validation. Just like the control binders, validators can be registered that target controls by CSS selector.
