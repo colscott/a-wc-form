@@ -24,6 +24,15 @@ export const booleanBinder = {
   }
 };
 
+export const radioBinder = {
+  controlSelector: "mwc-radio",
+  initializeEvents: (control, onChange) =>
+    control.addEventListener("change", e => onChange(e.target.value)),
+  writeValue: (control, value) => {
+    control.checked = value.toString() === control.value.toString();
+  }
+};
+
 export const sliderBinder = {
   controlSelector: "mwc-slider",
   initializeEvents: (control, onChange) =>

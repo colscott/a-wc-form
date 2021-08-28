@@ -1,6 +1,9 @@
 /* eslint-disable no-unused-expressions */
 /* global describe, before, after, afterEach, it */
+import "@material/mwc-formfield";
 import "@material/mwc-textfield";
+import "@material/mwc-radio";
+import "@material/mwc-select";
 import "@material/mwc-slider";
 import "@material/mwc-switch";
 import {
@@ -26,6 +29,16 @@ async function createFormBinder() {
   <mwc-textfield id="message" bind="#/comments/1/message"></mwc-textfield>
   <mwc-switch id="student" bind="#/student"></mwc-switch>
   <mwc-checkbox id="vegetarian2" bind="#/student"></mwc-checkbox>
+  <mwc-select id="select" bind="#/occupation" label="Occupation">
+    <mwc-list-item value="Engineer">Engineer</mwc-list-item>
+    <mwc-list-item value="Programmer">Programmer</mwc-list-item>
+  </mwc-select>
+  <mwc-formfield label="Engineer">
+    <mwc-radio id="radio1" bind="#/occupation" value="Engineer"></mwc-radio>
+  </mwc-formfield>
+  <mwc-formfield label="Programmer">
+    <mwc-radio id="radio2" bind="#/occupation" value="Programmer"></mwc-radio>
+  </mwc-formfield>
   `;
   const changes = { data };
   formBinder.addEventListener("form-binder:change", e => {
@@ -77,6 +90,9 @@ describe("form-binder binding tests", () => {
     expect(document.getElementById("message").value).to.equal("Thdsdfsdfsdf");
     expect(document.getElementById("student").checked).to.be.true;
     expect(document.getElementById("vegetarian2").checked).to.be.true;
+    // expect(document.getElementById("select").checked).to.equal("Engineer");
+    expect(document.getElementById("radio1").checked).to.be.true;
+    expect(document.getElementById("radio2").checked).to.be.false;
   });
   it("Should not change value when invalid", async () => {
     const { formBinder, changes } = await createFormBinder();
@@ -106,10 +122,14 @@ describe("form-binder binding tests", () => {
     dataCopy.name = "fred123";
     dataCopy.personalData.age = 62;
     dataCopy.student = false;
+    dataCopy.occupation = "Programmer";
     formBinder.data = dataCopy;
     await formBinder.updateComplete;
     expect(document.getElementById("name").value).to.equal("fred123");
     expect(document.getElementById("age").value).to.equal("62");
     expect(document.getElementById("student").checked).to.be.false;
+    // expect(document.getElementById("select").checked).to.equal("Programmer");
+    expect(document.getElementById("radio1").checked).to.be.false;
+    expect(document.getElementById("radio2").checked).to.be.true;
   });
 });
