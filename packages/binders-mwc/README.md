@@ -1,12 +1,12 @@
 # a-wc-form-binders-mwc
 
-Material Web Component support 
+Material Web Component binders for [form-binder](https://github.com/colscott/a-wc-form/tree/master/packages/binder)
 
 ```cmd
 npm i -save a-wc-form-binders-mwc
 ```
 
-Form binders
+## Usage
 
 ```js
 import { controlBinder as binder } from "a-wc-form-binder";
@@ -19,7 +19,9 @@ binder.add(...Object.values(binders));
 
 ```
 
-Form layout templates are included and registered when you import form binder material
+See [form-binder](https://github.com/colscott/a-wc-form/tree/master/packages/binder) for more information.
+
+Form layout templates (for use with [a-wc-form-layout](https://github.com/colscott/a-wc-form/tree/master/packages/layout)) are included and registered when you import form binder material
 
 ```js
 import 'a-wc-form-binders-mwc';

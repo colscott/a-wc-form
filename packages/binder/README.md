@@ -320,3 +320,20 @@ controlValidator.add(asyncValidator);
 | form-binder:change          | data              | event.detail.data references a copy of the original data that has new values applied to it. |
 |                             | validationResults | event.detail.validationResults validation was performed as part of the change process.      |
 | form-binder:report-validity | import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult | Should be listened to to update the UI with messages. |
+
+## Styles
+Since there is no shadow DOM applied, you are free to style the form-binder.
+
+Optional basic styling is provided via a lit-element [CSSResult](https://lit-element.polymer-project.org/api/classes/_lit_element_.cssresult.html).
+If using LitElement, they can be applied like so:
+
+```js
+import { formCss } from 'a-wc-form-binder';
+...
+/** @inheritdoc */
+    static get styles() {
+      return [
+        ...formCss.allCss
+      ];
+    }
+```

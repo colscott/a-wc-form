@@ -21,7 +21,7 @@ customElements.define(
         css`
           :host {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr min-content min-content min-content;
           }
           :invalid {
             border: 1px solid red;
@@ -124,6 +124,12 @@ customElements.define(
         </section>
         <section class="data">
           <pre>${JSON.stringify(this.data, null, 2)}</pre>
+        </section>
+        <section class="schema">
+          <pre>${JSON.stringify(schema, null, 2)}</pre>
+        </section>
+        <section class="layout">
+          <pre>${JSON.stringify(layout, null, 2)}</pre>
         </section>
       `;
     }

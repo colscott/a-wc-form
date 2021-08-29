@@ -1,9 +1,2 @@
-Refactoring out into separate packages:
-- form-binder
-- form-layout
-- json-schema
-- material
-
-
 Issues:
 - Batch up property changes and invoke render after. e.g. data, schema, and layout maybe set but render should only run once 

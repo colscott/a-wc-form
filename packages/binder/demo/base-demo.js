@@ -18,6 +18,7 @@ const errorText = {
   rangeUnderflow: error => ""
 };
 
+/** Demo base class */
 export class BaseDemo extends LitElement {
   /** @inheritdoc */
   static get properties() {
@@ -55,10 +56,12 @@ export class BaseDemo extends LitElement {
         ${this.renderForm}
       </section>
       <section>
-        <pre>${JSON.stringify(this.data, null, 2)}</pre>
+        <h2>Original data</h2>
+        <pre>${JSON.stringify(data, null, 2)}</pre>
       </section>
       <section>
-        <pre>${JSON.stringify(data, null, 2)}</pre>
+        <h2>Live data</h2>
+        <pre>${JSON.stringify(this.data, null, 2)}</pre>
       </section>
     `;
   }

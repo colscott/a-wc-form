@@ -4,8 +4,8 @@ A JSON Schema form binder web component. Can be used anywhere you can use web co
 
 Generates form controls, and optionally form layout, from [JSON Schema](https://json-schema.org/) data.
 
-Extends a-wc-form-binder to use a [JSON Schema](https://json-schema.org/) to automatically create form controls based on the schema data types. Validation defined in the JSON schema is also applied to the form controls.
-Layout can be provided which is a set of instructions on how a-wc-form-json-schema should layout the form. Or you can create the form with normal HTML.
+Extends [a-wc-form-binder](https://github.com/colscott/a-wc-form/tree/master/packages/binder) to use a [JSON Schema](https://json-schema.org/) to automatically create form controls based on the schema data types. Validation defined in the JSON schema is also applied to the form controls.
+([a-wc-form-layout](https://github.com/colscott/a-wc-form/tree/master/packages/layout)) can be provided which is a set of instructions on how a-wc-form-json-schema should layout the form. Or you can create the form with normal HTML.
 Controls used for JSON schema data types can be customized.
 
 ## Usage
@@ -14,7 +14,7 @@ npm i -save a-wc-form-json-schema
 ```
 
 ### Using form-binder
-Example of binding data to JSON Schema generated form controls. This example does not use a-wc-form-layout and instead relies on you to manually create the form control structure.
+Example of binding data to JSON Schema generated form controls. This example does not use [a-wc-form-layout](https://github.com/colscott/a-wc-form/tree/master/packages/layout) and instead relies on you to manually create the form control structure using [a-wc-form-binder](https://github.com/colscott/a-wc-form/tree/master/packages/binder).
 #### HTML
 ```html
 <form-binder>
@@ -28,7 +28,7 @@ Example of binding data to JSON Schema generated form controls. This example doe
 </form-binder>
 ```
 #### Javascript
-See a-wc-form-binder package for more info on binders and validation.
+See [a-wc-form-binder](https://github.com/colscott/a-wc-form/tree/master/packages/binder) package for more info on binders and validation.
 ```js
 import {
   controlBinder as binder
@@ -46,7 +46,7 @@ formBinder.data = {
   firstName: 'foo', lastName: 'bar', middleName: '' }
 }
 
-// Defined the schema
+// Defined the schema - here we simply declare it inline but you might load it from somewhere like an OpenAPI spec file
 const schema = {
   type: "object",
   properties: {
@@ -83,8 +83,12 @@ formBinder.schema = schema;
 jsonSchemaForm.addEventListener('form-binder:change', e => console.info(e.detail.data));
 ```
 
+The json-schema-control web component uses [a-wc-form-layout](https://github.com/colscott/a-wc-form/tree/master/packages/layout) templates to render controls based on a properties data types.
+
 ### Using form-layout
-Example showing the use of a-wc-form-layout to layout out the form controls.
+A new [a-wc-form-layout](https://github.com/colscott/a-wc-form/tree/master/packages/layout) control type, JsonSchemaControl, is available. JsonSchemaControl will render the control required for the data type as defined in the [JSON Schema](https://json-schema.org/) provided.
+
+Example showing the use of [a-wc-form-layout](https://github.com/colscott/a-wc-form/tree/master/packages/layout) with JsonSchemaControl to layout out the form controls.
 #### HTML
 ```html
 <!-- json-schema-from extends form-layout -->
@@ -105,7 +109,7 @@ binder.add(...Object.values(binders));
 const jsonSchemaForm = document.querySelector('json-schema-form');
 
 // Give json-schema-form the data
-formLayout.data = {
+jsonSchemaForm.data = {
   firstName: 'foo', lastName: 'bar', middleName: '' }
 }
 
@@ -167,7 +171,9 @@ jsonSchemaForm.addEventListener('form-binder:change', e => console.info(e.detail
 ## Events
 | Name | Detail | Description |
 | ---- | ------ | ----------- |
-| form-binder:change | data | event.detail.data references a copy of the original data that has new values applied to it. |
+| form-binder:change          | data              | event.detail.data references a copy of the original data that has new values applied to it. |
+|                             | validationResults | event.detail.validationResults validation was performed as part of the change process.      |
+| form-binder:report-validity | import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult | Should be listened to to update the UI with messages. |
 
 ## API - json-schema-control
 ### Attributes and properties

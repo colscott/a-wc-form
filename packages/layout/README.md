@@ -1,9 +1,9 @@
 # AWC Form Layout
-Simple to use web component that extends a-wc-form-binder's ability to bind data to form controls with a JSON object to define the form layout and controls used.
+Extends [a-wc-form-binder](https://github.com/colscott/a-wc-form/tree/master/packages/binder) to use a layout schema which generates a form layout and controls.
 
 ## Usage
 
-Install the a-wc-form-layout package which includes basic layout templates that can be customized with CSS:
+Install [a-wc-form-binder](https://github.com/colscott/a-wc-form/tree/master/packages/binder) package which includes basic layout templates that can be customized with CSS:
 ```cmd
 npm i -save a-wc-form-layout
 ```
