@@ -7,7 +7,7 @@ import "@material/mwc-select";
 import "@material/mwc-slider";
 import "@material/mwc-switch";
 import {
-  controlBinder as binder,
+  binderRegistry,
   controlValidator as validator
 } from "a-wc-form-binder";
 import { patternValidator } from 'a-wc-form-binder/src/lib/validators/pattern.js';
@@ -72,10 +72,10 @@ function inputValue(controlId, value) {
 
 describe("form-binder binding tests", () => {
   before(() => {
-    binder.add(...Object.values(binders));
+    binderRegistry.add(...Object.values(binders));
   });
   after(() => {
-    binder.remove(...Object.values(binders));
+    binderRegistry.remove(...Object.values(binders));
   });
   afterEach(() => {
     document

@@ -18,13 +18,10 @@ Example:
 ```
 Next we bind data and event listeners to the form just like we would with the form-binder. See AWC Form Binder for more information.
 ```js
-import {
-  controlBinder as binder,
-  controlBinders as binders
-} from 'a-wc-form-layout/src/index.js';
+import { binderRegistry, binders } from 'a-wc-form-layout/src/index.js';
 
 // And the control binders you wish to use. These can be custom.
-binder.add(...Object.values(binders));
+binderRegistry.add(...Object.values(binders));
 
 const formBinder = document.querySelector('form-layout');
 
@@ -243,7 +240,7 @@ formBinder.layout = {
 <!-- ## Material Web Component control binders
 
 ```js
-import { controlBinder as binder } from "a-wc-form-binder";
+import { binderRegistry } from "a-wc-form-binder";
 
 // import Material Web Component control binders
 import 'a-wc-form-binders-mwc/src/lib/control-binders.js';
@@ -267,7 +264,7 @@ In the above code, if there was already a template called Toggle registered it w
 
 Set up data binding using a-wc-form-binder
 ```js
-import { controlBinder as binder } from "a-wc-form-layout";
+import { binderRegistry } from "a-wc-form-layout";
 
 // Create the binder
 const divToggleBinding = {
@@ -284,7 +281,7 @@ const divToggleBinding = {
 };
 
 // Register the binding:
-binder.add(divToggleBinding);
+binderRegistry.add(divToggleBinding);
 ```
 
 Add the form with data and layout

@@ -24,14 +24,11 @@ Example:
 ```
 ```js
 // Import the binder registry and the binders you which to use.
-import {
-  controlBinder as binder
-  controlBinders as binders,
-} from "a-wc-form-binder";
+import { binderRegistry, binders } from "a-wc-form-binder";
 
 // And the control binders you wish to use. These can be custom.
 // Here we're adding the binders for native HTML Form controls (INPUT, SELECT, etc.)
-binder.add(...Object.values(binders));
+binderRegistry.add(...Object.values(binders));
 
 const formBinder = document.querySelector('form-binder');
 
@@ -56,16 +53,16 @@ The process of binding is performed by control binders. These need to be registe
 ## Material Web Component control binders
 
 ```js
-import { controlBinder as binder } from "a-wc-form-binder";
+import { binderRegistry } from "a-wc-form-binder";
 
 // import Material Web Component control binders
-import { controlBinders as binders } from 'a-wc-form-binders-mwc';
+import { binders } from 'a-wc-form-binders-mwc';
 
 // Register all of the MWC control binders
-binder.add(...Object.values(binders));
+binderRegistry.add(...Object.values(binders));
 
 // Or just add specific binders
-binder.add(binders.sliderBinder)
+binderRegistry.add(binders.sliderBinder)
 ```
 
 ## Custom control binders
@@ -94,16 +91,16 @@ const divToggleBinding = {
 
 Then add it whenever you want to use it:
 ```js
-import { controlBinder as binder } from "a-wc-form-binder";
+import { binderRegistry } from "a-wc-form-binder";
 
-binder.add(divToggleBinding);
+binderRegistry.add(divToggleBinding);
 ```
 
 Control binders can also be removed when they are no longer needed:
 ```js
-import { controlBinder as binder } from "a-wc-form-binder";
+import { binderRegistry } from "a-wc-form-binder";
 
-binder.remove(divToggleBinding);
+binderRegistry.remove(divToggleBinding);
 ```
 
 NOTE: Binders are evaluated in the order they are added. The first binder with a selector that matches to control will be used to bind the control.

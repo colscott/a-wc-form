@@ -9,10 +9,10 @@
         import "a-wc-form-binder/src/components/form-binder.js";
         import "a-wc-form-binders-mwc/src/templates/controls.js";
         import "a-wc-form-json-schema/src/components/json-schema-form.js";
-        import { controlBinder as binder} from 'a-wc-form-layout';
-        import { controlBinders as binders } from '../src/index.js';
+        import { binderRegistry } from 'a-wc-form-layout';
+        import { binders } from '../src/index.js';
           
-          binder.add(...Object.values(binders));
+        binderRegistry.add(...Object.values(binders));
 
         customElements.define('test-json-ui-schema', class extends LitElement {
           /** @inheritdoc */

@@ -1,5 +1,5 @@
 import { render, html } from "lit-html";
-import { controlBinder } from "a-wc-form-binder";
+import { binderRegistry } from "a-wc-form-binder";
 import {
   getComponentTemplate,
   setComponentTemplate
@@ -40,7 +40,7 @@ const gridBinder = {
   }
 };
 
-controlBinder.add(gridBinder);
+binderRegistry.add(gridBinder);
 
 /**
  * @param {import("./layouts.js").LayoutContext<import("../lib/models.js").GridLayout>} context
@@ -91,7 +91,7 @@ const arrayBinder = {
   }
 };
 
-controlBinder.add(arrayBinder);
+binderRegistry.add(arrayBinder);
 
 /**
  * @param {import("./layouts.js").LayoutContext<import("../lib/models.js").ArrayLayout>} context

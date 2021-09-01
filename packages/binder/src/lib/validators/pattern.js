@@ -1,4 +1,4 @@
-import { controlValidator } from "../../index.js";
+import * as controlValidator from "../control-validator.js";
 
 /** @type {import('../control-validator').Validator} */
 export const patternValidator = {

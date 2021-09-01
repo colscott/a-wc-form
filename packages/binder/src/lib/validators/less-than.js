@@ -1,4 +1,4 @@
-import { controlValidator } from "../../index.js";
+import * as controlValidator from "../control-validator.js";
 import { getValue } from "../json-pointer.js";
 
 /**

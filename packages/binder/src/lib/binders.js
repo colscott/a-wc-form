@@ -1,4 +1,4 @@
-/** @typedef {import('./control-binder').Binder} Binder */
+/** @typedef {import('./binder-registry').Binder} Binder */
 
 /** @type {Binder} */
 export const textInputBinder = {

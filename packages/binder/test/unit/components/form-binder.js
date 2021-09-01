@@ -1,8 +1,8 @@
 /* global describe, before, after, afterEach, it */
 import { expect } from "@esm-bundle/chai/esm/chai.js";
 import {
-  controlBinders as binders,
-  controlBinder as binder,
+  binderRegistry,
+  binders,
   controlValidator as validator
 } from "../../../src/index.js";
 import { patternValidator } from "../../../src/lib/validators/pattern.js";
@@ -75,13 +75,13 @@ describe("form-binder binding tests", () => {
   afterEach(() => {
     validator.remove(patternValidator);
     validator.remove(maxValidator);
-    binder.remove(...Object.values(binders));
+    binderRegistry.remove(...Object.values(binders));
     document
       .querySelectorAll("form-binder")
       .forEach(e => e.parentElement.removeChild(e));
   });
   it("Should populate controls", async () => {
-    binder.add(...Object.values(binders));
+    binderRegistry.add(...Object.values(binders));
     await createFormBinder();
     expect(document.getElementById("name").value).to.equal("Johnny Five");
     expect(document.getElementById("age").value).to.equal("34");
@@ -90,7 +90,7 @@ describe("form-binder binding tests", () => {
     expect(document.getElementById("student").checked).to.equal(true);
   });
   it("Should not change value when value is invalid", async () => {
-    binder.add(...Object.values(binders));
+    binderRegistry.add(...Object.values(binders));
     const { changes } = await createFormBinder();
     validator.add(patternValidator, true);
     validator.add(maxValidator, true);
@@ -108,7 +108,7 @@ describe("form-binder binding tests", () => {
     expect(changes.data.personalData.age).to.equal(20);
   });
   it("Should reflect changes to data", async () => {
-    binder.add(...Object.values(binders));
+    binderRegistry.add(...Object.values(binders));
     const { formBinder } = await createFormBinder();
     const dataCopy = JSON.parse(JSON.stringify(formBinder.data));
     dataCopy.name = "fred123";
@@ -122,7 +122,7 @@ describe("form-binder binding tests", () => {
   });
 
   it("Should use custom validation", async () => {
-    binder.add(...Object.values(binders));
+    binderRegistry.add(...Object.values(binders));
     const { changes } = await createFormBinder();
     inputValue("whitelist", "Bert");
     await wait();
@@ -139,7 +139,7 @@ describe("form-binder binding tests", () => {
   });
 
   it("Should be able to patch values with object", async () => {
-    binder.add(...Object.values(binders));
+    binderRegistry.add(...Object.values(binders));
     const { formBinder, changes } = await createFormBinder();
     inputValue("whitelist", "Bert");
     inputValue("age", "30");
@@ -154,7 +154,7 @@ describe("form-binder binding tests", () => {
   });
 
   it("Should be able to patch values with Map", async () => {
-    binder.add(...Object.values(binders));
+    binderRegistry.add(...Object.values(binders));
     const { formBinder, changes } = await createFormBinder();
     inputValue("whitelist", "Bert");
     inputValue("age", "30");
@@ -172,7 +172,7 @@ describe("form-binder binding tests", () => {
   });
 
   it("Should be able to reset data", async () => {
-    binder.add(...Object.values(binders));
+    binderRegistry.add(...Object.values(binders));
     const { formBinder, changes } = await createFormBinder();
     inputValue("whitelist", "Bert");
     inputValue("age", "30");

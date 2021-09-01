@@ -30,14 +30,11 @@ Example of binding data to JSON Schema generated form controls. This example doe
 #### Javascript
 See [a-wc-form-binder](https://github.com/colscott/a-wc-form/tree/master/packages/binder) package for more info on binders and validation.
 ```js
-import {
-  controlBinder as binder
-  controlBinders as binders,
-} from "a-wc-form-binder";
+import { binderRegistry binders } from "a-wc-form-binder";
 import "a-wc-form-json-schema/src/components/json-schema-control.js";
 
 // add the control binders to bind data to controls
-binder.add(...Object.values(binders));
+binderRegistry.add(...Object.values(binders));
 
 const formBinder = document.querySelector('form-binder');
 
@@ -97,14 +94,11 @@ Example showing the use of [a-wc-form-layout](https://github.com/colscott/a-wc-f
 
 #### Javascript
 ```js
-import {
-  controlBinder as binder
-  controlBinders as binders,
-} from "a-wc-form-binder";
+import { binderRegistry, binders } from "a-wc-form-binder";
 import "a-wc-form-json-schema/src/components/json-schema-form.js";
 
 // add the control binders to bind data to controls
-binder.add(...Object.values(binders));
+binderRegistry.add(...Object.values(binders));
 
 const jsonSchemaForm = document.querySelector('json-schema-form');
 

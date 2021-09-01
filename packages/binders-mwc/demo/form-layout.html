@@ -7,10 +7,10 @@
           import { layout } from 'a-wc-form-layout/demo/mock.js';
           import { schema } from "a-wc-form-json-schema/demo/mock.js";
           import { formCss } from 'a-wc-form-binder';
-          import { controlBinder as binder} from 'a-wc-form-layout';
-          import { controlBinders as binders } from '../src/index.js';
+          import { binderRegistry} from 'a-wc-form-layout';
+          import { binders } from '../src/index.js';
           
-          binder.add(...Object.values(binders));
+          binderRegistry.add(...Object.values(binders));
 
           customElements.define('test-form-layout', class extends LitElement {
             static get styles() {

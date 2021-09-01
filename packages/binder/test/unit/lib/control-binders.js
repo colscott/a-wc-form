@@ -1,17 +1,14 @@
 /* eslint-disable no-unused-expressions */
 /* global describe, before, after, it */
 import { expect } from "@esm-bundle/chai/esm/chai.js";
-import {
-  controlBinders as binders,
-  controlBinder as binder
-} from "../../../src/index.js";
+import { binderRegistry, binders } from "../../../src/index.js";
 
 describe("Custom Binders", () => {
   before(() => {
-    binder.add(...Object.values(binders));
+    binderRegistry.add(...Object.values(binders));
   });
   after(() => {
-    binder.remove(...Object.values(binders));
+    binderRegistry.remove(...Object.values(binders));
   });
   it("Should write values", () => {
     const input = document.createElement("input");

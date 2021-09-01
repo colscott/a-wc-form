@@ -1,4 +1,4 @@
-import { initialize } from "../lib/control-binder.js";
+import { initialize } from "../lib/binder-registry.js";
 import {
   filterValidationResults,
   matchingValidators,
@@ -13,8 +13,8 @@ import {
 } from "../lib/json-pointer.js";
 import { ShadowDomMutationObserver } from "../lib/observer.js";
 
-/** @typedef {import('../lib/control-binder.js').ControlBinding} ControlBinding */
-/** @typedef {import("../lib/control-binder.js").ControlElement} ControlElement */
+/** @typedef {import('../lib/control-binding.js').ControlBinding} ControlBinding */
+/** @typedef {import("../lib/binder-registry.js").ControlElement} ControlElement */
 /** @typedef {import("../lib/control-validator.js").ValidationControlResult} ValidationControlResult */
 /** @typedef {import("../lib/control-validator.js").ValidationElement} ValidationElement */
 /** @typedef {import("../lib/control-validator.js").ValidationResults} ValidationResults */

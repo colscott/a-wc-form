@@ -1,3 +1,3 @@
 import "./templates/controls.js";
 
-export * as controlBinders from "./lib/control-binders.js";
+export * as binders from "./lib/binders.js";

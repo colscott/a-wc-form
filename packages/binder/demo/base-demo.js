@@ -1,12 +1,8 @@
 import { LitElement, html, css } from "lit-element";
 import { data } from "./mock.js";
-import {
-  controlBinder as binder,
-  controlBinders as binders,
-  formCss
-} from "../src/index.js";
+import { binderRegistry, binders, formCss } from "../src/index.js";
 
-binder.add(...Object.values(binders));
+binderRegistry.add(...Object.values(binders));
 
 const errorText = {
   pattern: error => `${error.field} must begin with fred`,

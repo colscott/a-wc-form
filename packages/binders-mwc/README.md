@@ -9,13 +9,13 @@ npm i -save a-wc-form-binders-mwc
 ## Usage
 
 ```js
-import { controlBinder as binder } from "a-wc-form-binder";
+import { binderRegistry } from "a-wc-form-binder";
 
 // import Material Web Component control binders
-import { controlBinder as binders } 'a-wc-form-binders-mwc';
+import { binders } 'a-wc-form-binders-mwc';
 
 // add the binders
-binder.add(...Object.values(binders));
+binderRegistry.add(...Object.values(binders));
 
 ```
 

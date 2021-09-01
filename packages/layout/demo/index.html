@@ -6,12 +6,9 @@
           import { data } from 'a-wc-form-binder/demo/mock.js';
           import { formCss } from 'a-wc-form-binder';
           import { layout } from './mock.js';
-          import {
-            controlBinder as binder,
-            controlBinders as binders,
-          } from '../src/index.js';
+          import { binderRegistry, binders } from '../src/index.js';
           
-          binder.add(...Object.values(binders));
+          binderRegistry.add(...Object.values(binders));
 
           customElements.define('test-form-layout', class extends LitElement {
             static get styles() {

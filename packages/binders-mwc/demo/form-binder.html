@@ -3,16 +3,16 @@
     <head>
         <script type="module">
           import { LitElement, html, css } from 'lit-element';
-          import { controlBinder as binder, formCss } from 'a-wc-form-binder';
+          import { binderRegistry, formCss } from 'a-wc-form-binder';
           import { data } from 'a-wc-form-binder/demo/mock.js';
           import { schema } from "a-wc-form-json-schema/demo/mock.js";
-          import { controlBinders as binders } from '../src/index.js';
+          import { binders } from '../src/index.js';
           import '@material/mwc-checkbox';
           import '@material/mwc-textfield';
           import '@material/mwc-slider';
           import '@material/mwc-switch';
 
-          binder.add(...Object.values(binders));
+          binderRegistry.add(...Object.values(binders));
 
           customElements.define('test-form-binder', class extends LitElement {
             static get styles() {

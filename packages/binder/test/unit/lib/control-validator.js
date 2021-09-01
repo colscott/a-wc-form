@@ -2,8 +2,8 @@
 /* global describe, after, afterEach, beforeEach, it */
 import { expect } from "@esm-bundle/chai/esm/chai.js";
 import {
-  controlBinder as binder,
-  controlBinders as binders,
+  binderRegistry,
+  binders,
   controlValidator as validator
 } from "../../../src/index.js";
 import { data } from "../../../demo/mock.js";
@@ -74,13 +74,13 @@ export function standupValidatorTest(...validatorsToTest) {
   });
 
   beforeEach(() => {
-    binder.add(binders.numberInputBinder);
-    binder.add(binders.textInputBinder);
+    binderRegistry.add(binders.numberInputBinder);
+    binderRegistry.add(binders.textInputBinder);
   });
 
   afterEach(() => {
-    binder.remove(binders.textInputBinder);
-    binder.remove(binders.numberInputBinder);
+    binderRegistry.remove(binders.textInputBinder);
+    binderRegistry.remove(binders.numberInputBinder);
     document
       .querySelectorAll("form-binder")
       .forEach(e => e.parentElement.removeChild(e));
