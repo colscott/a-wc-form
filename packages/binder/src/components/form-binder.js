@@ -3,7 +3,7 @@ import {
   filterValidationResults,
   matchingValidators,
   add
-} from "../lib/control-validator.js";
+} from "../lib/validator-registry.js";
 import * as validators from "../lib/validators/index.js";
 import {
   getValue,
@@ -15,10 +15,10 @@ import { ShadowDomMutationObserver } from "../lib/observer.js";
 
 /** @typedef {import('../lib/control-binding.js').ControlBinding} ControlBinding */
 /** @typedef {import("../lib/binder-registry.js").ControlElement} ControlElement */
-/** @typedef {import("../lib/control-validator.js").ValidationControlResult} ValidationControlResult */
-/** @typedef {import("../lib/control-validator.js").ValidationElement} ValidationElement */
-/** @typedef {import("../lib/control-validator.js").ValidationResults} ValidationResults */
-/** @typedef {import("../lib/control-validator.js").FormValidationResult} FormValidationResult */
+/** @typedef {import("../lib/validator-registry.js").ValidationControlResult} ValidationControlResult */
+/** @typedef {import("../lib/validator-registry.js").ValidationElement} ValidationElement */
+/** @typedef {import("../lib/validator-registry.js").ValidationResults} ValidationResults */
+/** @typedef {import("../lib/validator-registry.js").FormValidationResult} FormValidationResult */
 
 // Add built-in validators
 // eslint-disable-next-line guard-for-in,no-restricted-syntax

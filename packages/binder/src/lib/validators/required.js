@@ -1,14 +1,9 @@
-import * as controlValidator from "../control-validator.js";
+import { ValidationResult } from "../validation-result.js";
 
-/** @type {import('../control-validator').Validator} */
+/** @type {import('../validator-registry').Validator} */
 export const requiredValidator = {
   controlSelector: "[required]",
   validate: (control, value, data) => {
-    return new controlValidator.ValidationResult(
-      "required",
-      true,
-      value,
-      !!value
-    );
+    return new ValidationResult("required", true, value, !!value);
   }
 };

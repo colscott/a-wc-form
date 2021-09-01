@@ -1,6 +1,6 @@
-import * as controlValidator from "../control-validator.js";
+import { ValidationResult } from "../validation-result.js";
 
-/** @type {import('../control-validator').Validator} */
+/** @type {import('../validator-registry').Validator} */
 export const maxLengthValidator = {
   controlSelector: "[maxlength],[max-length]",
   validate: (control, value, data) => {
@@ -11,7 +11,7 @@ export const maxLengthValidator = {
       10
     );
     const valueLength = value.toString().length;
-    const result = new controlValidator.ValidationResult(
+    const result = new ValidationResult(
       "max-length",
       maxLengthValue,
       valueLength,

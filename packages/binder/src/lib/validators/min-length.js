@@ -1,6 +1,6 @@
-import * as controlValidator from "../control-validator.js";
+import { ValidationResult } from "../validation-result.js";
 
-/** @type {import('../control-validator').Validator} */
+/** @type {import('../validator-registry').Validator} */
 export const minLengthValidator = {
   controlSelector: "[minlength],[min-length]",
   validate: (control, value, data) => {
@@ -11,7 +11,7 @@ export const minLengthValidator = {
       10
     );
     const valueLength = value.toString().length;
-    return new controlValidator.ValidationResult(
+    return new ValidationResult(
       "min-length",
       minLengthValue,
       valueLength,

@@ -4,7 +4,8 @@ import { expect } from "@esm-bundle/chai/esm/chai.js";
 import {
   binderRegistry,
   binders,
-  controlValidator as validator
+  validatorRegistry,
+  ValidationResult,
 } from "../../../src/index.js";
 import { data } from "../../../demo/mock.js";
 import { wait } from "../components/form-binder.js";
@@ -24,7 +25,7 @@ export async function createFormBinder() {
     <input id="height" type="number" bind="#/personalData/height" />
   `;
   formBinder.addEventListener("form-binder:report-validity", e => {
-    /** @type {import('../../../src/lib/control-validator').FormValidationResult} */
+    /** @type {import('../../../src/lib/validator-registry').FormValidationResult} */
     const { errors, isValid, result } = e.detail;
     errors
       // .filter(controlValidationResult => controlValidationResult.visited)
@@ -45,31 +46,31 @@ export async function createFormBinder() {
   return formBinder;
 }
 
-/** @type {import('../../../src/lib/control-validator').Validator} */
+/** @type {import('../../../src/lib/validator-registry').Validator} */
 const validateLowerCase = {
   controlSelector: "[lower-case]",
   validate: (control, value) => {
     const result = /^[a-z]*$/.test(value);
-    return new validator.ValidationResult("lower-case", true, result, result);
+    return new ValidationResult("lower-case", true, result, result);
   }
 };
 
-/** @type {import('../../../src/lib/control-validator').Validator} */
+/** @type {import('../../../src/lib/validator-registry').Validator} */
 const validateVowelsOnly = {
   controlSelector: "[vowels-only]",
   validate: (control, value) => {
     const result = /^[a|e|i|o|u]*$/.test(value);
-    return new validator.ValidationResult("vowels-only", true, result, result);
+    return new ValidationResult("vowels-only", true, result, result);
   }
 };
 
 /**
- * @param {...import('../../../src/lib/control-validator').Validator} validatorsToTest being tested
+ * @param {...import('../../../src/lib/validator-registry').Validator} validatorsToTest being tested
  */
 export function standupValidatorTest(...validatorsToTest) {
   after(() => {
     validatorsToTest.forEach(validatorToTest =>
-      validator.remove(validatorToTest)
+      validatorRegistry.remove(validatorToTest)
     );
   });
 
@@ -94,7 +95,7 @@ describe("Custom validators", () => {
     const formBinder = await createFormBinder();
     const input = document.getElementById("name");
     expect(await formBinder.checkValidity()).to.be.true;
-    validator.add(validateLowerCase);
+    validatorRegistry.add(validateLowerCase);
     expect(await formBinder.checkValidity()).to.be.true;
     input.setAttribute("lower-case", "");
     expect(await formBinder.checkValidity()).to.be.false;
@@ -102,12 +103,12 @@ describe("Custom validators", () => {
     expect(await formBinder.checkValidity()).to.be.true;
     input.setAttribute("lower-case", "");
     expect(await formBinder.checkValidity()).to.be.false;
-    validator.remove(validateLowerCase);
+    validatorRegistry.remove(validateLowerCase);
     expect(await formBinder.checkValidity()).to.be.true;
     input.setAttribute("lower-case", "");
-    validator.add(validateVowelsOnly);
+    validatorRegistry.add(validateVowelsOnly);
     expect(await formBinder.checkValidity()).to.be.true;
-    validator.remove(validateVowelsOnly);
+    validatorRegistry.remove(validateVowelsOnly);
   });
 
   it("Should correctly report invalid state", async () => {
@@ -115,7 +116,7 @@ describe("Custom validators", () => {
     const input = document.getElementById("name");
     await wait();
     expect(input.validationMessage).to.equal("");
-    validator.add(validateLowerCase);
+    validatorRegistry.add(validateLowerCase);
     await wait();
     expect(input.validationMessage).to.equal("");
     input.setAttribute("lower-case", "");

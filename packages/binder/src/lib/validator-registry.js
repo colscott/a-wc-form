@@ -1,3 +1,4 @@
+/** @typedef {import('./validation-result').ValidationResult} ValidationResult */
 /** @typedef {Element} ValidationElement */
 /** @typedef {Array<ValidationResult>} ValidationResults */
 /**
@@ -19,7 +20,7 @@
  */
 
 /** @type {Array<Validator>} */
-const validators = [];
+const validatorRegistry = [];
 
 /**
  * @param {Validator} validator
@@ -27,17 +28,17 @@ const validators = [];
  */
 export function add(validator, addToBeginning) {
   if (addToBeginning === true) {
-    validators.unshift(validator);
+    validatorRegistry.unshift(validator);
   } else {
-    validators.push(validator);
+    validatorRegistry.push(validator);
   }
 }
 
 /** @param {Validator} validator to remove */
 export function remove(validator) {
-  const index = validators.findIndex(b => b === validator);
+  const index = validatorRegistry.findIndex(b => b === validator);
   if (index > -1) {
-    validators.splice(index, 1);
+    validatorRegistry.splice(index, 1);
   }
 }
 
@@ -46,7 +47,7 @@ export function remove(validator) {
  * @returns {Array<Validator>} matching validators
  */
 export function matchingValidators(control) {
-  return validators.filter(v => control.matches(v.controlSelector));
+  return validatorRegistry.filter(v => control.matches(v.controlSelector));
 }
 
 /**
@@ -71,29 +72,4 @@ export function filterValidationResults(validationResult, predicate) {
   });
 
   return result;
-}
-
-/**
- * @template TValue
- * Validity object
- */
-export class ValidationResult {
-  /**
-   * @param {string} name of the validator
-   * @param {TValue} expected value
-   * @param {TValue} actual value
-   * @param {boolean} valid is valid or not
-   */
-  constructor(name, expected, actual, valid) {
-    /** @type {string} */
-    this.name = name;
-    /** @type {TValue} */
-    this.expected = expected;
-    /** @type {TValue} */
-    this.actual = actual;
-    /** @type {boolean} */
-    this.valid = valid;
-    /** @type {string} */
-    this.field = null;
-  }
 }

@@ -1,3 +1,6 @@
+/** @typedef {import("./binder-registry").ControlElement} ControlElement */
+/** @typedef {import("./binder-registry").Binder} Binder */
+
 /** */
 export class ControlBinding {
   /** @returns {Binder} */

@@ -1,5 +1,5 @@
 import { getValue } from "../json-pointer.js";
-import * as controlValidator from "../control-validator.js";
+import { ValidationResult } from "../validation-result.js";
 
 /**
  * @param {string} string to test is date
@@ -8,13 +8,13 @@ import * as controlValidator from "../control-validator.js";
 const isIsoDate = string =>
   /\d{4}-\d{2}-\d{2}.*/.test(string) && isNaN(Date.parse(string)) === false;
 
-/** @type {import('../control-validator').Validator} */
+/** @type {import('../validator-registry').Validator} */
 export const greaterThanValidator = {
   controlSelector: "[greater-than]",
   validate: (control, value, data) => {
     const otherField = control.getAttribute("greater-than");
 
-    return new controlValidator.ValidationResult(
+    return new ValidationResult(
       "greater-than",
       otherField,
       value,

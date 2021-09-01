@@ -3,7 +3,8 @@ import { expect } from "@esm-bundle/chai/esm/chai.js";
 import {
   binderRegistry,
   binders,
-  controlValidator as validator
+  validatorRegistry,
+  ValidationResult
 } from "../../../src/index.js";
 import { patternValidator } from "../../../src/lib/validators/pattern.js";
 import { maxValidator } from "../../../src/lib/validators/max.js";
@@ -36,18 +37,13 @@ async function createFormBinder() {
   return { formBinder, changes };
 }
 
-/** @type {import('../../../src/lib/control-validator').Validator} */
+/** @type {import('../../../src/lib/validator-registry').Validator} */
 const validateTextInput = {
   controlSelector: "input[whitelist]",
   validate: (control, value, data) => {
     const whitelist = control.getAttribute("whitelist").split(",");
     const isValid = whitelist.some(v => v === value);
-    return new validator.ValidationResult(
-      "whitelist",
-      whitelist,
-      value,
-      isValid
-    );
+    return new ValidationResult("whitelist", whitelist, value, isValid);
   }
 };
 
@@ -67,14 +63,14 @@ function inputValue(controlId, value) {
 
 describe("form-binder binding tests", () => {
   before(() => {
-    validator.add(validateTextInput, true);
+    validatorRegistry.add(validateTextInput, true);
   });
   after(() => {
-    validator.remove(validateTextInput, true);
+    validatorRegistry.remove(validateTextInput, true);
   });
   afterEach(() => {
-    validator.remove(patternValidator);
-    validator.remove(maxValidator);
+    validatorRegistry.remove(patternValidator);
+    validatorRegistry.remove(maxValidator);
     binderRegistry.remove(...Object.values(binders));
     document
       .querySelectorAll("form-binder")
@@ -92,15 +88,15 @@ describe("form-binder binding tests", () => {
   it("Should not change value when value is invalid", async () => {
     binderRegistry.add(...Object.values(binders));
     const { changes } = await createFormBinder();
-    validator.add(patternValidator, true);
-    validator.add(maxValidator, true);
+    validatorRegistry.add(patternValidator, true);
+    validatorRegistry.add(maxValidator, true);
     inputValue("name", "Bert");
     inputValue("age", "300");
     await wait();
     expect(changes.data.name).to.equal("Johnny Five");
     expect(changes.data.personalData.age).to.equal(34);
-    validator.remove(patternValidator);
-    validator.remove(maxValidator);
+    validatorRegistry.remove(patternValidator);
+    validatorRegistry.remove(maxValidator);
     inputValue("name", "Fred");
     inputValue("age", "20");
     await wait();

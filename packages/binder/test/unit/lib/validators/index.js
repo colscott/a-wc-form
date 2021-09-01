@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* global describe, it */
 import { expect } from "@esm-bundle/chai/esm/chai.js";
-import { controlValidator as validator } from "../../../../src/index.js";
+import { validatorRegistry } from "../../../../src/index.js";
 import * as validators from "../../../../src/lib/validators/index.js";
 import {
   createFormBinder,
@@ -20,7 +20,7 @@ describe("validation - greater-than", () => {
     inputHeight.value = 50;
     inputHeight.dispatchEvent(new Event("change"));
     expect(await formBinder.checkValidity()).to.be.true;
-    validator.add(validators.greaterThanValidator);
+    validatorRegistry.add(validators.greaterThanValidator);
     expect(await formBinder.checkValidity()).to.be.true;
     inputAge.setAttribute("greater-than", "#/personalData/height");
     expect(await formBinder.checkValidity()).to.be.false;
@@ -42,7 +42,7 @@ describe("validation - less-than", () => {
     inputHeight.value = 20;
     inputHeight.dispatchEvent(new Event("change"));
     expect(await formBinder.checkValidity()).to.be.true;
-    validator.add(validators.lessThanValidator);
+    validatorRegistry.add(validators.lessThanValidator);
     expect(await formBinder.checkValidity()).to.be.true;
     inputAge.setAttribute("less-than", "#/personalData/height");
     expect(await formBinder.checkValidity()).to.be.false;
@@ -61,7 +61,7 @@ describe("validation - max-length", () => {
     inputName.value = "Fred Blogs";
     inputName.dispatchEvent(new Event("change"));
     expect(await formBinder.checkValidity()).to.be.true;
-    validator.add(validators.maxLengthValidator);
+    validatorRegistry.add(validators.maxLengthValidator);
     expect(await formBinder.checkValidity()).to.be.true;
     inputName.setAttribute("max-length", "8");
     expect(await formBinder.checkValidity()).to.be.false;
@@ -80,7 +80,7 @@ describe("validation - min-length", () => {
     inputName.value = "Fred Blogs";
     inputName.dispatchEvent(new Event("change"));
     expect(await formBinder.checkValidity()).to.be.true;
-    validator.add(validators.minLengthValidator);
+    validatorRegistry.add(validators.minLengthValidator);
     expect(await formBinder.checkValidity()).to.be.true;
     inputName.setAttribute("min-length", "11");
     expect(await formBinder.checkValidity()).to.be.false;
@@ -99,7 +99,7 @@ describe("validation - max", () => {
     inputAge.value = "20";
     inputAge.dispatchEvent(new Event("change"));
     expect(await formBinder.checkValidity()).to.be.true;
-    validator.add(validators.maxValidator);
+    validatorRegistry.add(validators.maxValidator);
     expect(await formBinder.checkValidity()).to.be.true;
     inputAge.setAttribute("max", "18");
     expect(await formBinder.checkValidity()).to.be.false;
@@ -118,7 +118,7 @@ describe("validation - min", () => {
     inputAge.value = "16";
     inputAge.dispatchEvent(new Event("change"));
     expect(await formBinder.checkValidity()).to.be.true;
-    validator.add(validators.maxValidator);
+    validatorRegistry.add(validators.maxValidator);
     expect(await formBinder.checkValidity()).to.be.true;
     inputAge.setAttribute("min", "18");
     expect(await formBinder.checkValidity()).to.be.false;
@@ -137,7 +137,7 @@ describe("validation - pattern", () => {
     inputName.value = "Fred Blogs";
     inputName.dispatchEvent(new Event("change"));
     expect(await formBinder.checkValidity()).to.be.true;
-    validator.add(validators.patternValidator);
+    validatorRegistry.add(validators.patternValidator);
     expect(await formBinder.checkValidity()).to.be.true;
     inputName.setAttribute("pattern", "^[a-z|\\s]*$");
     expect(await formBinder.checkValidity()).to.be.false;
@@ -156,7 +156,7 @@ describe("validation - required", () => {
     inputName.value = "";
     inputName.dispatchEvent(new Event("change"));
     expect(await formBinder.checkValidity()).to.be.true;
-    validator.add(validators.requiredValidator);
+    validatorRegistry.add(validators.requiredValidator);
     expect(await formBinder.checkValidity()).to.be.true;
     inputName.setAttribute("required", "");
     expect(await formBinder.checkValidity()).to.be.false;

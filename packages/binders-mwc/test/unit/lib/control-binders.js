@@ -8,13 +8,13 @@ import "@material/mwc-slider";
 import "@material/mwc-switch";
 import {
   binderRegistry,
-  controlValidator as validator
+  validatorRegistry as validator
 } from "a-wc-form-binder";
-import { patternValidator } from 'a-wc-form-binder/src/lib/validators/pattern.js';
-import { maxValidator } from 'a-wc-form-binder/src/lib/validators/max.js';
+import { patternValidator } from "a-wc-form-binder/src/lib/validators/pattern.js";
+import { maxValidator } from "a-wc-form-binder/src/lib/validators/max.js";
 import { expect } from "@esm-bundle/chai/esm/chai.js";
 import { data as mockData } from "a-wc-form-binder/demo/mock.js";
-import { controlBinders as binders } from "a-wc-form-binders-mwc";
+import { binders } from "a-wc-form-binders-mwc";
 
 /** @returns {import('../../../src/components/form-binder.js').FormBinder} */
 async function createFormBinder() {

@@ -1,10 +1,10 @@
-import * as controlValidator from "../control-validator.js";
+import { ValidationResult } from "../validation-result.js";
 
-/** @type {import('../control-validator').Validator} */
+/** @type {import('../validator-registry').Validator} */
 export const minValidator = {
   controlSelector: "[min]",
   validate: (control, value, data) => {
     const minValue = parseInt(control.getAttribute("min"), 10);
-    return new controlValidator.ValidationResult("min", minValue, value, value >= minValue);
+    return new ValidationResult("min", minValue, value, value >= minValue);
   }
 };

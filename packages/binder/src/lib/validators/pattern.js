@@ -1,11 +1,11 @@
-import * as controlValidator from "../control-validator.js";
+import { ValidationResult } from "../validation-result.js";
 
-/** @type {import('../control-validator').Validator} */
+/** @type {import('../validator-registry').Validator} */
 export const patternValidator = {
   controlSelector: "[pattern]",
   validate: (control, value, data) => {
     const patternValue = control.getAttribute("pattern");
-    return new controlValidator.ValidationResult(
+    return new ValidationResult(
       "pattern",
       patternValidator,
       value,

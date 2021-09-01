@@ -1,4 +1,4 @@
-import * as controlValidator from "../control-validator.js";
+import { ValidationResult } from "../validation-result.js";
 import { getValue } from "../json-pointer.js";
 
 /**
@@ -6,15 +6,15 @@ import { getValue } from "../json-pointer.js";
  * @returns {boolean} f string is date like
  */
 const isIsoDate = string =>
-/\d{4}-\d{2}-\d{2}.*/.test(string) && isNaN(Date.parse(string)) === false;
+  /\d{4}-\d{2}-\d{2}.*/.test(string) && isNaN(Date.parse(string)) === false;
 
-/** @type {import('../control-validator').Validator} */
+/** @type {import('../validator-registry').Validator} */
 export const lessThanValidator = {
   controlSelector: "[less-than]",
   validate: (control, value, data) => {
     const otherField = control.getAttribute("less-than");
 
-    return new controlValidator.ValidationResult(
+    return new ValidationResult(
       "less-than",
       otherField,
       value,
