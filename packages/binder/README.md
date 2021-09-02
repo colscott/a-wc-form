@@ -111,8 +111,8 @@ form-binder loosely implements the HTML5 constraint validation methods checkVali
 
 ```js
 const formBinder = document.querySelector('form-binder');
-formBinder.checkValidity(); // Returns a boolean if form is valid or not
-formBinder.reportValidity(); // Returns a FormValidationResult and give a message to the user if invalid
+await formBinder.checkValidity(); // Returns a Promise<boolean> if form is valid or not
+await formBinder.reportValidity(); // Returns a Promise<FormValidationResult> and give a message to the user if invalid
 ```
 
 ## Handling and displaying errors
@@ -199,7 +199,7 @@ Validates that a controls value is required and can not be falsy.
 
 ## Custom Validation
 
-As well as trying to use native constraint validation, form-binder allows for custom validation. Just like the control binders, validators can be registered that target controls by CSS selector.
+Form-binder allows for custom validation. Just like the control binders, validators can be registered that target controls by CSS selector.
 
 A single control validator is made up of the following parts:
 - CSS Selector that maps the binder to the controllers to validate
@@ -208,27 +208,27 @@ A single control validator is made up of the following parts:
 Example validator:
 
 ```js
-import { controlValidator } from "a-wc-form-binder";
+import { ValidationResult, validatorRegistry } from "a-wc-form-binder";
 
 // Define the validator
 const validateLowerCase = {
   controlSelector: "[lower-case]",
   validate: (control, value) => {
     const result = /^[a-z]*$/.test(value);
-    return new controlValidator.ValidationResult("lower-case", true, result, result);
+    return new ValidationResult("lower-case", true, result, result);
   }
 };
 
 // register the validator
-controlValidator.add(validateLowerCase);
+validatorRegistry.add(validateLowerCase);
 
 // unregister the validator if no longer needed
-controlValidator.remove(validateLowerCase);
+validatorRegistry.remove(validateLowerCase);
 ```
 ## Custom cross-field validation
 Below is an example of validation that uses another field in calculating validity:
 ```js
-import { controlValidator } from "a-wc-form-binder";
+import { validatorRegistry, ValidationResult } from "a-wc-form-binder";
 
 // Define the greater than validator
 const greaterThanValidator = {
@@ -244,7 +244,7 @@ const greaterThanValidator = {
       isValid = new Date(value) > new Date(otherValue);
     }
 
-    return new controlValidator.ValidationResult(
+    return new ValidationResult(
       "greater-than",
       otherField,
       value,
@@ -254,7 +254,7 @@ const greaterThanValidator = {
 };
 
 // register the validator
-controlValidator.add(greaterThanValidator);
+validatorRegistry.add(greaterThanValidator);
 
 ```
 
@@ -268,14 +268,14 @@ Usage:
 form-binder also supports asynchronous validator results. Simply return a Promise from Validator validate function.
 Example that asynchronously checks the value equals 'foobar'.
 ```js
-import { controlValidator } from "a-wc-form-binder";
+import { validatorRegistry, ValidationResult } from "a-wc-form-binder";
 
 // Define the greater than validator
 const asyncValidator = {
   controlSelector: "[async-validator-foobar]",
   validate: (control, value, data) => {
     return new Promise(resolve => {
-      resolve(new controlValidator.ValidationResult(
+      resolve(new ValidationResult(
       "async-validator-foobar",
       "foobar",
       value,
@@ -286,7 +286,7 @@ const asyncValidator = {
 };
 
 // register the validator
-controlValidator.add(asyncValidator);
+validatorRegistry.add(asyncValidator);
 
 ```
 
