@@ -3,11 +3,11 @@ Simple to use web component that binds data to form controls with validation.
 
 ## Usage
 
-Install core package which includes HTML standard control binders:
+Install core package which includes standard HTML Input control binders:
 ```cmd
 npm i -save a-wc-form-binder
 ```
-Optional Material Web Component binders:
+Optional package with Material Web Component control binders:
 ```cmd
 npm i -save a-wc-form-binders-mwc
 ```
@@ -15,10 +15,10 @@ npm i -save a-wc-form-binders-mwc
 Example:
 ```html
 <form-binder>
-  <!-- controls are bound to data by assigning JSON pointers to the name of the control -->
+  <!-- Controls are bound to data by assigning a JSON pointer to the bind attribute of the control -->
   <input bind="/name/first" min-length="3" />
   <input bind="/name/second" />
-  <!-- Even custom controls can be bound to data by name so long as a custom binder is defined to handle the case. More on custom control binders later. -->
+  <!-- Anything can be bound to data by JSON pointer as long as a custom binder is defined to handle the case. More on custom control binders later. -->
   <div bind="/name/first"></div>
 </form-binder>
 ```
@@ -65,13 +65,13 @@ formBinder.addEventListener('form-binder:report-validity', event => {
 ```
 
 Form-binder takes a JSON data object as input and outputs a CustomEvent (form-binder:change) that contains a copy of the data with any changes made it.
-Form controls are bound to the data by setting the name of the form control as a JSON pointer to the data.
+Form controls are bound to the data by setting the bind attribute of the form control as a JSON pointer to the data.
 
 NOTE: The data input must serialize to valid JSON. The form binder works on a copy of the data. The copy is made using the native JSON API (stringify+parse).
 
 ## Binders
 
-The process of binding is performed by control binders. These need to be registered. When a binder is registered it is done so with a CSS selector. Any control that matches the selector will use that binder for binding (see Custom control binders below for examples). a-wc-form-binder package contains binders for standard HTML form elements (input, select, text-area). To bind other controls you'll need custom binders. See the a-wc-binders-mwc for Material Web Component binders.
+The process of binding is performed by binders. These need to be registered. When a binder is registered it is done so with a CSS selector. Any control that matches the CSS selector will use that binder for binding (see Custom control binders below for examples). a-wc-form-binder package includes binders for standard HTML form elements (input, select, text-area). To bind other controls you will need custom binders. See the a-wc-binders-mwc for Material Web Component binders.
 
 ## Material Web Component control binders
 
@@ -90,13 +90,13 @@ binderRegistry.add(binders.sliderBinder)
 
 ## Custom control binders
 
-The process of binding data to controllers needs to be defined and implemented. This is done through control binders.
-A single control binder is made up of the following parts:
-- CSS Selector that maps the binder to the controls
+The process of binding data to controllers needs to be defined and implemented. This is done through binders.
+A single binder is made up of the following parts:
+- CSS Selector (controlSelector) that maps the binder to the controls. If a binder matches a control then a control binding is created
 - A function (initializeEvents) to listen to value changes on the control, and pass the new data values to an onChange callback
 - A function (writeValue) to write a value to the control
 
-Here's an example binder for a using a DIV element as boolean toggle when it is clicked:
+Here is an example binder for a using a DIV element as boolean toggle when it is clicked:
 
 ```js
 const divToggleBinding = {
@@ -126,7 +126,7 @@ import { binderRegistry } from "a-wc-form-binder";
 binderRegistry.remove(divToggleBinding);
 ```
 
-NOTE: Binders are evaluated in the order they are added. The first binder with a selector that matches to control will be used to bind the control.
+NOTE: Binders are evaluated in the order they are added. The first binder with a selector that matches a control will be used to create a control binding.
 
 ## Validation
 
@@ -225,7 +225,7 @@ Validates that a controls value is required and can not be falsy.
 Form-binder allows for custom validation. Just like the control binders, validators can be registered that target controls by CSS selector.
 
 A single control validator is made up of the following parts:
-- CSS Selector that maps the binder to the controllers to validate
+- CSS Selector (controlSelector) that maps the binder to the controllers to validate
 - A function (validate) to check if the control value is valid or not and returns a ValidationResult
 
 Example validator:
@@ -245,7 +245,7 @@ const validateLowerCase = {
 // register the validator
 validatorRegistry.add(validateLowerCase);
 
-// unregister the validator if no longer needed
+// un-register the validator if no longer needed
 validatorRegistry.remove(validateLowerCase);
 ```
 ## Custom cross-field validation
@@ -258,14 +258,8 @@ const greaterThanValidator = {
   controlSelector: "[greater-than]",
   validate: (control, value, data) => {
     const otherField = control.getAttribute("greater-than");
-    let isValid = false;
     const otherValue = getValue(data, otherField);
-    if (typeof value === "number") {
-      isValid = value > otherValue;
-    }
-    if (isIsoDate(value) && isIsoDate(otherValue)) {
-      isValid = new Date(value) > new Date(otherValue);
-    }
+    const isValid = value > otherValue;
 
     return new ValidationResult(
       "greater-than",
@@ -298,12 +292,12 @@ const asyncValidator = {
   controlSelector: "[async-validator-foobar]",
   validate: (control, value, data) => {
     return new Promise(resolve => {
-      resolve(new ValidationResult(
-      "async-validator-foobar",
-      "foobar",
-      value,
-      "foobar" === value
-    ));
+      setTimeout(() => resolve(new ValidationResult(
+        "async-validator-foobar",
+        "foobar",
+        value,
+        "foobar" === value
+      )));
     });
   }
 };
