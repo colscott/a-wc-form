@@ -67,9 +67,7 @@ export class FormBinder extends HTMLElement {
   /** @param {object} data to bind to the form controls. A copy of the data is taken. */
   set data(data) {
     this._data = JSON.parse(JSON.stringify(data));
-    if (!this._originalData) {
-      this._originalData = JSON.parse(JSON.stringify(data));
-    }
+    this._originalData = JSON.parse(JSON.stringify(data));
     this.updateControlValues();
   }
 
