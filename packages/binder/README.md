@@ -51,7 +51,7 @@ formBinder.data = {
   name: { first: 'fred', second: 'bar' }
 }
 
-// Reset the form data back to the original values
+// Revert any user changes or patches made to the data
 formBinder.reset();
 
 // Listen for and display validation errors
@@ -60,7 +60,7 @@ formBinder.addEventListener('form-binder:report-validity', event => {
   const { errors, isValid, result } = event.detail;
   console.info(errors);
   // Here you would translate and display errors
-  // More in-depth example later in [Handling and displaying errors](#handling-and-displaying-errors)
+  // More in-depth example later in Handling and displaying errors
 });
 ```
 
@@ -324,7 +324,7 @@ validatorRegistry.add(asyncValidator);
 | ---- | ---- | ----------- |
 | getControls | Array<Element> | Gets the controls that have been bound to the form |
 | patch | void | Can be passed partial data to update parts of the data model. Pass an Object that has the same structure as the data model to be changed bu only the properties you want to update are present. Alternatively, you can pass a Map\<string, unknown> where the key is JSON pointer to the data item and the key is the value to set. |
-| reset | void | Resets the form data back to its initial value. |
+| reset | void | Reverts any user changes or patches made to the data. |
 | addControl | void | Can be called to manually bind a control to a form. |
 | updateControlValue | void | Manually updates a control with the value in the data. Triggers reportValidity if the user has visited/touched the control. |
 | updateControlValues | void | Manually updates all bound controls with the value in the data. Triggers reportValidity if the user has visited/touched the control. |
