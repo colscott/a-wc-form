@@ -16,7 +16,7 @@ Example:
 ```html
 <form-binder>
   <!-- controls are bound to data by assigning JSON pointers to the name of the control -->
-  <input bind="/name/first" />
+  <input bind="/name/first" min-length="3" />
   <input bind="/name/second" />
   <!-- Even custom controls can be bound to data by name so long as a custom binder is defined to handle the case. More on custom control binders later. -->
   <div bind="/name/first"></div>
@@ -39,6 +39,29 @@ formBinder.data = {
 
 // Listen for changes to the data
 formBinder.addEventListener('form-binder:change', e => console.info(e.detail.data));
+
+// Patch data to update certain values
+formBinder.patch({ name: { first: 'fred' }});
+
+// Can also patch using a Map of JSON Pointers
+formBinder.patch(new Map([['/name/first', 'fred']]));
+
+// Can also set the data again
+formBinder.data = {
+  name: { first: 'fred', second: 'bar' }
+}
+
+// Reset the form data back to the original values
+formBinder.reset();
+
+// Listen for and display validation errors
+formBinder.addEventListener('form-binder:report-validity', event => {
+  /** @type {import('a-wc-form-binder/src/lib/control-validator').FormValidationResult} */
+  const { errors, isValid, result } = event.detail;
+  console.info(errors);
+  // Here you would translate and display errors
+  // More in-depth example later in [Handling and displaying errors](#handling-and-displaying-errors)
+});
 ```
 
 Form-binder takes a JSON data object as input and outputs a CustomEvent (form-binder:change) that contains a copy of the data with any changes made it.
