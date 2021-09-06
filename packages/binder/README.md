@@ -43,8 +43,11 @@ formBinder.addEventListener('form-binder:change', e => console.info(e.detail.dat
 // Patch data to update certain values
 formBinder.patch({ name: { first: 'fred' }});
 
-// Can also patch using a Map of JSON Pointers
+// Can also patch using a Map of JSON Pointers/values
 formBinder.patch(new Map([['/name/first', 'fred']]));
+
+// Can also patch using an Array of JSON Pointer/value Tuples
+formBinder.patch([['/name/first', 'fred']]);
 
 // Can also set the data again
 formBinder.data = {
@@ -226,7 +229,7 @@ Form-binder allows for custom validation. Just like the control binders, validat
 
 A single control validator is made up of the following parts:
 - CSS Selector (controlSelector) that maps the binder to the controllers to validate
-- A function (validate) to check if the control value is valid or not and returns a ValidationResult
+- A function (validate) to check if the control value is valid or not and returns a ValidationResult.
 
 Example validator:
 
@@ -236,9 +239,11 @@ import { ValidationResult, validatorRegistry } from "a-wc-form-binder";
 // Define the validator
 const validateLowerCase = {
   controlSelector: "[lower-case]",
-  validate: (control, value) => {
+  validate: (control, value, data) => {
     const result = /^[a-z]*$/.test(value);
-    return new ValidationResult("lower-case", true, result, result);
+    // ValidationResult params are (unique name, expected value, actual value, is valid)
+    // expected and actual values are the data values. null can be passed for expected if it is not known
+    return new ValidationResult("lower-case", null, value, result);
   }
 };
 
@@ -249,7 +254,16 @@ validatorRegistry.add(validateLowerCase);
 validatorRegistry.remove(validateLowerCase);
 ```
 ## Custom cross-field validation
+
+Let say we want to odo some cross field validation in the form:
+
+```html
+<input type="number" bind="#/from" />
+<input type="number" bind="#/to" greater-than="#/from" />
+```
+
 Below is an example of validation that uses another field in calculating validity:
+
 ```js
 import { validatorRegistry, ValidationResult } from "a-wc-form-binder";
 
@@ -273,12 +287,6 @@ const greaterThanValidator = {
 // register the validator
 validatorRegistry.add(greaterThanValidator);
 
-```
-
-Usage:
-```html
-<input type="number" bind="#/from" />
-<input type="number" bind="#/to" greater-than="#/from" />
 ```
 
 ## Asynchronous validator example
@@ -317,7 +325,7 @@ validatorRegistry.add(asyncValidator);
 | Name | Return type | Description |
 | ---- | ---- | ----------- |
 | getControls | Array<Element> | Gets the controls that have been bound to the form |
-| patch | void | Can be passed partial data to update parts of the data model. Pass an Object that has the same structure as the data model to be changed bu only the properties you want to update are present. Alternatively, you can pass a Map\<string, unknown> where the key is JSON pointer to the data item and the key is the value to set. |
+| patch | void | Can be passed partial data to update parts of the data model. Pass an Object that has the same structure as the data model to be changed bu only the properties you want to update are present. Alternatively, you can pass a Map\<string, unknown> or an Array of Tuple<string, unknown> where the key is JSON pointer to the data item and the key is the value to set. |
 | reset | void | Reverts any user changes or patches made to the data. |
 | addControl | void | Can be called to manually bind a control to a form. |
 | updateControlValue | void | Manually updates a control with the value in the data. Triggers reportValidity if the user has visited/touched the control. |
