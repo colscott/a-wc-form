@@ -24,7 +24,6 @@
     "generateTypes": "npx tsc -p d.tsconfig.json",
     "removeTypes": "rimraf ./packages/*/src/**/*d.ts",
     "prepublishOnly": "npm run generateTypes",
-    "postpublish": "npm run removeTypes",
     "start": "web-dev-server --node-resolve --preserve-symlinks",
     "test": "npm run test:unit",
     "test:coverage": "npm run test:unit -- --coverage",
