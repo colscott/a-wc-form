@@ -46,7 +46,7 @@ export const selectBinder = {
   controlSelector: "mwc-select",
   initializeEvents: (control, onChange) =>
     control.addEventListener("selected", e => {
-      /** @type {number | Set<number>} */
+      /** @type {Array<import('@material/mwc-list/mwc-list-item').ListItem>} */
       const items = e.target.multi ? e.target.selected : [e.target.selected];
       const value = items
         .filter(i => !!i)

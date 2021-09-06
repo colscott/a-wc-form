@@ -25,7 +25,7 @@ export {};
  * @typedef {object} ArrayLayout
  * @property {'ArrayLayout'} template
  * @property {object} properties
- * @property {Array<ComponentTemplate>} properties.component 
+ * @property {ComponentTemplate} properties.component 
  * @property {string} properties.ref JSON pointer to the data value that will back this control
  * @property {string} [properties.label] 
  */

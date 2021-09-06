@@ -65,7 +65,7 @@ describe("Custom Binders", () => {
   it("Should listen for select changes", done => {
     const select = document.createElement("select");
     select.innerHTML = `<option value="one">one</option><option value="two">two</option>`;
-    binders.textInputBinder.initializeEvents(select, value => {
+    binders.selectBinder.initializeEvents(select, value => {
       expect(value).to.be.equal("two");
       done();
     });

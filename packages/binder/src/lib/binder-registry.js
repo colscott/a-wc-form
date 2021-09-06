@@ -5,7 +5,7 @@ import { ControlBinding } from "./control-binding.js";
  * @typedef {Object} Binder
  * @property {string} controlSelector css selector associated with this value accessor
  * @property {function(Element, function(any):void, function():void):void} initializeEvents should be used to bind component value change events to onChange. e.g. (control, binder) => control.addEventListener('input', () => binder.onChange())
- * @property {function(Element, string):void} writeValue responsible for writing a value to the control e.g. (control, value) => control.value = value
+ * @property {function(Element, unknown):void} writeValue responsible for writing a value to the control e.g. (control, value) => control.value = value
  */
 
 /** @type {Array<Binder>} */

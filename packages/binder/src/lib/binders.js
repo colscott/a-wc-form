@@ -5,12 +5,17 @@ export const textInputBinder = {
   controlSelector: "input, textarea",
   initializeEvents: (control, onChange, onTouch) => {
     control.addEventListener("change", e => {
-      onChange(e.target.value);
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        onChange(e.target.value);
+      }
     });
     control.addEventListener("blur", () => onTouch());
   },
-  writeValue: (control, value) => {
-    control.value = value;
+  writeValue: /** @param {HTMLInputElement} control */ (control, value) => {
+    control.value = value.toString();
   }
 };
 
@@ -19,10 +24,14 @@ export const numberInputBinder = {
   controlSelector: "input[type=number]",
   initializeEvents: (control, onChange) =>
     control.addEventListener("change", e => {
-      onChange(+e.target.value);
+      if (e.target instanceof HTMLInputElement) {
+        onChange(+e.target.value);
+      }
     }),
   writeValue: (control, value) => {
-    control.value = value;
+    if (control instanceof HTMLInputElement) {
+      control.value = value.toString();
+    }
   }
 };
 
@@ -31,10 +40,14 @@ export const checkboxInputBinder = {
   controlSelector: "input[type='checkbox']",
   initializeEvents: (control, onChange) =>
     control.addEventListener("change", e => {
-      onChange(e.target.checked);
+      if (e.target instanceof HTMLInputElement) {
+        onChange(e.target.checked);
+      }
     }),
   writeValue: (control, value) => {
-    control.checked = value;
+    if (control instanceof HTMLInputElement) {
+      control.checked = !!value;
+    }
   }
 };
 
@@ -43,14 +56,16 @@ export const selectBinder = {
   controlSelector: "select",
   initializeEvents: (control, onChange) =>
     control.addEventListener("change", e => {
-      const value = Array.from(
-        /** @type {HTMLSelectElement} */ (e.target).selectedOptions
-      )
-        .map(i => i.value)
-        .join(",");
-      onChange(value);
+      if (e.target instanceof HTMLSelectElement) {
+        const value = Array.from(e.target.selectedOptions)
+          .map(i => i.value)
+          .join(",");
+        onChange(value);
+      }
     }),
   writeValue: (control, value) => {
-    control.value = value;
+    if (control instanceof HTMLSelectElement) {
+      control.value = value.toString();
+    }
   }
 };
