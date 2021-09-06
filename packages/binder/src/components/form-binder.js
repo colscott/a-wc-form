@@ -138,12 +138,18 @@ export class FormBinder extends HTMLElement {
     this._reportValidityRequested = false;
   }
 
-  /** @param {object|Map<string, unknown>} partialData that will be used to update the current form data. Can be a partial object of a Map or JSON pointers and new values. */
+  /** @typedef {Array<Array<*> & { 0: string, 1: unknown, length: 2 }>} JSONPointerValueTuple */
+  /** @param {Object.<string, unknown>|Map<string, unknown>|JSONPointerValueTuple} partialData that will be used to update the current form data. Can be a partial object of a Map or JSON pointers and new values. */
   patch(partialData) {
-    const jsonPointers =
-      partialData instanceof Map
-        ? /** @type {Map<String, unknown>} */ (partialData)
-        : objectToJsonPointers(partialData);
+    let jsonPointers;
+    if (partialData instanceof Array) {
+      jsonPointers = new Map(partialData);
+    } else if (partialData instanceof Map) {
+      jsonPointers = /** @type {Map<String, unknown>} */ (partialData);
+    } else {
+      jsonPointers = objectToJsonPointers(partialData);
+    }
+
     const registeredControlBinders = Array.from(
       this.registeredControlBinders.entries()
     ).map(entry => ({

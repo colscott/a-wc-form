@@ -1,4 +1,5 @@
 /* global describe, before, after, afterEach, it */
+// @ts-check
 import { expect } from "@esm-bundle/chai/esm/chai.js";
 import {
   binderRegistry,
@@ -159,6 +160,24 @@ describe("form-binder binding tests", () => {
     patchValues.set("/personalData/age", 40);
     patchValues.set("#/student", false);
     formBinder.patch(patchValues);
+    await wait();
+    inputValue("whitelist", "rob");
+    await wait();
+    expect(changes.data.name).to.equal("rob");
+    expect(changes.data.personalData.age).to.equal(40);
+    expect(changes.data.student).to.equal(false);
+  });
+
+  it("Should be able to patch values with JSON pointer", async () => {
+    binderRegistry.add(...Object.values(binders));
+    const { formBinder, changes } = await createFormBinder();
+    inputValue("whitelist", "Bert");
+    inputValue("age", "30");
+    await wait();
+    formBinder.patch([
+      ["/personalData/age", 40],
+      ["#/student", false]
+    ]);
     await wait();
     inputValue("whitelist", "rob");
     await wait();
