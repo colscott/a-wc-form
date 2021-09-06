@@ -46,8 +46,8 @@ export function getName(element) {
 }
 
 /**
- * @param {Element} parentElement to find children for
- * @returns {Array<Element>} found children
+ * @param {Element} parentElement to find child Element of
+ * @returns {Array<Element>} found child Elements
  */
 function getChildElements(parentElement) {
   const elements = Array.from(parentElement.querySelectorAll("*"));
