@@ -4,7 +4,7 @@ import { expect } from "@esm-bundle/chai/esm/chai.js";
 import {
   getSchemaValue,
   getValue,
-  objectToJsonPointers,
+  objectFlat,
   normalize
 } from "../../../src/lib/json-pointer.js";
 import { data } from "../../../demo/mock.js";
@@ -66,22 +66,22 @@ describe("JSON Pointer", () => {
     );
   });
 
-  it("Should convert object to JSON Pointers", () => {
+  it("Should convert object to flat JSON Pointers", () => {
     const testData = { test: { foobar: "t1", arr1: [{ test2: "t2" }, 4] } };
-    const result = objectToJsonPointers(testData);
+    const result = objectFlat(testData);
     expect(Array.from(result.keys())).to.eql([
-      "#/test/foobar",
-      "#/test/arr1/0/test2",
-      "#/test/arr1/1"
+      "/test/foobar",
+      "/test/arr1/0/test2",
+      "/test/arr1/1"
     ]);
     expect(Array.from(result.values())).to.eql(["t1", "t2", 4]);
   });
 
   it("Should normalize JSON pointer references", () => {
-    expect(normalize("foobar")).to.equal("#/foobar");
-    expect(normalize("/foobar")).to.equal("#/foobar");
-    expect(normalize("#/foobar")).to.equal("#/foobar");
+    expect(normalize("foobar")).to.equal("/foobar");
+    expect(normalize("/foobar")).to.equal("/foobar");
+    expect(normalize("#/foobar")).to.equal("/foobar");
   });
 
-  xit("Should correctly set data", async () => {});
+  // xit("Should correctly set data", async () => {});
 });

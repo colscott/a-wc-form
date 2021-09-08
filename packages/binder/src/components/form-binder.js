@@ -8,7 +8,7 @@ import * as validators from "../lib/validators/index.js";
 import {
   getValue,
   normalize,
-  objectToJsonPointers,
+  objectFlat,
   setValue
 } from "../lib/json-pointer.js";
 import { ShadowDomMutationObserver } from "../lib/observer.js";
@@ -149,7 +149,7 @@ export class FormBinder extends HTMLElement {
     } else if (partialData instanceof Map) {
       jsonPointers = /** @type {Map<String, unknown>} */ (partialData);
     } else {
-      jsonPointers = objectToJsonPointers(partialData);
+      jsonPointers = objectFlat(partialData);
     }
 
     const registeredControlBinders = Array.from(
