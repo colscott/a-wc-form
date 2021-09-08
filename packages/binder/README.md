@@ -258,8 +258,8 @@ validatorRegistry.remove(validateLowerCase);
 Let say we want to odo some cross field validation in the form:
 
 ```html
-<input type="number" bind="#/from" />
-<input type="number" bind="#/to" greater-than="#/from" />
+<input type="number" bind="/from" />
+<input type="number" bind="/to" greater-than="/from" />
 ```
 
 Below is an example of validation that uses another field in calculating validity:
