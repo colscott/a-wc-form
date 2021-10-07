@@ -163,10 +163,9 @@ export class FormBinder extends HTMLElement {
     // For each value, update the data and update the control
     jsonPointers.forEach((value, key) => {
       setValue(this.data, key, value);
-      const binderEntry = registeredControlBinders.find(
-        entry => entry.name === normalize(key)
-      );
-      this.updateControlValue(binderEntry.control);
+      registeredControlBinders
+        .filter(binderEntry => binderEntry.name === normalize(key))
+        .forEach(binderEntry => this.updateControlValue(binderEntry.control));
     });
   }
 

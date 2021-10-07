@@ -23,10 +23,11 @@ async function createFormBinder() {
   formBinder.data = data;
   document.body.appendChild(formBinder);
   formBinder.innerHTML = `
-    <input id="name" required pattern="Fred.*" type="text" bind="#/name" />
+    <input id="name" required pattern="Fred.*" type="text" bind="/name" />
     <input id="whitelist" whitelist="bill,bob,rob" type="text" bind="#/name" />
     <input id="age" min="18" max="65" type="number" bind="#/personalData/age" />
-    <input id="tel" bind="#/telephoneNumbers/1" />
+    <input id="age2" min="18" max="65" type="number" bind="#/personalData/age" />
+    <input id="tel" bind="telephoneNumbers/1" />
     <input id="message" bind="#/comments/1/message" />
     <input id="student" bind="#/student" type="checkbox" />
   `;
@@ -184,6 +185,20 @@ describe("form-binder binding tests", () => {
     expect(changes.data.name).to.equal("rob");
     expect(changes.data.personalData.age).to.equal(40);
     expect(changes.data.student).to.equal(false);
+  });
+
+  it("Should update control values with patched data", async () => {
+    binderRegistry.add(...Object.values(binders));
+    const { formBinder, changes } = await createFormBinder();
+    inputValue("age", 28);
+    inputValue("age2", 28);
+    await wait();
+    expect(document.getElementById("age").value).to.equal("28");
+    expect(document.getElementById("age2").value).to.equal("28");
+    formBinder.patch([["/personalData/age", 35]]);
+    await wait();
+    expect(document.getElementById("age").value).to.equal("35");
+    expect(document.getElementById("age2").value).to.equal("35");
   });
 
   it("Should be able to reset data", async () => {
