@@ -158,7 +158,6 @@ formBinder.addEventListener('form-binder:report-validity', event => {
       // Here you would translate the errors and output them somewhere in the UI
       // The example outputs in UI using the native API, setCustomValidity
       control.setCustomValidity(controlValidationResults
-          .filter()
           .map(controlValidator => translate(controlValidator.name)) // Translate here
           .join(","));
     });
