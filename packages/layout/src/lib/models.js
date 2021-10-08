@@ -9,25 +9,25 @@ export {};
  * @typedef {object} HorizontalLayout
  * @property {'HorizontalLayout'} template
  * @property {object} properties
- * @property {Array<ComponentTemplate>} properties.components 
- * @property {string} [properties.label] 
+ * @property {Array<ComponentTemplate>} properties.components
+ * @property {string} [properties.label]
  */
 
 /**
  * @typedef {object} VerticalLayout
  * @property {'VerticalLayout'} template
  * @property {object} properties
- * @property {Array<ComponentTemplate>} properties.components 
- * @property {string} [properties.label] 
+ * @property {Array<ComponentTemplate>} properties.components
+ * @property {string} [properties.label]
  */
 
 /**
  * @typedef {object} ArrayLayout
  * @property {'ArrayLayout'} template
  * @property {object} properties
- * @property {ComponentTemplate} properties.component 
+ * @property {ComponentTemplate} properties.component
  * @property {string} properties.ref JSON pointer to the data value that will back this control
- * @property {string} [properties.label] 
+ * @property {string} [properties.label]
  */
 
 /**
@@ -35,15 +35,15 @@ export {};
  * @property {'GridLayout'} template
  * @property {object} properties
  * @property {string} properties.ref JSON pointer to the data value that will back this control
- * @property {string} [properties.label] 
+ * @property {string} [properties.label]
  * @property {Array<ComponentTemplate>} properties.components The JSON pointer on the child components should be relative to the GridLayout
  */
 
 /**
  * @typedef {object} Label
  * @property {'Label'} template
- * @property {object} properties 
- * @property {string} properties.label 
+ * @property {object} properties
+ * @property {string} properties.label
  */
 
 /**

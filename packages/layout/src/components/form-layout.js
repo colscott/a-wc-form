@@ -1,8 +1,8 @@
-import { render } from "lit-html";
-import { FormBinder } from "a-wc-form-binder";
-import { getComponentTemplate } from "../lib/template-registry.js";
-import "../templates/controls.js";
-import "../templates/layouts.js";
+import { render } from 'lit-html';
+import { FormBinder } from 'a-wc-form-binder';
+import { getComponentTemplate } from '../lib/template-registry.js';
+import '../templates/controls.js';
+import '../templates/layouts.js';
 /** @typedef {import("../lib/models.js").LayoutContext<import("../lib/models.js").ComponentTemplate>} LayoutContext */
 
 /**  */
@@ -31,26 +31,23 @@ export class FormLayout extends FormBinder {
   /** @inheritdoc */
   connectedCallback() {
     this.hasSlottedContent = !!this.children.length;
-    this.setAttribute("role", "form");
+    this.setAttribute('role', 'form');
     super.connectedCallback();
   }
 
   /** Renders the UI based on uiSchema only if user did not populate HTML themselves */
   render() {
     if (this.layout && this.hasSlottedContent === false && this.data !== null) {
-      render(
-        getComponentTemplate(this.context.component.template)(this.context),
-        this
-      );
+      render(getComponentTemplate(this.context.component.template)(this.context), this);
     }
   }
 
   /** @returns {LayoutContext} */
   get context() {
     return {
-      component: this.layout
+      component: this.layout,
     };
   }
 }
 
-window.customElements.define("form-layout", FormLayout);
+window.customElements.define('form-layout', FormLayout);

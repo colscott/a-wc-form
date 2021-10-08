@@ -1,5 +1,5 @@
-import { FormLayout } from "a-wc-form-layout";
-import "./json-schema-control.js";
+import { FormLayout } from 'a-wc-form-layout';
+import './json-schema-control.js';
 
 /** @typedef {import("../lib/models.js").JsonSchema} JsonSchema */
 
@@ -9,11 +9,11 @@ export class JsonSchemaForm extends FormLayout {
   get layout() {
     return (
       this._layout || {
-        template: "JsonSchemaControl",
+        template: 'JsonSchemaControl',
         properties: {
-          ref: "#",
-          type: "text"
-        }
+          ref: '#',
+          type: 'text',
+        },
       }
     );
   }
@@ -40,7 +40,7 @@ export class JsonSchemaForm extends FormLayout {
   get context() {
     return {
       ...super.context,
-      schema: this.schema
+      schema: this.schema,
     };
   }
 
@@ -52,4 +52,4 @@ export class JsonSchemaForm extends FormLayout {
   }
 }
 
-window.customElements.define("json-schema-form", JsonSchemaForm);
+window.customElements.define('json-schema-form', JsonSchemaForm);

@@ -1,4 +1,4 @@
-import { css } from "lit-element";
+import { css } from 'lit-element';
 
 export const structureCss = css`
   form-binder,
@@ -25,10 +25,7 @@ export const structureCss = css`
 
   [form-layout-grid] {
     display: grid;
-    grid-template-columns: repeat(
-      var(--form-grid-columns),
-      minmax(max-content, 1fr)
-    );
+    grid-template-columns: repeat(var(--form-grid-columns), minmax(max-content, 1fr));
     grid-gap: var(--form-pad, 8px);
     align-items: center;
   }

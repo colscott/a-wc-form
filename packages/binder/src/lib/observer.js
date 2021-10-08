@@ -6,8 +6,8 @@
 function observeShadowRoots(node, observer, config) {
   observer.observe(node, config);
   if (node instanceof Element || node instanceof ShadowRoot) {
-    const children = node.querySelectorAll("*");
-    children.forEach(child => {
+    const children = node.querySelectorAll('*');
+    children.forEach((child) => {
       if (child.shadowRoot) {
         observeShadowRoots(child.shadowRoot, observer, config);
       }

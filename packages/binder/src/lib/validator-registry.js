@@ -36,7 +36,7 @@ export function add(validator, addToBeginning) {
 
 /** @param {Validator} validator to remove */
 export function remove(validator) {
-  const index = validatorRegistry.findIndex(b => b === validator);
+  const index = validatorRegistry.findIndex((b) => b === validator);
   if (index > -1) {
     validatorRegistry.splice(index, 1);
   }
@@ -47,7 +47,7 @@ export function remove(validator) {
  * @returns {Array<Validator>} matching validators
  */
 export function matchingValidators(control) {
-  return validatorRegistry.filter(v => control.matches(v.controlSelector));
+  return validatorRegistry.filter((v) => control.matches(v.controlSelector));
 }
 
 /**
@@ -58,15 +58,15 @@ export function matchingValidators(control) {
 export function filterValidationResults(validationResult, predicate) {
   /** @type {Array<ValidationControlResult>} */
   const result = [];
-  validationResult.forEach(validationControlResult => {
-    const filteredResult = validationControlResult.controlValidationResults.filter(
-      controlValidationResult => predicate(controlValidationResult)
+  validationResult.forEach((validationControlResult) => {
+    const filteredResult = validationControlResult.controlValidationResults.filter((controlValidationResult) =>
+      predicate(controlValidationResult),
     );
     if (filteredResult.length) {
       result.push({
         control: validationControlResult.control,
         controlValidationResults: filteredResult,
-        visited: validationControlResult.visited
+        visited: validationControlResult.visited,
       });
     }
   });

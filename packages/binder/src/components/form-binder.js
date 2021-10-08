@@ -1,17 +1,8 @@
-import { initialize } from "../lib/binder-registry.js";
-import {
-  filterValidationResults,
-  matchingValidators,
-  add
-} from "../lib/validator-registry.js";
-import * as validators from "../lib/validators/index.js";
-import {
-  getValue,
-  normalize,
-  objectFlat,
-  setValue
-} from "../lib/json-pointer.js";
-import { ShadowDomMutationObserver } from "../lib/observer.js";
+import { initialize } from '../lib/binder-registry.js';
+import { filterValidationResults, matchingValidators, add } from '../lib/validator-registry.js';
+import * as validators from '../lib/validators/index.js';
+import { getValue, normalize, objectFlat, setValue } from '../lib/json-pointer.js';
+import { ShadowDomMutationObserver } from '../lib/observer.js';
 
 /** @typedef {import('../lib/control-binding.js').ControlBinding} ControlBinding */
 /** @typedef {import("../lib/binder-registry.js").ControlElement} ControlElement */
@@ -35,12 +26,12 @@ export function getName(element) {
   const binderName =
     // @ts-ignore
     element.bind ||
-    element.getAttribute("bind") ||
+    element.getAttribute('bind') ||
     // @ts-ignore
     element.name ||
-    element.getAttribute("name");
+    element.getAttribute('name');
   if (!binderName) {
-    console.error("No binder name found for element", element);
+    console.error('No binder name found for element', element);
   }
   return binderName;
 }
@@ -50,12 +41,10 @@ export function getName(element) {
  * @returns {Array<Element>} found child Elements
  */
 function getChildElements(parentElement) {
-  const elements = Array.from(parentElement.querySelectorAll("*"));
+  const elements = Array.from(parentElement.querySelectorAll('*'));
   return [
     ...elements,
-    ...elements
-      .filter(element => !!element.shadowRoot)
-      .flatMap(element => getChildElements(element))
+    ...elements.filter((element) => !!element.shadowRoot).flatMap((element) => getChildElements(element)),
   ];
 }
 
@@ -75,27 +64,27 @@ export class FormBinder extends HTMLElement {
 
   /** @inheritdoc */
   connectedCallback() {
-    this.setAttribute("role", "form");
+    this.setAttribute('role', 'form');
     const config = { attributes: false, childList: true, subtree: true };
 
     /**
      * @type {MutationCallback}
      * @param {MutationRecord[]} mutationsList .
      */
-    const callback = mutationsList => {
-      mutationsList.forEach(mutation => {
-        mutation.addedNodes.forEach(controlCandidate => {
+    const callback = (mutationsList) => {
+      mutationsList.forEach((mutation) => {
+        mutation.addedNodes.forEach((controlCandidate) => {
           if (controlCandidate instanceof Element) {
             this.addControl(controlCandidate);
-            getChildElements(controlCandidate).forEach(c => this.addControl(c));
+            getChildElements(controlCandidate).forEach((c) => this.addControl(c));
           }
         });
-        mutation.removedNodes.forEach(controlCandidate => {
+        mutation.removedNodes.forEach((controlCandidate) => {
           if (controlCandidate instanceof Element) {
             if (this.registeredControlBinders.has(controlCandidate)) {
               this.registeredControlBinders.delete(controlCandidate);
             }
-            getChildElements(controlCandidate).forEach(c => {
+            getChildElements(controlCandidate).forEach((c) => {
               if (this.registeredControlBinders.has(c)) {
                 this.registeredControlBinders.delete(c);
               }
@@ -109,7 +98,7 @@ export class FormBinder extends HTMLElement {
 
     this.mutationObserver.observe(this, config);
 
-    getChildElements(this).forEach(element => this.addControl(element));
+    getChildElements(this).forEach((element) => this.addControl(element));
   }
 
   /** @inheritdoc */
@@ -152,20 +141,18 @@ export class FormBinder extends HTMLElement {
       jsonPointers = objectFlat(partialData);
     }
 
-    const registeredControlBinders = Array.from(
-      this.registeredControlBinders.entries()
-    ).map(entry => ({
+    const registeredControlBinders = Array.from(this.registeredControlBinders.entries()).map((entry) => ({
       name: normalize(getName(entry[0])),
       control: entry[0],
-      binding: entry[1]
+      binding: entry[1],
     }));
 
     // For each value, update the data and update the control
     jsonPointers.forEach((value, key) => {
       setValue(this.data, key, value);
       registeredControlBinders
-        .filter(binderEntry => binderEntry.name === normalize(key))
-        .forEach(binderEntry => this.updateControlValue(binderEntry.control));
+        .filter((binderEntry) => binderEntry.name === normalize(key))
+        .forEach((binderEntry) => this.updateControlValue(binderEntry.control));
     });
   }
 
@@ -187,7 +174,7 @@ export class FormBinder extends HTMLElement {
       const binder = initialize(
         controlCandidate,
         this.handleControlValueChange.bind(this),
-        this.controlVisited.bind(this)
+        this.controlVisited.bind(this),
       );
       if (binder) {
         this.registeredControlBinders.set(controlCandidate, binder);
@@ -204,10 +191,7 @@ export class FormBinder extends HTMLElement {
     if (binder) {
       const value = getValue(this.data, getName(control));
       binder.binder.writeValue(control, value);
-      if (
-        this._reportValidityRequested === false &&
-        this._visitedControls.has(control)
-      ) {
+      if (this._reportValidityRequested === false && this._visitedControls.has(control)) {
         this._reportValidityRequested = true;
         // Run validity check as task to give custom controls chance to initialize (e.g. MWC)
         setTimeout(() => this.reportValidity());
@@ -233,15 +217,15 @@ export class FormBinder extends HTMLElement {
       setValue(this.data, name, newValue);
       const validationResults = this.controlVisited(control);
       const data = JSON.parse(JSON.stringify(this.data));
-      this.checkValidity([control]).then(async isValid => {
+      this.checkValidity([control]).then(async (isValid) => {
         if (isValid) {
           this.dispatchEvent(
-            new CustomEvent("form-binder:change", {
+            new CustomEvent('form-binder:change', {
               detail: {
                 data,
-                validationResults: await validationResults
-              }
-            })
+                validationResults: await validationResults,
+              },
+            }),
           );
         }
       });
@@ -264,35 +248,28 @@ export class FormBinder extends HTMLElement {
    */
   async validateControlValue(control, value) {
     const controlName = getName(control);
-    const t = matchingValidators(control).map(validator => {
+    const t = matchingValidators(control).map((validator) => {
       const result = validator.validate(
         control,
         value === undefined ? getValue(this.data, controlName) : value,
-        this.data
+        this.data,
       );
       return result instanceof Promise ? result : Promise.resolve(result);
     });
 
     /** @type {ValidationResults} */
-    const controlValidationResults = (await Promise.allSettled(t)).map(
-      promiseSettled => {
-        if (promiseSettled.status === "fulfilled") {
-          return promiseSettled.value;
-        }
-        console.error(
-          "Validation validator failed",
-          control,
-          value,
-          promiseSettled.reason
-        );
-        return null;
+    const controlValidationResults = (await Promise.allSettled(t)).map((promiseSettled) => {
+      if (promiseSettled.status === 'fulfilled') {
+        return promiseSettled.value;
       }
-    );
+      console.error('Validation validator failed', control, value, promiseSettled.reason);
+      return null;
+    });
 
     // Add 'field' property if missing
     controlValidationResults
-      .filter(validatorResult => validatorResult !== null)
-      .forEach(validatorResult => {
+      .filter((validatorResult) => validatorResult !== null)
+      .forEach((validatorResult) => {
         if (!validatorResult.field) {
           validatorResult.field = controlName;
         }
@@ -301,7 +278,7 @@ export class FormBinder extends HTMLElement {
     return {
       control,
       controlValidationResults,
-      visited: this._visitedControls.has(control)
+      visited: this._visitedControls.has(control),
     };
   }
 
@@ -312,19 +289,16 @@ export class FormBinder extends HTMLElement {
   async validate(controls) {
     const result = await Promise.all(
       (controls || Array.from(this.registeredControlBinders.keys()))
-        .map(async c => this.validateControlValue(c))
-        .filter(async e => (await e).controlValidationResults.length > 0)
+        .map(async (c) => this.validateControlValue(c))
+        .filter(async (e) => (await e).controlValidationResults.length > 0),
     );
 
-    const errors = filterValidationResults(
-      result,
-      validationResult => validationResult.valid === false
-    );
+    const errors = filterValidationResults(result, (validationResult) => validationResult.valid === false);
 
     return {
       result,
       errors,
-      isValid: errors.length === 0
+      isValid: errors.length === 0,
     };
   }
 
@@ -350,14 +324,14 @@ export class FormBinder extends HTMLElement {
   /** @param {FormValidationResult} validationResults that to be displayed */
   reportErrors(validationResults) {
     this.dispatchEvent(
-      new CustomEvent("form-binder:report-validity", {
+      new CustomEvent('form-binder:report-validity', {
         bubbles: true,
         cancelable: false,
         composed: true,
-        detail: validationResults
-      })
+        detail: validationResults,
+      }),
     );
   }
 }
 
-window.customElements.define("form-binder", FormBinder);
+window.customElements.define('form-binder', FormBinder);

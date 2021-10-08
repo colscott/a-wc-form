@@ -7,7 +7,7 @@ export {};
  */
 
 /**
- * @typedef {Object} JsonSchemaControlType 
+ * @typedef {Object} JsonSchemaControlType
  * @property {'JsonSchemaControl'} template
  *
  * @typedef {Object} JsonSchemaControlValidation

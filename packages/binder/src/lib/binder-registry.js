@@ -1,4 +1,4 @@
-import { ControlBinding } from "./control-binding.js";
+import { ControlBinding } from './control-binding.js';
 
 /** @typedef {Element} ControlElement */
 /**
@@ -21,8 +21,8 @@ export function add(...binder) {
  * @param {Array<Binder>} binder to remove
  */
 export function remove(...binder) {
-  binder.forEach(b => {
-    const index = binders.findIndex(bc => bc === b);
+  binder.forEach((b) => {
+    const index = binders.findIndex((bc) => bc === b);
     if (index > -1) {
       binders.splice(index, 1);
     }
@@ -37,7 +37,7 @@ export function remove(...binder) {
  * @returns {ControlBinding} if a binding is found then an initialized binding is returned. If no binding was found for the control then null is returned.
  */
 export function initialize(controlCandidate, onChange, onTouch) {
-  const binder = binders.find(b => controlCandidate.matches(b.controlSelector));
+  const binder = binders.find((b) => controlCandidate.matches(b.controlSelector));
   if (binder) {
     return new ControlBinding(binder, controlCandidate, onChange, onTouch);
   }

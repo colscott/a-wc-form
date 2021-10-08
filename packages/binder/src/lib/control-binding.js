@@ -43,8 +43,8 @@ export class ControlBinding {
   initialize(controlElement) {
     this.binder.initializeEvents(
       controlElement,
-      value => this.onChange(value),
-      () => this.onTouch()
+      (value) => this.onChange(value),
+      () => this.onTouch(),
     );
   }
 

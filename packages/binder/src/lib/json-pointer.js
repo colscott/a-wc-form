@@ -5,7 +5,7 @@
  */
 const getDataRef = (data, ref, traverseSchema) => {
   let nextData = data;
-  const parts = ref.split("/").reverse();
+  const parts = ref.split('/').reverse();
   while (nextData && parts.length > 1) {
     const nextKey = parts.pop();
 
@@ -21,8 +21,8 @@ const getDataRef = (data, ref, traverseSchema) => {
  * @param {{data: any; property: string;}} dataAndProperty
  * @returns {any} value
  */
-const getDataProperty = dataAndProperty => {
-  if (dataAndProperty.property === "#") {
+const getDataProperty = (dataAndProperty) => {
+  if (dataAndProperty.property === '#') {
     return dataAndProperty.data;
   }
 
@@ -60,11 +60,7 @@ export const setValue = (data, ref, value) => {
  * @returns {any}
  */
 export const getSchemaValue = (data, ref) => {
-  const dataAndProperty = getDataRef(
-    data,
-    ref.replace(/\//g, "/properties/").replace(/\/(\d+)/g, "/items/$1"),
-    true
-  );
+  const dataAndProperty = getDataRef(data, ref.replace(/\//g, '/properties/').replace(/\/(\d+)/g, '/items/$1'), true);
   return getDataProperty(dataAndProperty);
 };
 
@@ -74,12 +70,12 @@ export const getSchemaValue = (data, ref) => {
  * @param {Map<string, unknown>} [map] to add the JSON Pointers too
  * @returns {Map<string, unknown>} JSON Pointer, value entries
  */
-export function objectFlat(item, map = new Map(), _ref = "") {
+export function objectFlat(item, map = new Map(), _ref = '') {
   if (item instanceof Array) {
     item.forEach((entry, index) => {
       objectFlat(entry, map, `${_ref}/${index}`);
     });
-  } else if (item && typeof item === "object") {
+  } else if (item && typeof item === 'object') {
     Object.keys(item).forEach((key, index) => {
       objectFlat(item[key], map, `${_ref}/${key}`);
     });
@@ -94,10 +90,10 @@ export function objectFlat(item, map = new Map(), _ref = "") {
  * @returns {string} the normalized JSON pointer (ensures it starts '/')
  */
 export function normalize(ref) {
-  if (ref[0] === "#") {
+  if (ref[0] === '#') {
     return ref.substr(1);
   }
-  if (ref[0] === "/") {
+  if (ref[0] === '/') {
     return `${ref}`;
   }
   return `/${ref}`;

@@ -1,8 +1,8 @@
-import { getSchemaValue } from "a-wc-form-binder/src/lib/json-pointer.js";
-import { getComponentTemplate, setComponentTemplate } from "a-wc-form-layout";
-import { LitElement, html } from "lit-element";
+import { getSchemaValue } from 'a-wc-form-binder/src/lib/json-pointer.js';
+import { getComponentTemplate, setComponentTemplate } from 'a-wc-form-layout';
+import { LitElement, html } from 'lit-element';
 // import { jsonTypeMapping } from "../templates/controls.js";
-import { getLayout } from "../lib/layout-generator.js";
+import { getLayout } from '../lib/layout-generator.js';
 
 /**
  * @param {string} selector CSS selector to match
@@ -27,18 +27,16 @@ export class JsonSchemaControl extends LitElement {
   static get properties() {
     return {
       ref: { type: String },
-      schema: { type: Object }
+      schema: { type: Object },
     };
   }
 
   /** @returns {import('../lib/models').JsonSchema} */
   get schema() {
     if (!this._schema) {
-      const form = /** @type {Element&{schema: import("../lib/models").JsonSchema}} */ (closest(
-        "form-layout, form-binder",
-        this.parentElement ||
-          /** @type {ShadowRoot} */ (this.getRootNode()).host
-      ));
+      const form = /** @type {Element&{schema: import("../lib/models").JsonSchema}} */ (
+        closest('form-layout, form-binder', this.parentElement || /** @type {ShadowRoot} */ (this.getRootNode()).host)
+      );
       if (form) {
         this.schema = form.schema;
       }
@@ -55,11 +53,11 @@ export class JsonSchemaControl extends LitElement {
   constructor() {
     super();
 
-    this.style.display = "contents";
+    this.style.display = 'contents';
     this.schema = null;
 
     /** @type {string} */
-    this.ref = "";
+    this.ref = '';
   }
 
   /** @inheritdoc */
@@ -74,14 +72,14 @@ export class JsonSchemaControl extends LitElement {
       const currentSchema = getSchemaValue(this.schema, this.ref);
       const layout = getLayout(this.schema, this.ref);
       return getComponentTemplate(layout.template)({
-        component: layout
+        component: layout,
       });
     }
     return html``;
   }
 }
 
-customElements.define("json-schema-control", JsonSchemaControl);
+customElements.define('json-schema-control', JsonSchemaControl);
 
 /**
  * @param {import("../lib/models.js").SchemaLayoutContext<import("../lib/models").JsonSchemaControl>} context
@@ -101,4 +99,4 @@ function jsonSchemaTemplate(context) {
   // return jsonTypeMapping[currentSchema.type](schema, ref);
 }
 
-setComponentTemplate("JsonSchemaControl", jsonSchemaTemplate);
+setComponentTemplate('JsonSchemaControl', jsonSchemaTemplate);

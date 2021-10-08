@@ -1,11 +1,11 @@
-import { html } from "lit-html/lit-html.js";
-import { ifDefined } from "lit-html/directives/if-defined.js";
-import "@material/mwc-checkbox/mwc-checkbox.js";
-import "@material/mwc-formfield/mwc-formfield.js";
-import "@material/mwc-textfield/mwc-textfield.js";
-import "@material/mwc-select/mwc-select.js";
-import "@material/mwc-list/mwc-list-item.js";
-import { setComponentTemplate } from "a-wc-form-layout/src/lib/template-registry.js";
+import { html } from 'lit-html/lit-html.js';
+import { ifDefined } from 'lit-html/directives/if-defined.js';
+import '@material/mwc-checkbox/mwc-checkbox.js';
+import '@material/mwc-formfield/mwc-formfield.js';
+import '@material/mwc-textfield/mwc-textfield.js';
+import '@material/mwc-select/mwc-select.js';
+import '@material/mwc-list/mwc-list-item.js';
+import { setComponentTemplate } from 'a-wc-form-layout/src/lib/template-registry.js';
 
 /** @typedef {import("a-wc-form-layout/src/lib/models").Control} Control */
 /** @typedef {import('a-wc-form-layout/src/lib/models').LayoutContext<Control>} ControlLayoutContext */
@@ -66,16 +66,9 @@ export function enumTemplate(context) {
       label=${ifDefined(properties.label)}
       ?required=${!!properties.validation?.required}
     >
-      ${!context.component.properties.validation?.required
-        ? html`
-            <mwc-list-item></mwc-list-item>
-          `
-        : html``}
+      ${!context.component.properties.validation?.required ? html` <mwc-list-item></mwc-list-item> ` : html``}
       ${context.component.properties.possibleValues.map(
-        e =>
-          html`
-            <mwc-list-item value="${e.toString()}">${e}</mwc-list-item>
-          `
+        (e) => html` <mwc-list-item value="${e.toString()}">${e}</mwc-list-item> `,
       )}
     </mwc-select>
   `;
@@ -86,16 +79,13 @@ export function enumTemplate(context) {
  * @returns {TemplateResult} matching the context passed in
  */
 function controlTemplate(context) {
-  if (
-    "possibleValues" in context.component.properties &&
-    context.component.properties.possibleValues
-  ) {
+  if ('possibleValues' in context.component.properties && context.component.properties.possibleValues) {
     return enumTemplate(context);
   }
-  if (context.component.properties.type === "checkbox") {
+  if (context.component.properties.type === 'checkbox') {
     return checkboxTemplate(context);
   }
   return genericInput(context);
 }
 
-setComponentTemplate("Control", controlTemplate);
+setComponentTemplate('Control', controlTemplate);

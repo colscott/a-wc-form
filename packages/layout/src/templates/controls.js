@@ -1,6 +1,6 @@
-import { html } from "lit-html/lit-html.js";
-import { ifDefined } from "lit-html/directives/if-defined.js";
-import { setComponentTemplate } from "../lib/template-registry.js";
+import { html } from 'lit-html/lit-html.js';
+import { ifDefined } from 'lit-html/directives/if-defined.js';
+import { setComponentTemplate } from '../lib/template-registry.js';
 
 /** @typedef {import("../lib/models.js").Control} Control */
 /** @typedef {import('../lib/models.js').LayoutContext<Control>} ControlLayoutContext */
@@ -14,13 +14,7 @@ function label(context) {
   const { properties } = context.component;
   return html`
     ${context.component.template && properties.label
-      ? html`
-          <label
-            for=${properties.ref}
-            title=${ifDefined(properties.description)}
-            >${properties.label}</label
-          >
-        `
+      ? html` <label for=${properties.ref} title=${ifDefined(properties.description)}>${properties.label}</label> `
       : html``}
   `;
 }
@@ -61,17 +55,12 @@ function genericInput(context) {
  */
 function enumTemplate(context) {
   return html`
-    ${label(context)}<select
-      name="${context.component.properties.ref}"
-      bind="${context.component.properties.ref}"
-    >
+    ${label(context)}<select name="${context.component.properties.ref}" bind="${context.component.properties.ref}">
       ${context.component.properties.possibleValues.map(
-        e =>
+        (e) =>
           html`
-            <option value="${typeof e === "string" ? e : e.value}"
-              >${typeof e === "string" ? e : e.label}</option
-            >
-          `
+            <option value="${typeof e === 'string' ? e : e.value}">${typeof e === 'string' ? e : e.label}</option>
+          `,
       )}
     </select>
   `;
@@ -82,13 +71,10 @@ function enumTemplate(context) {
  * @returns {TemplateResult} matching the context passed in
  */
 function controlTemplate(context) {
-  if (
-    "possibleValues" in context.component.properties &&
-    context.component.properties.possibleValues
-  ) {
+  if ('possibleValues' in context.component.properties && context.component.properties.possibleValues) {
     return enumTemplate(context);
   }
   return genericInput(context);
 }
 
-setComponentTemplate("Control", controlTemplate);
+setComponentTemplate('Control', controlTemplate);
