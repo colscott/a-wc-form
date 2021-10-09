@@ -141,19 +141,11 @@ export class FormBinder extends HTMLElement {
       jsonPointers = objectFlat(partialData);
     }
 
-    const registeredControlBinders = Array.from(this.registeredControlBinders.entries()).map((entry) => ({
-      name: normalize(getName(entry[0])),
-      control: entry[0],
-      binding: entry[1],
-    }));
-
-    // For each value, update the data and update the control
     jsonPointers.forEach((value, key) => {
       setValue(this.data, key, value);
-      registeredControlBinders
-        .filter((binderEntry) => binderEntry.name === normalize(key))
-        .forEach((binderEntry) => this.updateControlValue(binderEntry.control));
     });
+
+    this.updateControlValues(Array.from(jsonPointers.keys()));
   }
 
   /** Clears the data to the initial data value set */
@@ -199,10 +191,30 @@ export class FormBinder extends HTMLElement {
     }
   }
 
-  /** Updates the values of all control values */
-  updateControlValues() {
-    this.registeredControlBinders.forEach((binder, control) => {
-      this.updateControlValue(control);
+  /**
+   * Updates the values of all control values
+   * @param {Array<string>} [jsonPointers] only update controls using the passed jsonPointers
+   */
+  updateControlValues(jsonPointers) {
+    if (!jsonPointers) {
+      this.registeredControlBinders.forEach((binder, control) => {
+        this.updateControlValue(control);
+      });
+      return;
+    }
+
+    const registeredControlBinders = Array.from(this.registeredControlBinders.entries()).map((entry) => ({
+      name: normalize(getName(entry[0])),
+      control: entry[0],
+      binding: entry[1],
+    }));
+
+    // For each value, update the data and update the control
+    jsonPointers.forEach((jsonPointer) => {
+      const normalizedKey = normalize(jsonPointer);
+      registeredControlBinders
+        .filter((binderEntry) => binderEntry.name === normalizedKey)
+        .forEach((binderEntry) => this.updateControlValue(binderEntry.control));
     });
   }
 
