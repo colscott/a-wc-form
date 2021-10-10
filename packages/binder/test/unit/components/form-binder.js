@@ -1,25 +1,20 @@
 /* global describe, before, after, afterEach, it */
 // @ts-check
-import { expect } from "@esm-bundle/chai/esm/chai.js";
-import {
-  binderRegistry,
-  binders,
-  validatorRegistry,
-  ValidationResult
-} from "../../../src/index.js";
-import { patternValidator } from "../../../src/lib/validators/pattern.js";
-import { maxValidator } from "../../../src/lib/validators/max.js";
-import { data as mockData } from "../../../demo/mock.js";
+import { expect } from '@esm-bundle/chai/esm/chai.js';
+import { binderRegistry, binders, validatorRegistry, ValidationResult } from '../../../src/index.js';
+import { patternValidator } from '../../../src/lib/validators/pattern.js';
+import { maxValidator } from '../../../src/lib/validators/max.js';
+import { data as mockData } from '../../../demo/mock.js';
 
 /** @returns {Promise} that resolves when the form-binder:change event fires */
 export function wait() {
-  return new Promise(res => setTimeout(res));
+  return new Promise((res) => setTimeout(res));
 }
 
-/** @returns {{formBinder: import('../../../src/components/form-binder.js').FormBinder, change: {data: any}}} */
+/** @returns {Promise<{formBinder: import('../../../src/components/form-binder.js').FormBinder, change: {data: any}}>} */
 async function createFormBinder() {
   const data = JSON.parse(JSON.stringify(mockData));
-  const formBinder = document.createElement("form-binder");
+  const formBinder = /** @type {import('../../../src/components/form-binder.js').FormBinder} */ (document.createElement('form-binder'));
   formBinder.data = data;
   document.body.appendChild(formBinder);
   formBinder.innerHTML = `
@@ -32,8 +27,8 @@ async function createFormBinder() {
     <input id="student" bind="#/student" type="checkbox" />
   `;
   const changes = { data };
-  formBinder.addEventListener("form-binder:change", e => {
-    changes.data = e.detail.data;
+  formBinder.addEventListener('form-binder:change', (e) => {
+    changes.data = e instanceof CustomEvent && e.detail.data;
   });
   await formBinder.updateComplete;
   return { formBinder, changes };
@@ -41,12 +36,12 @@ async function createFormBinder() {
 
 /** @type {import('../../../src/lib/validator-registry').Validator} */
 const validateTextInput = {
-  controlSelector: "input[whitelist]",
+  controlSelector: 'input[whitelist]',
   validate: (control, value, data) => {
-    const whitelist = control.getAttribute("whitelist").split(",");
-    const isValid = whitelist.some(v => v === value);
-    return new ValidationResult("whitelist", whitelist, value, isValid);
-  }
+    const whitelist = control.getAttribute('whitelist').split(',');
+    const isValid = whitelist.some((v) => v === value);
+    return new ValidationResult('whitelist', whitelist, value, isValid);
+  },
 };
 
 /**
@@ -55,15 +50,15 @@ const validateTextInput = {
  */
 function inputValue(controlId, value) {
   const controlElement = document.getElementById(controlId);
-  if (typeof value === "boolean") {
+  if (typeof value === 'boolean') {
     controlElement.checked = value;
   } else {
     controlElement.value = value;
   }
-  controlElement.dispatchEvent(new Event("change"));
+  controlElement.dispatchEvent(new Event('change'));
 }
 
-describe("form-binder binding tests", () => {
+describe('form-binder binding tests', () => {
   before(() => {
     validatorRegistry.add(validateTextInput, true);
   });
@@ -74,145 +69,143 @@ describe("form-binder binding tests", () => {
     validatorRegistry.remove(patternValidator);
     validatorRegistry.remove(maxValidator);
     binderRegistry.remove(...Object.values(binders));
-    document
-      .querySelectorAll("form-binder")
-      .forEach(e => e.parentElement.removeChild(e));
+    document.querySelectorAll('form-binder').forEach((e) => e.parentElement.removeChild(e));
   });
-  it("Should populate controls", async () => {
+  it('Should populate controls', async () => {
     binderRegistry.add(...Object.values(binders));
     await createFormBinder();
-    expect(document.getElementById("name").value).to.equal("Johnny Five");
-    expect(document.getElementById("age").value).to.equal("34");
-    expect(document.getElementById("tel").value).to.equal("123-8901234");
-    expect(document.getElementById("message").value).to.equal("Thdsdfsdfsdf");
-    expect(document.getElementById("student").checked).to.equal(true);
+    expect(document.getElementById('name').value).to.equal('Johnny Five');
+    expect(document.getElementById('age').value).to.equal('34');
+    expect(document.getElementById('tel').value).to.equal('123-8901234');
+    expect(document.getElementById('message').value).to.equal('Thdsdfsdfsdf');
+    expect(document.getElementById('student').checked).to.equal(true);
   });
-  it("Should not change value when value is invalid", async () => {
+  it('Should not change value when value is invalid', async () => {
     binderRegistry.add(...Object.values(binders));
     const { changes } = await createFormBinder();
     validatorRegistry.add(patternValidator, true);
     validatorRegistry.add(maxValidator, true);
-    inputValue("name", "Bert");
-    inputValue("age", "300");
+    inputValue('name', 'Bert');
+    inputValue('age', '300');
     await wait();
-    expect(changes.data.name).to.equal("Johnny Five");
+    expect(changes.data.name).to.equal('Johnny Five');
     expect(changes.data.personalData.age).to.equal(34);
     validatorRegistry.remove(patternValidator);
     validatorRegistry.remove(maxValidator);
-    inputValue("name", "Fred");
-    inputValue("age", "20");
+    inputValue('name', 'Fred');
+    inputValue('age', '20');
     await wait();
-    expect(changes.data.name).to.equal("Fred");
+    expect(changes.data.name).to.equal('Fred');
     expect(changes.data.personalData.age).to.equal(20);
   });
-  it("Should reflect changes to data", async () => {
+  it('Should reflect changes to data', async () => {
     binderRegistry.add(...Object.values(binders));
     const { formBinder } = await createFormBinder();
     const dataCopy = JSON.parse(JSON.stringify(formBinder.data));
-    dataCopy.name = "fred123";
+    dataCopy.name = 'fred123';
     dataCopy.personalData.age = 62;
     dataCopy.student = false;
     formBinder.data = dataCopy;
     await formBinder.updateComplete;
-    expect(document.getElementById("name").value).to.equal("fred123");
-    expect(document.getElementById("age").value).to.equal("62");
-    expect(document.getElementById("student").checked).to.equal(false);
+    expect(document.getElementById('name').value).to.equal('fred123');
+    expect(document.getElementById('age').value).to.equal('62');
+    expect(document.getElementById('student').checked).to.equal(false);
   });
 
-  it("Should use custom validation", async () => {
+  it('Should use custom validation', async () => {
     binderRegistry.add(...Object.values(binders));
     const { changes } = await createFormBinder();
-    inputValue("whitelist", "Bert");
+    inputValue('whitelist', 'Bert');
     await wait();
-    expect(changes.data.name).to.equal("Johnny Five");
-    inputValue("whitelist", "bill");
+    expect(changes.data.name).to.equal('Johnny Five');
+    inputValue('whitelist', 'bill');
     await wait();
-    expect(changes.data.name).to.equal("bill");
-    inputValue("whitelist", "ray");
+    expect(changes.data.name).to.equal('bill');
+    inputValue('whitelist', 'ray');
     await wait();
-    expect(changes.data.name).to.equal("bill");
-    inputValue("whitelist", "rob");
+    expect(changes.data.name).to.equal('bill');
+    inputValue('whitelist', 'rob');
     await wait();
-    expect(changes.data.name).to.equal("rob");
+    expect(changes.data.name).to.equal('rob');
   });
 
-  it("Should be able to patch values with object", async () => {
+  it('Should be able to patch values with object', async () => {
     binderRegistry.add(...Object.values(binders));
     const { formBinder, changes } = await createFormBinder();
-    inputValue("whitelist", "Bert");
-    inputValue("age", "30");
+    inputValue('whitelist', 'Bert');
+    inputValue('age', '30');
     await wait();
     formBinder.patch({ personalData: { age: 35 }, student: false });
     await wait();
-    inputValue("whitelist", "bob");
+    inputValue('whitelist', 'bob');
     await wait();
-    expect(changes.data.name).to.equal("bob");
+    expect(changes.data.name).to.equal('bob');
     expect(changes.data.personalData.age).to.equal(35);
     expect(changes.data.student).to.equal(false);
   });
 
-  it("Should be able to patch values with Map", async () => {
+  it('Should be able to patch values with Map', async () => {
     binderRegistry.add(...Object.values(binders));
     const { formBinder, changes } = await createFormBinder();
-    inputValue("whitelist", "Bert");
-    inputValue("age", "30");
+    inputValue('whitelist', 'Bert');
+    inputValue('age', '30');
     await wait();
     const patchValues = new Map();
-    patchValues.set("/personalData/age", 40);
-    patchValues.set("#/student", false);
+    patchValues.set('/personalData/age', 40);
+    patchValues.set('#/student', false);
     formBinder.patch(patchValues);
     await wait();
-    inputValue("whitelist", "rob");
+    inputValue('whitelist', 'rob');
     await wait();
-    expect(changes.data.name).to.equal("rob");
+    expect(changes.data.name).to.equal('rob');
     expect(changes.data.personalData.age).to.equal(40);
     expect(changes.data.student).to.equal(false);
   });
 
-  it("Should be able to patch values with JSON pointer", async () => {
+  it('Should be able to patch values with JSON pointer', async () => {
     binderRegistry.add(...Object.values(binders));
     const { formBinder, changes } = await createFormBinder();
-    inputValue("whitelist", "Bert");
-    inputValue("age", "30");
+    inputValue('whitelist', 'Bert');
+    inputValue('age', '30');
     await wait();
     formBinder.patch([
-      ["/personalData/age", 40],
-      ["#/student", false]
+      ['/personalData/age', 40],
+      ['#/student', false],
     ]);
     await wait();
-    inputValue("whitelist", "rob");
+    inputValue('whitelist', 'rob');
     await wait();
-    expect(changes.data.name).to.equal("rob");
+    expect(changes.data.name).to.equal('rob');
     expect(changes.data.personalData.age).to.equal(40);
     expect(changes.data.student).to.equal(false);
   });
 
-  it("Should update control values with patched data", async () => {
+  it('Should update control values with patched data', async () => {
     binderRegistry.add(...Object.values(binders));
     const { formBinder, changes } = await createFormBinder();
-    inputValue("age", 28);
-    inputValue("age2", 28);
+    inputValue('age', 28);
+    inputValue('age2', 28);
     await wait();
-    expect(document.getElementById("age").value).to.equal("28");
-    expect(document.getElementById("age2").value).to.equal("28");
-    formBinder.patch([["/personalData/age", 35]]);
+    expect(document.getElementById('age').value).to.equal('28');
+    expect(document.getElementById('age2').value).to.equal('28');
+    formBinder.patch([['/personalData/age', 35]]);
     await wait();
-    expect(document.getElementById("age").value).to.equal("35");
-    expect(document.getElementById("age2").value).to.equal("35");
+    expect(document.getElementById('age').value).to.equal('35');
+    expect(document.getElementById('age2').value).to.equal('35');
   });
 
-  it("Should be able to reset data", async () => {
+  it('Should be able to reset data', async () => {
     binderRegistry.add(...Object.values(binders));
     const { formBinder, changes } = await createFormBinder();
-    inputValue("whitelist", "Bert");
-    inputValue("age", "30");
+    inputValue('whitelist', 'Bert');
+    inputValue('age', '30');
     await wait();
     const patchValues = new Map();
-    patchValues.set("/personalData/age", 40);
-    patchValues.set("#/student", false);
+    patchValues.set('/personalData/age', 40);
+    patchValues.set('#/student', false);
     formBinder.patch(patchValues);
     await wait();
-    inputValue("whitelist", "rob");
+    inputValue('whitelist', 'rob');
     await wait();
     formBinder.reset();
     await wait();
