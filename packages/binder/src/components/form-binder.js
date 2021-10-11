@@ -17,6 +17,8 @@ for (const validator in validators) {
   add(validators[validator]);
 }
 
+const ATTRIBUTE_BINDER_PREFIX = 'bind-attr:';
+
 /**
  * @param {Element} element to get the name for
  * @returns {string} the name assigned to the element
@@ -34,6 +36,24 @@ export function getName(element) {
     console.error('No binder name found for element', element);
   }
   return binderName;
+}
+
+/**
+ * @param {Element} element to get the binder names for
+ * @returns {Array<{jsonPointer: string, attribute: string}>}
+ */
+export function getAttributeBinders(element) {
+  const attributes = Array.from(element.attributes);
+  const attributeBinders = attributes.reduce((result, attribute) => {
+    if (attribute.name.startsWith(ATTRIBUTE_BINDER_PREFIX)) {
+      result.push({
+        jsonPointer: normalize(attribute.value),
+        attribute: attribute.name.substr(ATTRIBUTE_BINDER_PREFIX.length),
+      });
+    }
+    return result;
+  }, []);
+  return attributeBinders;
 }
 
 /**
@@ -177,12 +197,25 @@ export class FormBinder extends HTMLElement {
     }
   }
 
-  /** @param {Element} control to update the value of. If control has been visited then validation is invoked. */
+  /**
+   * Update a controls model binder and attribute binders
+   * @param {Element} control to update the value of. If control has been visited then validation is invoked.
+   */
   updateControlValue(control) {
+    getAttributeBinders(control).forEach(({ jsonPointer, attribute }) => {
+      const attributeValue = getValue(this.data, jsonPointer);
+      if (attributeValue == null || attributeValue === false) {
+        control.removeAttribute(attribute);
+      } else {
+        control.setAttribute(attribute, attributeValue);
+      }
+    });
+
     const binder = this.registeredControlBinders.get(control);
     if (binder) {
       const value = getValue(this.data, getName(control));
       binder.binder.writeValue(control, value);
+
       if (this._reportValidityRequested === false && this._visitedControls.has(control)) {
         this._reportValidityRequested = true;
         // Run validity check as task to give custom controls chance to initialize (e.g. MWC)
@@ -207,13 +240,18 @@ export class FormBinder extends HTMLElement {
       name: normalize(getName(entry[0])),
       control: entry[0],
       binding: entry[1],
+      attributeBinders: getAttributeBinders(entry[0]),
     }));
 
     // For each value, update the data and update the control
     jsonPointers.forEach((jsonPointer) => {
       const normalizedKey = normalize(jsonPointer);
       registeredControlBinders
-        .filter((binderEntry) => binderEntry.name === normalizedKey)
+        .filter(
+          (binderEntry) =>
+            binderEntry.name === normalizedKey ||
+            binderEntry.attributeBinders.find((a) => a.jsonPointer === normalizedKey),
+        )
         .forEach((binderEntry) => this.updateControlValue(binderEntry.control));
     });
   }
@@ -227,6 +265,7 @@ export class FormBinder extends HTMLElement {
     if (newValue !== getValue(this.data, name)) {
       this._dirtyControls.set(control, newValue);
       setValue(this.data, name, newValue);
+      this.updateControlValues([name]);
       const validationResults = this.controlVisited(control);
       const data = JSON.parse(JSON.stringify(this.data));
       this.checkValidity([control]).then(async (isValid) => {

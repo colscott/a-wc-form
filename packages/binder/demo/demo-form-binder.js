@@ -7,8 +7,8 @@ binderRegistry.add(...Object.values(binders));
 
 const errorText = {
   pattern: (error) => `${error.field} must begin with fred`,
-  min: (error) => `${error.field} but be greater than ${error.expected}`,
-  max: (error) => `${error.field} but be less than ${error.expected}`,
+  min: (error) => `${error.field} must be greater than ${error.expected}`,
+  max: (error) => `${error.field} must be less than ${error.expected}`,
   'less-than': (error) => `${error.field} must be less than ${error.expected}`,
   'greater-than': (error) => `${error.field} must be greater than ${error.expected}`,
   rangeUnderflow: (error) => '',
@@ -33,8 +33,9 @@ customElements.define(
           <input type="number" min="40" max="50" step="1" bind="#/personalData/age" />
           <input bind="#/telephoneNumbers/1" />
           <input type="checkbox" id="student" bind="/student" />
-          <input type="date" bind="/birthDate" less-than="/retireDate" />
-          <input type="date" bind="/retireDate" greater-than="/birthDate" />
+          <input id="occupation" bind="/occupation" bind-attr:disabled="/student" />
+          <input type="date" bind="/birthDate" bind-attr:max="/retireDate" />
+          <input type="date" bind="/retireDate" bind-attr:min="/birthDate" />
           <div>
             <ul>
               ${this.errors.map((controlErrorEntry) => {

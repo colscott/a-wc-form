@@ -20,6 +20,9 @@ Example:
   <input bind="/name/second" />
   <!-- Anything can be bound to data by JSON pointer as long as a custom binder is defined to handle the case. More on custom control binders later. -->
   <div bind="/name/first"></div>
+  <!-- Auxiliary attributes can also be bound. These attributes start 'bind-attr:' and are single way binders that do not use control binders -->
+  <input bind="/name/second" bind-attr:disabled="/canEdit" /> <!-- Will add disabled attribute if canEdit is true -->
+  <input bind="/age" bind-attr:min="/minAge" /> <!-- set the min attribute to the value of the minAge property in the data -->
 </form-binder>
 ```
 ```js

@@ -14,7 +14,9 @@ export function wait() {
 /** @returns {Promise<{formBinder: import('../../../src/components/form-binder.js').FormBinder, change: {data: any}}>} */
 async function createFormBinder() {
   const data = JSON.parse(JSON.stringify(mockData));
-  const formBinder = /** @type {import('../../../src/components/form-binder.js').FormBinder} */ (document.createElement('form-binder'));
+  const formBinder = /** @type {import('../../../src/components/form-binder.js').FormBinder} */ (
+    document.createElement('form-binder')
+  );
   formBinder.data = data;
   document.body.appendChild(formBinder);
   formBinder.innerHTML = `
@@ -25,6 +27,9 @@ async function createFormBinder() {
     <input id="tel" bind="telephoneNumbers/1" />
     <input id="message" bind="#/comments/1/message" />
     <input id="student" bind="#/student" type="checkbox" />
+    <input id="start" type="date" bind="/start" bind-attr:max="/end" />
+    <input id="end" type="date" bind="/end" bind-attr:min="/start" />
+    <input id="occupation" bind="/occupation" bind-attr:disabled="/student" />
   `;
   const changes = { data };
   formBinder.addEventListener('form-binder:change', (e) => {
@@ -211,6 +216,28 @@ describe('form-binder binding tests', () => {
     await wait();
     expect(formBinder.data).to.eql(mockData);
   });
+
+  it('Should bind attributes', async () => {
+    binderRegistry.add(...Object.values(binders));
+    const { formBinder, changes } = await createFormBinder();
+    inputValue('start', '2021-03-04');
+    inputValue('end', '2021-03-10');
+    await wait();
+    const startInput = document.getElementById('start');
+    const endInput = document.getElementById('end');
+    expect(startInput.value).to.eql('2021-03-04');
+    expect(startInput.getAttribute('max')).to.eql('2021-03-10');
+    expect(endInput.value).to.eql('2021-03-10');
+    expect(endInput.getAttribute('min')).to.eql('2021-03-04');
+    formBinder.patch({ student: false });
+    await wait();
+    const occupationInput = document.getElementById('occupation');
+    expect(occupationInput.hasAttribute('disabled')).to.equal(false);
+    formBinder.patch({ student: true });
+    await wait();
+    expect(occupationInput.hasAttribute('disabled')).to.equal(true);
+  });
+
   // Not currently supported as the binders get initialized with events when the control is added to the form
   // it("Should not change value when binder is removed", async () => {
   //   binder.add(binders.textInputBinder);
