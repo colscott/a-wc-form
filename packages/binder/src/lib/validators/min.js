@@ -4,7 +4,8 @@ import { ValidationResult } from '../validation-result.js';
 export const minValidator = {
   controlSelector: '[min]',
   validate: (control, value, data) => {
-    const minValue = parseInt(control.getAttribute('min'), 10);
+    const min = control.getAttribute('min');
+    const minValue = typeof value === 'number' ? parseInt(min, 10) : min;
     return new ValidationResult('min', minValue, value, value >= minValue);
   },
 };

@@ -4,7 +4,8 @@ import { ValidationResult } from '../validation-result.js';
 export const maxValidator = {
   controlSelector: '[max]',
   validate: (control, value, data) => {
-    const maxValue = parseInt(control.getAttribute('max'), 10);
-    return new ValidationResult('max', maxValue, value, typeof value === 'number' && value <= maxValue);
+    const max = control.getAttribute('max');
+    const maxValue = typeof value === 'number' ? parseInt(max, 10) : max;
+    return new ValidationResult('max', maxValue, value, value <= maxValue);
   },
 };

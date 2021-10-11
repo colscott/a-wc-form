@@ -23,7 +23,8 @@ export async function createFormBinder() {
     <input id="name" type="text" bind="#/name" />
     <input id="age" type="number" bind="#/personalData/age" />
     <input id="height" type="number" bind="#/personalData/height" />
-  `;
+    <input id="birthDate" type="date" bind="/birthDate" />
+    `;
   formBinder.addEventListener("form-binder:report-validity", e => {
     /** @type {import('../../../src/lib/validator-registry').FormValidationResult} */
     const { errors, isValid, result } = e.detail;

@@ -90,7 +90,7 @@ describe('validation - min-length', () => {
 describe('validation - max', () => {
   standupValidatorTest(validators.maxValidator);
 
-  it('should validate', async () => {
+  it('should validate numbers', async () => {
     const formBinder = await createFormBinder();
     const inputAge = document.getElementById('age');
     inputAge.value = '20';
@@ -104,12 +104,27 @@ describe('validation - max', () => {
     inputAge.dispatchEvent(new Event('change'));
     expect(await formBinder.checkValidity()).to.be.true;
   });
+
+  it('should validate dates', async () => {
+    const formBinder = await createFormBinder();
+    const inputAge = document.getElementById('birthDate');
+    inputAge.value = '2021-05-01';
+    inputAge.dispatchEvent(new Event('change'));
+    expect(await formBinder.checkValidity()).to.be.true;
+    validatorRegistry.add(validators.maxValidator);
+    expect(await formBinder.checkValidity()).to.be.true;
+    inputAge.setAttribute('max', '2021-03-01');
+    expect(await formBinder.checkValidity()).to.be.false;
+    inputAge.value = '2021-01-05';
+    inputAge.dispatchEvent(new Event('change'));
+    expect(await formBinder.checkValidity()).to.be.true;
+  });
 });
 
 describe('validation - min', () => {
   standupValidatorTest(validators.maxValidator);
 
-  it('should validate', async () => {
+  it('should validate numbers', async () => {
     const formBinder = await createFormBinder();
     const inputAge = document.getElementById('age');
     inputAge.value = '16';
@@ -120,6 +135,21 @@ describe('validation - min', () => {
     inputAge.setAttribute('min', '18');
     expect(await formBinder.checkValidity()).to.be.false;
     inputAge.value = '19';
+    inputAge.dispatchEvent(new Event('change'));
+    expect(await formBinder.checkValidity()).to.be.true;
+  });
+
+  it('should validate dates', async () => {
+    const formBinder = await createFormBinder();
+    const inputAge = document.getElementById('birthDate');
+    inputAge.value = '2021-05-01';
+    inputAge.dispatchEvent(new Event('change'));
+    expect(await formBinder.checkValidity()).to.be.true;
+    validatorRegistry.add(validators.minValidator);
+    expect(await formBinder.checkValidity()).to.be.true;
+    inputAge.setAttribute('min', '2021-08-01');
+    expect(await formBinder.checkValidity()).to.be.false;
+    inputAge.value = '2021-09-05';
     inputAge.dispatchEvent(new Event('change'));
     expect(await formBinder.checkValidity()).to.be.true;
   });
