@@ -41,7 +41,7 @@ async function createFormBinder() {
   </mwc-formfield>
   `;
   const changes = { data };
-  formBinder.addEventListener("form-binder:change", e => {
+  formBinder.addEventListener("form-binder-change", e => {
     changes.data = e.detail.data;
   });
   await formBinder.updateComplete;

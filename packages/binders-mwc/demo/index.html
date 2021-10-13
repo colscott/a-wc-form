@@ -48,12 +48,12 @@
               <json-schema-form
                 .layout=${layout}
                 .schema=${schema}
-                @form-binder:change=${e => {
+                @form-binder-change=${e => {
                   this.data = e.detail.data;
                   this.requestUpdate();
                   this.clearErrors();
                 }}
-                @form-binder:report-validity=${e =>
+                @form-binder-report-validity=${e =>
                   this.handleValidation(e.detail.errors)}
             ></json-schema-form>
             </section>

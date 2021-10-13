@@ -47,7 +47,7 @@ customElements.define(
           <h2>json-schema-control</h2>
           <br />
           <form-binder
-            @form-binder:change=${e => {
+            @form-binder-change=${e => {
               this.data = e.detail.data;
               this.requestUpdate();
             }}
@@ -62,7 +62,7 @@ customElements.define(
           <h2>json-schema-form</h2>
           <br />
           <form-layout
-            @form-binder:change=${e => {
+            @form-binder-change=${e => {
               this.data = e.detail.data;
               this.requestUpdate();
             }}
@@ -74,7 +74,7 @@ customElements.define(
           <h2>json-schema-control</h2>
           <br />
           <form-binder
-            @form-binder:change=${e => {
+            @form-binder-change=${e => {
               this.data = e.detail.data;
               this.requestUpdate();
             }}
