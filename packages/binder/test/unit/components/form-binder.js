@@ -6,7 +6,7 @@ import { patternValidator } from '../../../src/lib/validators/pattern.js';
 import { maxValidator } from '../../../src/lib/validators/max.js';
 import { data as mockData } from '../../../demo/mock.js';
 
-/** @returns {Promise} that resolves when the form-binder-change event fires */
+/** @returns {Promise} that resolves when the form-binder:change event fires */
 export function wait() {
   return new Promise((res) => setTimeout(res));
 }
@@ -32,7 +32,7 @@ async function createFormBinder() {
     <input id="occupation" bind="/occupation" bind-attr:disabled="/student" />
   `;
   const changes = { data };
-  formBinder.addEventListener('form-binder-change', (e) => {
+  formBinder.addEventListener('form-binder:change', (e) => {
     changes.data = e instanceof CustomEvent && e.detail.data;
   });
   await formBinder.updateComplete;

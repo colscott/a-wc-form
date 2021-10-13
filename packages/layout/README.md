@@ -55,7 +55,7 @@ formBinder.data = {
 };
 
 // Listen for changes to the data
-formBinder.addEventListener('form-binder-change', e => console.info(e.detail.data));
+formBinder.addEventListener('form-binder:change', e => console.info(e.detail.data));
 ```
 
 Next pass in the layout. Here's an exhaustive example to layout the data above:
@@ -235,7 +235,7 @@ formBinder.layout = {
 ## Events
 | Name | Detail | Description |
 | ---- | ------ | ----------- |
-| form-binder-change | data | event.detail.data references a copy of the original data that has new values applied to it. |
+| form-binder:change | data | event.detail.data references a copy of the original data that has new values applied to it. |
 
 <!-- ## Material Web Component control binders
 

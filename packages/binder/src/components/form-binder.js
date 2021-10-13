@@ -271,7 +271,7 @@ export class FormBinder extends HTMLElement {
       this.checkValidity([control]).then(async (isValid) => {
         if (isValid) {
           this.dispatchEvent(
-            new CustomEvent('form-binder-change', {
+            new CustomEvent('form-binder:change', {
               detail: {
                 data,
                 validationResults: await validationResults,
@@ -375,7 +375,7 @@ export class FormBinder extends HTMLElement {
   /** @param {FormValidationResult} validationResults that to be displayed */
   reportErrors(validationResults) {
     this.dispatchEvent(
-      new CustomEvent('form-binder-report-validity', {
+      new CustomEvent('form-binder:report-validity', {
         bubbles: true,
         cancelable: false,
         composed: true,

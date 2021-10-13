@@ -41,7 +41,7 @@ formBinder.data = {
 }
 
 // Listen for changes to the data
-formBinder.addEventListener('form-binder-change', e => console.info(e.detail.data));
+formBinder.addEventListener('form-binder:change', e => console.info(e.detail.data));
 
 // Patch data to update certain values
 formBinder.patch({ name: { first: 'fred' }});
@@ -61,7 +61,7 @@ formBinder.data = {
 formBinder.reset();
 
 // Listen for and display validation errors
-formBinder.addEventListener('form-binder-report-validity', event => {
+formBinder.addEventListener('form-binder:report-validity', event => {
   /** @type {import('a-wc-form-binder/src/lib/control-validator').FormValidationResult} */
   const { errors, isValid, result } = event.detail;
   console.info(errors);
@@ -70,7 +70,7 @@ formBinder.addEventListener('form-binder-report-validity', event => {
 });
 ```
 
-Form-binder takes a JSON data object as input and outputs a CustomEvent (form-binder-change) that contains a copy of the data with any changes made it.
+Form-binder takes a JSON data object as input and outputs a CustomEvent (form-binder:change) that contains a copy of the data with any changes made it.
 Form controls are bound to the data by setting the bind attribute of the form control as a JSON pointer to the data.
 
 NOTE: The data input must serialize to valid JSON. The form binder works on a copy of the data. The copy is made using the native JSON API (stringify+parse).
@@ -150,7 +150,7 @@ form-binder doesn't display errors on the screen. This has to be implemented by 
 
 ```js
 const formBinder = document.querySelector('form-binder');
-formBinder.addEventListener('form-binder-report-validity', event => {
+formBinder.addEventListener('form-binder:report-validity', event => {
   /** @type {import('a-wc-form-binder/src/lib/control-validator').FormValidationResult} */
   const { errors, isValid, result } = event.detail;
   errors
@@ -336,14 +336,14 @@ validatorRegistry.add(asyncValidator);
 | validate | Promise\<import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult> | Starts a validity check of all bound controllers. No reporting is performed. |
 | checkValidity | Promise\<boolean> | Starts a validity check of all bound controllers. No reporting is performed. |
 | reportValidity | Promise\<import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult> | Starts a validity check of all bound controllers. Reporting is performed. |
-| reportErrors | void | Given a import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult will dispatch a form-binder-report-validity event |
+| reportErrors | void | Given a import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult will dispatch a form-binder:report-validity event |
 
 ## Events
 | Name | Detail | Description |
 | ---- | ------ | ----------- |
-| form-binder-change          | data              | event.detail.data references a copy of the original data that has new values applied to it. |
+| form-binder:change          | data              | event.detail.data references a copy of the original data that has new values applied to it. |
 |                             | validationResults | event.detail.validationResults validation was performed as part of the change process.      |
-| form-binder-report-validity | import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult | Should be listened to to update the UI with messages. |
+| form-binder:report-validity | import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult | Should be listened to to update the UI with messages. |
 
 ## Styles
 Since there is no shadow DOM applied, you are free to style the form-binder.

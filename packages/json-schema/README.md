@@ -77,7 +77,7 @@ document.querySelectorAll('json-schema-control').forEach(control => {
 formBinder.schema = schema;
 
 // Listen for changes to the data
-jsonSchemaForm.addEventListener('form-binder-change', e => console.info(e.detail.data));
+jsonSchemaForm.addEventListener('form-binder:change', e => console.info(e.detail.data));
 ```
 
 The json-schema-control web component uses [a-wc-form-layout](https://github.com/colscott/a-wc-form/tree/master/packages/layout) templates to render controls based on a properties data types.
@@ -151,7 +151,7 @@ jsonSchemaForm.schema = {
 }
 
 // Listen for changes to the data
-jsonSchemaForm.addEventListener('form-binder-change', e => console.info(e.detail.data));
+jsonSchemaForm.addEventListener('form-binder:change', e => console.info(e.detail.data));
 ```
 
 ## API - json-schema-form
@@ -165,9 +165,9 @@ jsonSchemaForm.addEventListener('form-binder-change', e => console.info(e.detail
 ## Events
 | Name | Detail | Description |
 | ---- | ------ | ----------- |
-| form-binder-change          | data              | event.detail.data references a copy of the original data that has new values applied to it. |
+| form-binder:change          | data              | event.detail.data references a copy of the original data that has new values applied to it. |
 |                             | validationResults | event.detail.validationResults validation was performed as part of the change process.      |
-| form-binder-report-validity | import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult | Should be listened to to update the UI with messages. |
+| form-binder:report-validity | import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult | Should be listened to to update the UI with messages. |
 
 ## API - json-schema-control
 ### Attributes and properties
@@ -178,4 +178,4 @@ jsonSchemaForm.addEventListener('form-binder-change', e => console.info(e.detail
 ## Events
 | Name | Detail | Description |
 | ---- | ------ | ----------- |
-| form-binder-change | data | event.detail.data references a copy of the original data that has new values applied to it. |
+| form-binder:change | data | event.detail.data references a copy of the original data that has new values applied to it. |

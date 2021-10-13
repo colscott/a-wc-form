@@ -21,12 +21,12 @@ customElements.define(
     get renderForm() {
       return html`
         <form-binder
-          @form-binder-change=${(e) => {
+          @form-binder:change=${(e) => {
             this.data = e.detail.data;
             this.requestUpdate();
             this.clearErrors();
           }}
-          @form-binder-report-validity=${(e) => this.handleValidation(e.detail.errors)}
+          @form-binder:report-validity=${(e) => this.handleValidation(e.detail.errors)}
         >
           <input type="text" pattern="fred.*" bind="#/name" />
           <input type="text" pattern="fred.*" bind="#/name" />

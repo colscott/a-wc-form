@@ -41,7 +41,7 @@
               return html`
                 <section class="examples">
                   <h2>form-layout layout provided</h2><br />
-                  <form-layout @form-binder-change=${e => {this.data = e.detail.data;this.requestUpdate();}} .data=${this.data} .layout=${layout}></form-layout><br/>
+                  <form-layout @form-binder:change=${e => {this.data = e.detail.data;this.requestUpdate();}} .data=${this.data} .layout=${layout}></form-layout><br/>
                 </section>
                 <section class="data"><pre>${JSON.stringify(this.data, null, 2)}</pre></section>
               `;
