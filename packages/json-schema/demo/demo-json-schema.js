@@ -1,15 +1,15 @@
-import { LitElement, html, css } from "lit-element";
-import { binderRegistry, binders, formCss } from "a-wc-form-binder";
-import { data } from "a-wc-form-binder/demo/mock.js";
-import "a-wc-form-layout";
-import { schema, layout } from "./mock.js";
-import "../src/components/json-schema-form.js";
-import "../src/components/json-schema-control.js";
+import { LitElement, html, css } from 'lit-element';
+import { binderRegistry, binders, formCss } from 'a-wc-form-binder';
+import { data } from 'a-wc-form-binder/demo/mock.js';
+import 'a-wc-form-layout';
+import { schema, layout } from './mock.js';
+import '../src/components/json-schema-form.js';
+import '../src/components/json-schema-control.js';
 
 binderRegistry.add(...Object.values(binders));
 
 customElements.define(
-  "test-json-ui-schema",
+  'test-json-ui-schema',
   class extends LitElement {
     /** @inheritdoc */
     static get styles() {
@@ -23,14 +23,14 @@ customElements.define(
             border: 1px solid red;
           }
         `,
-        ...formCss.allCss
+        ...formCss.allCss,
       ];
     }
 
     /** @inheritdoc */
     static get properties() {
       return {
-        data: { type: Object }
+        data: { type: Object },
       };
     }
 
@@ -47,22 +47,19 @@ customElements.define(
           <h2>json-schema-control</h2>
           <br />
           <form-binder
-            @form-binder:change=${e => {
+            @form-binder:change=${(e) => {
               this.data = e.detail.data;
               this.requestUpdate();
             }}
             .data=${this.data}
           >
-            <json-schema-control
-              .schema=${schema}
-              ref="#"
-            ></json-schema-control> </form-binder
+            <json-schema-control .schema=${schema} ref="#"></json-schema-control> </form-binder
           ><br />
 
           <h2>json-schema-form</h2>
           <br />
           <form-layout
-            @form-binder:change=${e => {
+            @form-binder:change=${(e) => {
               this.data = e.detail.data;
               this.requestUpdate();
             }}
@@ -74,48 +71,21 @@ customElements.define(
           <h2>json-schema-control</h2>
           <br />
           <form-binder
-            @form-binder:change=${e => {
+            @form-binder:change=${(e) => {
               this.data = e.detail.data;
               this.requestUpdate();
             }}
             .data=${this.data}
           >
-            <json-schema-control
-              .schema=${schema}
-              ref="/name"
-            ></json-schema-control>
-            <json-schema-control
-              .schema=${schema}
-              ref="/student"
-            ></json-schema-control>
-            <json-schema-control
-              .schema=${schema}
-              ref="/postalCode"
-            ></json-schema-control>
-            <json-schema-control
-              .schema=${schema}
-              ref="/personalData"
-            ></json-schema-control>
-            <json-schema-control
-              .schema=${schema}
-              ref="/personalData/age"
-            ></json-schema-control>
-            <json-schema-control
-              .schema=${schema}
-              ref="/comments"
-            ></json-schema-control>
-            <json-schema-control
-              .schema=${schema}
-              ref="/comments/1/date"
-            ></json-schema-control>
-            <json-schema-control
-              .schema=${schema}
-              ref="/telephoneNumbers"
-            ></json-schema-control>
-            <json-schema-control
-              .schema=${schema}
-              ref="/telephoneNumbers/1"
-            ></json-schema-control>
+            <json-schema-control .schema=${schema} ref="/name"></json-schema-control>
+            <json-schema-control .schema=${schema} ref="/student"></json-schema-control>
+            <json-schema-control .schema=${schema} ref="/postalCode"></json-schema-control>
+            <json-schema-control .schema=${schema} ref="/personalData"></json-schema-control>
+            <json-schema-control .schema=${schema} ref="/personalData/age"></json-schema-control>
+            <json-schema-control .schema=${schema} ref="/comments"></json-schema-control>
+            <json-schema-control .schema=${schema} ref="/comments/1/date"></json-schema-control>
+            <json-schema-control .schema=${schema} ref="/telephoneNumbers"></json-schema-control>
+            <json-schema-control .schema=${schema} ref="/telephoneNumbers/1"></json-schema-control>
           </form-binder>
         </section>
         <section class="data">
@@ -129,5 +99,5 @@ customElements.define(
         </section>
       `;
     }
-  }
+  },
 );

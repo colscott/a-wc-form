@@ -1,38 +1,38 @@
 /* global describe, it */
-import { expect } from "@esm-bundle/chai/esm/chai.js";
-import { getLayout } from "../../../src/lib/layout-generator.js";
+import { expect } from '@esm-bundle/chai/esm/chai.js';
+import { getLayout } from '../../../src/lib/layout-generator.js';
 
 const jsonSchema = {
-  type: "object",
+  type: 'object',
   properties: {
     name: {
-      type: "string"
+      type: 'string',
     },
     age: {
-      type: "number"
+      type: 'number',
     },
     male: {
-      type: "boolean"
+      type: 'boolean',
     },
     children: {
-      type: "array",
+      type: 'array',
       items: {
-        type: "object",
+        type: 'object',
         properties: {
           name: {
-            type: "string"
+            type: 'string',
           },
           age: {
-            type: "number"
-          }
-        }
-      }
-    }
-  }
+            type: 'number',
+          },
+        },
+      },
+    },
+  },
 };
 
 const expectedLayout = {
-  template: "VerticalLayout",
+  template: 'VerticalLayout',
   properties: {
     components: [
       {
@@ -41,8 +41,8 @@ const expectedLayout = {
           label: undefined,
           possibleValues: undefined,
           readOnly: false,
-          ref: "#/name",
-          type: "text",
+          ref: '#/name',
+          type: 'text',
           validation: {
             max: undefined,
             maxLength: undefined,
@@ -50,10 +50,10 @@ const expectedLayout = {
             minLength: undefined,
             pattern: undefined,
             required: false,
-            step: undefined
-          }
+            step: undefined,
+          },
         },
-        template: "Control"
+        template: 'Control',
       },
       {
         properties: {
@@ -61,8 +61,8 @@ const expectedLayout = {
           label: undefined,
           possibleValues: undefined,
           readOnly: false,
-          ref: "#/age",
-          type: "number",
+          ref: '#/age',
+          type: 'number',
           validation: {
             max: undefined,
             maxLength: undefined,
@@ -70,10 +70,10 @@ const expectedLayout = {
             minLength: undefined,
             pattern: undefined,
             required: false,
-            step: undefined
-          }
+            step: undefined,
+          },
         },
-        template: "Control"
+        template: 'Control',
       },
       {
         properties: {
@@ -81,8 +81,8 @@ const expectedLayout = {
           label: undefined,
           possibleValues: undefined,
           readOnly: false,
-          ref: "#/male",
-          type: "checkbox",
+          ref: '#/male',
+          type: 'checkbox',
           validation: {
             max: undefined,
             maxLength: undefined,
@@ -90,10 +90,10 @@ const expectedLayout = {
             minLength: undefined,
             pattern: undefined,
             required: false,
-            step: undefined
-          }
+            step: undefined,
+          },
         },
-        template: "Control"
+        template: 'Control',
       },
       {
         properties: {
@@ -104,8 +104,8 @@ const expectedLayout = {
                 label: undefined,
                 possibleValues: undefined,
                 readOnly: false,
-                ref: "#/children/items/name",
-                type: "text",
+                ref: '#/children/items/name',
+                type: 'text',
                 validation: {
                   max: undefined,
                   maxLength: undefined,
@@ -113,10 +113,10 @@ const expectedLayout = {
                   minLength: undefined,
                   pattern: undefined,
                   required: false,
-                  step: undefined
-                }
+                  step: undefined,
+                },
               },
-              template: "Control"
+              template: 'Control',
             },
             {
               properties: {
@@ -124,8 +124,8 @@ const expectedLayout = {
                 label: undefined,
                 possibleValues: undefined,
                 readOnly: false,
-                ref: "#/children/items/age",
-                type: "number",
+                ref: '#/children/items/age',
+                type: 'number',
                 validation: {
                   max: undefined,
                   maxLength: undefined,
@@ -133,24 +133,24 @@ const expectedLayout = {
                   minLength: undefined,
                   pattern: undefined,
                   required: false,
-                  step: undefined
-                }
+                  step: undefined,
+                },
               },
-              template: "Control"
-            }
+              template: 'Control',
+            },
           ],
           label: undefined,
-          ref: "#/children"
+          ref: '#/children',
         },
-        template: "GridLayout"
-      }
+        template: 'GridLayout',
+      },
     ],
-    label: undefined
-  }
+    label: undefined,
+  },
 };
 
-describe("Layout", () => {
-  it("Generate from layout", () => {
+describe('Layout', () => {
+  it('Generate from layout', () => {
     expect(getLayout(jsonSchema)).to.deep.equal(expectedLayout);
   });
 });

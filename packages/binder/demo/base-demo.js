@@ -1,17 +1,16 @@
-import { LitElement, html, css } from "lit-element";
-import { data } from "./mock.js";
-import { binderRegistry, binders, formCss } from "../src/index.js";
+import { LitElement, html, css } from 'lit-element';
+import { data } from './mock.js';
+import { binderRegistry, binders, formCss } from '../src/index.js';
 
 binderRegistry.add(...Object.values(binders));
 
 const errorText = {
-  pattern: error => `${error.field} must begin with fred`,
-  min: error => `${error.field} but be greater than ${error.expected}`,
-  max: error => `${error.field} but be less than ${error.expected}`,
-  "less-than": error => `${error.field} must be less than ${error.expected}`,
-  "greater-than": error =>
-    `${error.field} must be greater than ${error.expected}`,
-  rangeUnderflow: error => ""
+  pattern: (error) => `${error.field} must begin with fred`,
+  min: (error) => `${error.field} but be greater than ${error.expected}`,
+  max: (error) => `${error.field} but be less than ${error.expected}`,
+  'less-than': (error) => `${error.field} must be less than ${error.expected}`,
+  'greater-than': (error) => `${error.field} must be greater than ${error.expected}`,
+  rangeUnderflow: (error) => '',
 };
 
 /** Demo base class */
@@ -20,7 +19,7 @@ export class BaseDemo extends LitElement {
   static get properties() {
     return {
       data: { type: Object },
-      errors: { type: Array }
+      errors: { type: Array },
     };
   }
 
@@ -41,16 +40,14 @@ export class BaseDemo extends LitElement {
           grid-template-columns: 1fr min-content min-content;
         }
       `,
-      ...formCss.allCss
+      ...formCss.allCss,
     ];
   }
 
   /** @inheritdoc */
   render() {
     return html`
-      <section>
-        ${this.renderForm}
-      </section>
+      <section>${this.renderForm}</section>
       <section>
         <h2>Original data</h2>
         <pre>${JSON.stringify(data, null, 2)}</pre>
@@ -70,7 +67,7 @@ export class BaseDemo extends LitElement {
   /** @inheritdoc */
   firstUpdated() {
     super.firstUpdated();
-    this.shadowRoot.querySelector("form-binder").data = this.data;
+    this.shadowRoot.querySelector('form-binder').data = this.data;
   }
 
   /**
@@ -78,14 +75,14 @@ export class BaseDemo extends LitElement {
    */
   handleValidation(errors) {
     errors
-      .filter(c => c.visited)
-      .forEach(controlErrorEntry => {
+      .filter((c) => c.visited)
+      .forEach((controlErrorEntry) => {
         const { control, controlValidationResults } = controlErrorEntry;
         // Here you would translate the errors and output them somewhere in the UI
         control.setCustomValidity(
           controlValidationResults // The example outputs in UI using the native API, setCustomValidity
-            .map(k => errorText[k.name](k)) // Translate here
-            .join(",")
+            .map((k) => errorText[k.name](k)) // Translate here
+            .join(','),
         );
       });
     this.errors = errors;
@@ -93,11 +90,9 @@ export class BaseDemo extends LitElement {
 
   /** */
   clearErrors() {
-    const form = /** @type {import('a-wc-form-binder/src/components/form-binder').FormBinder} */ (this.shadowRoot.querySelector(
-      "form-binder"
-    ));
-    Array.from(form.registeredControlBinders.keys()).forEach(control =>
-      control.setCustomValidity("")
+    const form = /** @type {import('a-wc-form-binder/src/components/form-binder').FormBinder} */ (
+      this.shadowRoot.querySelector('form-binder')
     );
+    Array.from(form.registeredControlBinders.keys()).forEach((control) => control.setCustomValidity(''));
   }
 }
