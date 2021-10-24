@@ -82,7 +82,7 @@ export const setValue = (data, ref, value) => {
  * @returns {any}
  */
 export const getSchemaValue = (data, ref) => {
-  const dataAndProperty = getDataRef(data, ref.replace(/\//g, '/properties/').replace(/\/(\d+)/g, '/items/$1'), true);
+  const dataAndProperty = getDataRef(data, ref.replace(/\//g, '/properties/').replace(/\/(\d+)/g, '/items/$1'));
   return getDataProperty(dataAndProperty);
 };
 
