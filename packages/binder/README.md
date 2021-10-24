@@ -41,7 +41,10 @@ formBinder.data = {
 }
 
 // Listen for changes to the data
-formBinder.addEventListener('form-binder:change', e => console.info(e.detail.data));
+formBinder.addEventListener('form-binder:change', e => {
+  const { data, jsonPointer, value, validationResults} = e.detail; 
+  console.info( data, jsonPointer, value, validationResults ));
+}
 
 // Patch data to update certain values
 formBinder.patch({ name: { first: 'fred' }});
@@ -54,11 +57,19 @@ formBinder.patch([['/name/first', 'fred']]);
 
 // Can also set the data again
 formBinder.data = {
-  name: { first: 'fred', second: 'bar' }
-}
+  name: { first: 'fred', second: 'bar', middle: 'foo' }
+};
 
 // Revert any user changes or patches made to the data
-formBinder.reset();
+formBinder.rollback();
+
+// Commit changes to create a new point that can be rolled back to
+formBinder.commit();
+
+// Get changes to data since form was created or last commit
+formBinder.getPatch(); // As Object
+formBinder.getPatchAsMap(); // As Map of JSONPointer/value pairs
+formBinder.getPatchAsArray(); // As Array of Tuples (JSONPointer/value pairs)
 
 // Listen for and display validation errors
 formBinder.addEventListener('form-binder:report-validity', event => {

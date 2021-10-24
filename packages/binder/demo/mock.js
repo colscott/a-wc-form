@@ -1,3 +1,19 @@
+/**
+ * @typedef {MockData}
+ * @property {string} name
+ * @property {boolean} student
+ * @property {string} birthDate
+ * @property {string} retireDate
+ * @property {string} time
+ * @property {string} occupation
+ * @property {object} personalData
+ * @property {number} personalData.age
+ * @property {number} personalData.height
+ * @property {string} postalCode
+ * @property {string} start
+ * @property {string} end
+ * 
+ */
 export const data = {
   name: 'Johnny Five',
   student: true,

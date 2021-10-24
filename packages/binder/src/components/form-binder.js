@@ -4,6 +4,15 @@ import * as validators from '../lib/validators/index.js';
 import { getValue, normalize, objectFlat, setValue } from '../lib/json-pointer.js';
 import { ShadowDomMutationObserver } from '../lib/observer.js';
 
+/** @typedef {Array<Array<*> & { 0: string, 1: any, length: 2 }>} JSONPointerValueTuple */
+/**
+ * @template TData
+ * @typedef {{ data: TData, jsonPointer: String, value: any, validationResults: FormValidationResult}} FormBinderChangeEventDetail
+ */
+/**
+ * @template TData
+ * @typedef {CustomEvent<FormBinderChangeEventDetail<TData>>} FormBinderChangeEvent
+ */
 /** @typedef {import('../lib/control-binding.js').ControlBinding} ControlBinding */
 /** @typedef {import("../lib/binder-registry.js").ControlElement} ControlElement */
 /** @typedef {import("../lib/validator-registry.js").ValidationControlResult} ValidationControlResult */
@@ -68,7 +77,7 @@ function getChildElements(parentElement) {
   ];
 }
 
-/**  */
+/** @template TData */
 export class FormBinder extends HTMLElement {
   /** @returns {object} that is being bound to the form controls */
   get data() {
@@ -134,23 +143,67 @@ export class FormBinder extends HTMLElement {
     /** @type {Map<Element, ControlBinding>} */
     this.registeredControlBinders = new Map();
 
-    /** @type {Set<Element>} controls the user has interacted with */
+    /**
+     * @private
+     * @type {Set<Element>} controls the user has interacted with
+     */
     this._visitedControls = new Set();
 
-    /** @type {Map<Element, any>} controls whose values have been changed by the user */
-    this._dirtyControls = new Map();
+    /**
+     * @private
+     * @type {Map<Element, any>} controls whose values have been changed by the user
+     */
+    this._updatedControls = new Map();
 
-    /** @type {object} */
+    /**
+     * @private
+     * @type {Partial<TData>}
+     */
+    this._patch = {};
+
+    /**
+     * @type {object}
+     * @private
+     */
     this._originalData = null;
 
-    /** @type {object} */
+    /** @type {TData} */
     this.data = null;
 
+    /** @private guard to prevent nested reportValidity processes */
     this._reportValidityRequested = false;
   }
 
-  /** @typedef {Array<Array<*> & { 0: string, 1: unknown, length: 2 }>} JSONPointerValueTuple */
-  /** @param {Object.<string, unknown>|Map<string, unknown>|JSONPointerValueTuple} partialData that will be used to update the current form data. Can be a partial object of a Map or JSON pointers and new values. */
+  /**
+   * @protected
+   * Marks a JSON Pointer and value as changed and also updates the value in the data.
+   * @param {string} jsonPointer to the property to set the value
+   * @param {unknown} newValue to assign to the pointer
+   */
+  _patchValue(jsonPointer, newValue) {
+    setValue(this._patch, jsonPointer, newValue);
+    setValue(this.data, jsonPointer, newValue);
+  }
+
+  /** @returns {Partial<TData>} data changed as a partial object */
+  getPatch() {
+    return this._patch;
+  }
+
+  /** @returns {Map<string, unknown>} data changed as Map of JSONPointer/value pairs */
+  getPatchAsMap() {
+    return objectFlat(this.getPatch());
+  }
+
+  /** @returns {JSONPointerValueTuple} data changed as Array of JSONPointer/value pairs */
+  getPatchAsArray() {
+    return Array.from(this.getPatchAsMap().entries());
+  }
+
+  /**
+   * Updates the form data with a partial object.
+   * @param {Partial<TData>|Map<string, any>|JSONPointerValueTuple} [partialData] that will be used to update the current form data. Can be a partial object of a Map or JSON pointers and new values.
+   */
   patch(partialData) {
     let jsonPointers;
     if (partialData instanceof Array) {
@@ -162,17 +215,38 @@ export class FormBinder extends HTMLElement {
     }
 
     jsonPointers.forEach((value, key) => {
-      setValue(this.data, key, value);
+      this._patchValue(key, value);
     });
 
     this.updateControlValues(Array.from(jsonPointers.keys()));
   }
 
-  /** Clears the data to the initial data value set */
-  reset() {
+  /**
+   * Clears the currently recorded changes and sets the current state as the new baseline. It does not clear the data changes themselves.
+   * You might use this if the user saves the form and you want to mark the form as .
+   * If reset() is called the form will be reverted to the last time commitChanges() was called.
+   */
+  commit() {
+    this._patch = {};
+    this._updatedControls = new Map();
+    this._originalData = JSON.parse(JSON.stringify(this.data));
+  }
+
+  /**
+   * Resets the form back to original status. All controls are marked unchanged. All patches are cleared.
+   * Clears the data to the initial data value set. Reverts the data to the last time the data was set or commitChanges was called.
+   */
+  rollback() {
+    this._patch = {};
+    this._updatedControls = new Map();
     if (this._originalData) {
       this.data = this._originalData;
     }
+  }
+
+  /** @deprecated use rollback */
+  reset() {
+    this.rollback();
   }
 
   /** @returns {Array<Element>} controls that have been bound to the form */
@@ -258,28 +332,29 @@ export class FormBinder extends HTMLElement {
 
   /**
    * @param {ControlElement} control
-   * @param {any} newValue
+   * @param {any} value
    */
-  handleControlValueChange(control, newValue) {
+  async handleControlValueChange(control, value) {
     const name = getName(control);
-    if (newValue !== getValue(this.data, name)) {
-      this._dirtyControls.set(control, newValue);
-      setValue(this.data, name, newValue);
+    if (value !== getValue(this.data, name)) {
+      this._updatedControls.set(control, value);
+      this._patchValue(name, value);
       this.updateControlValues([name]);
-      const validationResults = this.controlVisited(control);
       const data = JSON.parse(JSON.stringify(this.data));
-      this.checkValidity([control]).then(async (isValid) => {
-        if (isValid) {
-          this.dispatchEvent(
-            new CustomEvent('form-binder:change', {
-              detail: {
-                data,
-                validationResults: await validationResults,
-              },
-            }),
-          );
-        }
-      });
+      const validationResults = await this.controlVisited(control);
+      const controlIsValid = validationResults.errors.every((error) => error.control !== control);
+      if (controlIsValid) {
+        /** @type {FormBinderChangeEventDetail<TData>} */
+        const detail = {
+          data,
+          jsonPointer: normalize(name),
+          value,
+          validationResults,
+        };
+        /** @type {FormBinderChangeEvent<TData>} */
+        const event = new CustomEvent('form-binder:change', { detail });
+        this.dispatchEvent(event);
+      }
     }
   }
 
