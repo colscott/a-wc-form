@@ -1,4 +1,3 @@
-/** @typedef {string | number | boolean | null | JSONValue[] | {[key: string]: JSONValue]}} JSONValue */
 /**
  * @param {Object.<string, any>} data
  * @param {string} ref
