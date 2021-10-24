@@ -1,19 +1,23 @@
 /**
- * @typedef {MockData}
+ * @typedef {Partial<Object>} PersonalData
+ * @property {number} age
+ * @property {number} height
+ */
+/**
+ * @typedef {Partial<Object>} MockData
  * @property {string} name
  * @property {boolean} student
  * @property {string} birthDate
  * @property {string} retireDate
  * @property {string} time
  * @property {string} occupation
- * @property {object} personalData
- * @property {number} personalData.age
- * @property {number} personalData.height
+ * @property {PersonalData} personalData
  * @property {string} postalCode
  * @property {string} start
  * @property {string} end
  * 
  */
+
 export const data = {
   name: 'Johnny Five',
   student: true,

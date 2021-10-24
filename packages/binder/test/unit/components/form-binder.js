@@ -5,16 +5,19 @@ import { binderRegistry, binders, validatorRegistry, ValidationResult } from '..
 import { patternValidator } from '../../../src/lib/validators/pattern.js';
 import { maxValidator } from '../../../src/lib/validators/max.js';
 import { data as mockData } from '../../../demo/mock.js';
+/** @typedef {import('../../../demo/mock').MockData} MockData */
+/** @typedef {import('../../../src/components/form-binder.js').FormBinder<MockData>} FormBinder */
+/** @typedef {import('../../../src/components/form-binder').FormBinderChangeEventDetail<MockData>} FormBinderChangeEventDetail */
 
 /** @returns {Promise} that resolves when the form-binder:change event fires */
 export function wait() {
   return new Promise((res) => setTimeout(res));
 }
 
-/** @returns {Promise<{formBinder: import('../../../src/components/form-binder.js').FormBinder, eventDetail: import('../../../src/components/form-binder').FormBinderChangeEventDetail<any>}>} */
+/** @returns {Promise<{formBinder: FormBinder, eventDetail: FormBinderChangeEventDetail}>} */
 async function createFormBinder() {
   const data = JSON.parse(JSON.stringify(mockData));
-  const formBinder = /** @type {import('../../../src/components/form-binder.js').FormBinder} */ (
+  const formBinder = /** @type {import('../../../src/components/form-binder.js').FormBinder<MockData>} */ (
     document.createElement('form-binder')
   );
   formBinder.data = data;
@@ -31,9 +34,10 @@ async function createFormBinder() {
     <input id="end" type="date" bind="/end" bind-attr:min="/start" />
     <input id="occupation" bind="/occupation" bind-attr:disabled="/student" />
   `;
+  /** @type {import('../../../src/components/form-binder').FormBinderChangeEventDetail<MockData>} */
   const eventDetail = { data, jsonPointer: null, value: null, validationResults: null };
   formBinder.addEventListener('form-binder:change', (e) => {
-    const event = /** @type {import('../../../src/components/form-binder').FormBinderChangeEvent<any>} */ (e);
+    const event = /** @type {import('../../../src/components/form-binder').FormBinderChangeEvent<MockData>} */ (e);
     eventDetail.data = event.detail.data;
     eventDetail.jsonPointer = event.detail.jsonPointer;
     eventDetail.value = event.detail.value;
