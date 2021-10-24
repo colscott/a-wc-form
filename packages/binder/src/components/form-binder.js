@@ -36,11 +36,7 @@ export function getName(element) {
   // @ts-ignore
   const binderName =
     // @ts-ignore
-    element.bind ||
-    element.getAttribute('bind') ||
-    // @ts-ignore
-    element.name ||
-    element.getAttribute('name');
+    element.bind || element.getAttribute('bind');
   if (!binderName) {
     console.error('No binder name found for element', element);
   }
