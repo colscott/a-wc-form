@@ -1,20 +1,42 @@
+/** @typedef {string | number | boolean | null | JSONValue[] | {[key: string]: JSONValue]}} JSONValue */
 /**
- * @param {any} data
+ * @param {Object.<string, any>} data
  * @param {string} ref
  * @returns {{data: any; property: string;}}
  */
-const getDataRef = (data, ref, traverseSchema) => {
+const getDataRef = (data, ref) => {
   let nextData = data;
-  const parts = ref.split('/').reverse();
-  while (nextData && parts.length > 1) {
-    const nextKey = parts.pop();
+  const keys = ref.split('/').reverse();
+  while (nextData && keys.length > 1) {
+    const nextKey = keys.pop();
 
     if (nextKey in nextData) {
       nextData = nextData[nextKey];
     }
   }
 
-  return { data: nextData, property: parts[0] };
+  return { data: nextData, property: keys[0] };
+};
+
+const isIntRegEx = /^[0-9]+$/;
+
+/**
+ * @param {*} data 
+ * @param {string} ref 
+ */
+const buildOutObject = (data, ref) => {
+  const keys = ref.split('/');
+  let nextData = data;
+  keys.forEach((key, i) => {
+    if (key.length > 1) {
+      const nextKey = keys[i + 1];
+      // If there is a next key then it is expecting either array or object
+      if (nextKey && !nextData[key]) {
+        nextData[key] = isIntRegEx.test(nextKey) ? [] : {};
+      }
+      nextData = nextData[key];
+    }
+  });
 };
 
 /**
@@ -50,6 +72,7 @@ export const getValue = (data, ref) => {
  * @param {any} value
  */
 export const setValue = (data, ref, value) => {
+  buildOutObject(data, ref);
   const dataAndProperty = getDataRef(data, ref);
   dataAndProperty.data[dataAndProperty.property] = value;
 };

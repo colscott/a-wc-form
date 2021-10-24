@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* global describe, it */
 import { expect } from '@esm-bundle/chai/esm/chai.js';
-import { getSchemaValue, getValue, objectFlat, normalize } from '../../../src/lib/json-pointer.js';
+import { getSchemaValue, getValue, setValue, objectFlat, normalize } from '../../../src/lib/json-pointer.js';
 import { data } from '../../../demo/mock.js';
 import { schema } from '../../../../json-schema/demo/mock.js';
 
@@ -39,6 +39,18 @@ describe('JSON Pointer', () => {
     expect(getSchemaValue(schema, '/address/1')).to.equal(schema.properties.address.items[1]);
   });
 
+  it('Should set values', () => {
+    const t1 = {};
+    setValue(t1, '#/name', 1);
+    expect(t1).to.eql({ name: 1 });
+    setValue(t1, '/name2', 1);
+    expect(t1).to.eql({ name: 1, name2: 1 });
+    setValue(t1, '#/nested1/age', 1);
+    expect(t1).to.eql({ name: 1, name2: 1, nested1: { age: 1 } });
+    setValue(t1, '/nested1/age2', 1);
+    expect(t1).to.eql({ name: 1, name2: 1, nested1: { age: 1, age2: 1 } });
+  });
+
   it('Should convert object to flat JSON Pointers', () => {
     const testData = { test: { foobar: 't1', arr1: [{ test2: 't2' }, 4] } };
     const result = objectFlat(testData);
@@ -52,5 +64,25 @@ describe('JSON Pointer', () => {
     expect(normalize('#/foobar')).to.equal('/foobar');
   });
 
+  it('Should fill out data structure when setting value', () => {
+    testSetValue({}, '#/name', 'fred', { name: 'fred'});
+    testSetValue({}, '/name', 'fred', { name: 'fred'});
+    testSetValue({}, '/names/0', 'fred', { names: ['fred']});
+    testSetValue({names: ['bob']}, '/names/1', 'fred', { names: ['bob', 'fred']});
+    testSetValue({a:{}}, '/a/b', 123, { a: {b: 123}});
+    testSetValue({a:{c: true}}, '/a/b', 123, { a: {b: 123, c: true}});
+  });
+
   // xit("Should correctly set data", async () => {});
 });
+
+/**
+ * @param {Object.<string, any} seedData 
+ * @param {string} ref 
+ * @param {*} value 
+ * @param {*} expected 
+ */
+function testSetValue(seedData, ref, value, expected) {
+  setValue(seedData, ref, value);
+  expect(seedData).to.eql(expected);
+}
