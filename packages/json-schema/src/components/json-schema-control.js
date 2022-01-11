@@ -35,7 +35,10 @@ export class JsonSchemaControl extends LitElement {
   get schema() {
     if (!this._schema) {
       const form = /** @type {Element&{schema: import("../lib/models").JsonSchema}} */ (
-        closest('form-layout, form-binder', this.parentElement || /** @type {ShadowRoot} */ (this.getRootNode()).host)
+        closest(
+          'form-layout, form-binder, json-schema-form',
+          this.parentElement || /** @type {ShadowRoot} */ (this.getRootNode()).host,
+        )
       );
       if (form) {
         this.schema = form.schema;
