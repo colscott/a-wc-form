@@ -329,9 +329,10 @@ export class FormBinder extends HTMLElement {
   /**
    * @param {ControlElement} control
    * @param {any} value
+   * @param {import('../lib/binder-registry').OnValueChangeCallbackOptions} [options]
    */
-  async handleControlValueChange(control, value) {
-    const name = getName(control);
+  async handleControlValueChange(control, value, options) {
+    const name = `${getName(control)}${options && options.ref ? `/${options.ref}` : ''}`;
     if (value !== getValue(this.data, name)) {
       this._updatedControls.set(control, value);
       this._patchValue(name, value);

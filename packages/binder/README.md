@@ -123,7 +123,12 @@ const divToggleBinding = {
   initializeEvents: (control, onChange) =>
     control.addEventListener("click", e => {
       control.toggleValue = !control.toggleValue;
-      onChange(control.toggleValue)
+      onChange(control.toggleValue);
+      // Optionally pass a partial JSON pointer the the changed property
+      // This can be used if the control is bing a complex object
+      // such as a grid control 
+      // onChange(newValue, { ref: 'nested/pointer' })
+      // This nested JSON point would then get concatenated with the JSON pointer assigned to the control itself.
     }),
   writeValue: (control, value) => {
     control.toggleValue = value;

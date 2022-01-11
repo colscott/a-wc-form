@@ -1,21 +1,25 @@
 /** @typedef {import("./binder-registry").ControlElement} ControlElement */
 /** @typedef {import("./binder-registry").Binder} Binder */
 
+/**
+ * @callback OnValueChangeCallback
+ * @param {ControlElement} component
+ * @param {any} newValue new value to assign
+ * @param {import('./binder-registry').OnValueChangeCallbackOptions} [options]
+ * @returns {void}
+ */
+
+/**
+ * @callback OnTouchCallback
+ * @param {ControlElement} component
+ * @returns {void}
+ */
+
 /** */
 export class ControlBinding {
   /** @returns {Binder} */
   get binder() {
     return this._binder;
-  }
-
-  /** @returns {function(ControlElement, any):void} function that binds control value to the data */
-  get controlValueChanged() {
-    return this._controlValueChanged;
-  }
-
-  /** @param {function(ControlElement, any):void} callback function that binds control value to the data */
-  set controlValueChanged(callback) {
-    this._controlValueChanged = callback;
   }
 
   /** @param {any} newValue */
@@ -26,15 +30,15 @@ export class ControlBinding {
   /**
    * @param {Binder} binder
    * @param {ControlElement} controlElement
-   * @param {function(ControlElement, any):void} onChange
-   * @param {function(ControlElement):void} onTouch
+   * @param {OnValueChangeCallback} onChange
+   * @param {OnTouchCallback} onTouch
    */
   constructor(binder, controlElement, onChange, onTouch) {
     this._binder = binder;
     this.controlElement = controlElement;
-    /** @type {function(ControlElement, any):void} function that binds control value to the data */
+    /** @type {OnValueChangeCallback} function that binds control value to the data */
     this.controlValueChanged = onChange;
-    /** @type {function(ControlElement, any):void} function that binds control value to the data */
+    /** @type {OnTouchCallback} */
     this.controlTouched = onTouch;
     this.initialize(controlElement);
   }
@@ -43,14 +47,17 @@ export class ControlBinding {
   initialize(controlElement) {
     this.binder.initializeEvents(
       controlElement,
-      (value) => this.onChange(value),
+      (value, options) => this.onChange(value, options),
       () => this.onTouch(),
     );
   }
 
-  /** @param {any} newValue */
-  onChange(newValue) {
-    this.controlValueChanged(this.controlElement, newValue);
+  /**
+   * @param {any} newValue
+   * @param {import('./binder-registry').OnValueChangeCallbackOptions} [options]
+   */
+  onChange(newValue, options) {
+    this.controlValueChanged(this.controlElement, newValue, options);
   }
 
   /**  */
