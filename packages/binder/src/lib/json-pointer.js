@@ -27,7 +27,7 @@ const buildOutObject = (data, ref) => {
   const keys = ref.split('/');
   let nextData = data;
   keys.forEach((key, i) => {
-    if (key.length > 1) {
+    if (key.length && key !== '#') {
       const nextKey = keys[i + 1];
       // If there is a next key then it is expecting either array or object
       if (nextKey && !nextData[key]) {

@@ -65,22 +65,23 @@ describe('JSON Pointer', () => {
   });
 
   it('Should fill out data structure when setting value', () => {
-    testSetValue({}, '#/name', 'fred', { name: 'fred'});
-    testSetValue({}, '/name', 'fred', { name: 'fred'});
-    testSetValue({}, '/names/0', 'fred', { names: ['fred']});
-    testSetValue({names: ['bob']}, '/names/1', 'fred', { names: ['bob', 'fred']});
-    testSetValue({a:{}}, '/a/b', 123, { a: {b: 123}});
-    testSetValue({a:{c: true}}, '/a/b', 123, { a: {b: 123, c: true}});
+    testSetValue({}, '#/name', 'fred', { name: 'fred' });
+    testSetValue({}, '/name', 'fred', { name: 'fred' });
+    testSetValue({}, '/names/0', 'fred', { names: ['fred'] });
+    testSetValue({ names: ['bob'] }, '/names/1', 'fred', { names: ['bob', 'fred'] });
+    testSetValue({ a: {} }, '/a/b', 123, { a: { b: 123 } });
+    testSetValue({ a: { c: true } }, '/a/b', 123, { a: { b: 123, c: true } });
+    testSetValue({}, '#/comments/1/message', 'foobar', { comments: [undefined, { message: 'foobar' }] });
   });
 
   // xit("Should correctly set data", async () => {});
 });
 
 /**
- * @param {Object.<string, any} seedData 
- * @param {string} ref 
- * @param {*} value 
- * @param {*} expected 
+ * @param {Object.<string, any} seedData
+ * @param {string} ref
+ * @param {*} value
+ * @param {*} expected
  */
 function testSetValue(seedData, ref, value, expected) {
   setValue(seedData, ref, value);
