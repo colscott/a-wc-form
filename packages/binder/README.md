@@ -23,6 +23,8 @@ Example:
   <!-- Auxiliary attributes can also be bound. These attributes start 'bind-attr:' and are single way binders that do not use control binders -->
   <input bind="/name/second" bind-attr:disabled="/canEdit" /> <!-- Will add disabled attribute if canEdit is true -->
   <input bind="/age" bind-attr:min="/minAge" /> <!-- set the min attribute to the value of the minAge property in the data -->
+  <input type="date" bind="/start" bind-attr:max="/end" /> <!-- Date range constraint example -->
+  <input type="date" bind="/end" bind-attr:min="/start" />
 </form-binder>
 ```
 ```js
@@ -41,7 +43,10 @@ formBinder.data = {
 }
 
 // Listen for changes to the data
-formBinder.addEventListener('form-binder:change', e => console.info(e.detail.data));
+formBinder.addEventListener('form-binder:change', e => {
+  const { data, jsonPointer, value, validationResults} = e.detail; 
+  console.info( data, jsonPointer, value, validationResults ));
+}
 
 // Patch data to update certain values
 formBinder.patch({ name: { first: 'fred' }});
@@ -54,11 +59,19 @@ formBinder.patch([['/name/first', 'fred']]);
 
 // Can also set the data again
 formBinder.data = {
-  name: { first: 'fred', second: 'bar' }
-}
+  name: { first: 'fred', second: 'bar', middle: 'foo' }
+};
 
 // Revert any user changes or patches made to the data
-formBinder.reset();
+formBinder.rollback();
+
+// Commit changes to create a new point that can be rolled back to
+formBinder.commit();
+
+// Get changes to data since form was created or last commit
+formBinder.getPatch(); // As Object
+formBinder.getPatchAsMap(); // As Map of JSONPointer/value pairs
+formBinder.getPatchAsArray(); // As Array of Tuples (JSONPointer/value pairs)
 
 // Listen for and display validation errors
 formBinder.addEventListener('form-binder:report-validity', event => {
@@ -328,7 +341,11 @@ validatorRegistry.add(asyncValidator);
 | ---- | ---- | ----------- |
 | getControls | Array<Element> | Gets the controls that have been bound to the form |
 | patch | void | Can be passed partial data to update parts of the data model. Pass an Object that has the same structure as the data model to be changed bu only the properties you want to update are present. Alternatively, you can pass a Map\<string, unknown> or an Array of Tuple<string, unknown> where the key is JSON pointer to the data item and the key is the value to set. |
-| reset | void | Reverts any user changes or patches made to the data. |
+| getPatch | Partial<TData> | data changed as a partial object since data was set or commit() was called. |
+| getPatchAsMap | Map<string, unknown> | data changed as a JSONPoint/value Map since data was set or commit() was called. |
+| getPatchAsArray | Array<[string, unknown]> | data changed as an Array or Tuple (JSONPointer/value) since data was set or commit() was called. |
+| rollback | void | Reverts any user changes or patches made to the data. |
+| commit | void | Clears the currently recorded changes and sets the current state as the new baseline. It does not clear the data changes themselves. You might use this if the user saves the form and you want to mark the form as unchanged. If rollback() is called the form will be reverted to the last time commit() was called. |
 | addControl | void | Can be called to manually bind a control to a form. |
 | updateControlValue | void | Manually updates a control with the value in the data. Triggers reportValidity if the user has visited/touched the control. |
 | updateControlValues | void | Manually updates all bound controls with the value in the data. Triggers reportValidity if the user has visited/touched the control. |

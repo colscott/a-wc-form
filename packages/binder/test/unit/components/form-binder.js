@@ -5,16 +5,19 @@ import { binderRegistry, binders, validatorRegistry, ValidationResult } from '..
 import { patternValidator } from '../../../src/lib/validators/pattern.js';
 import { maxValidator } from '../../../src/lib/validators/max.js';
 import { data as mockData } from '../../../demo/mock.js';
+/** @typedef {import('../../../demo/mock').MockData} MockData */
+/** @typedef {import('../../../src/components/form-binder.js').FormBinder<MockData>} FormBinder */
+/** @typedef {import('../../../src/components/form-binder').FormBinderChangeEventDetail<MockData>} FormBinderChangeEventDetail */
 
 /** @returns {Promise} that resolves when the form-binder:change event fires */
 export function wait() {
   return new Promise((res) => setTimeout(res));
 }
 
-/** @returns {Promise<{formBinder: import('../../../src/components/form-binder.js').FormBinder, change: {data: any}}>} */
+/** @returns {Promise<{formBinder: FormBinder, eventDetail: FormBinderChangeEventDetail}>} */
 async function createFormBinder() {
   const data = JSON.parse(JSON.stringify(mockData));
-  const formBinder = /** @type {import('../../../src/components/form-binder.js').FormBinder} */ (
+  const formBinder = /** @type {import('../../../src/components/form-binder.js').FormBinder<MockData>} */ (
     document.createElement('form-binder')
   );
   formBinder.data = data;
@@ -31,12 +34,16 @@ async function createFormBinder() {
     <input id="end" type="date" bind="/end" bind-attr:min="/start" />
     <input id="occupation" bind="/occupation" bind-attr:disabled="/student" />
   `;
-  const changes = { data };
+  /** @type {import('../../../src/components/form-binder').FormBinderChangeEventDetail<MockData>} */
+  const eventDetail = { data, jsonPointer: null, value: null, validationResults: null };
   formBinder.addEventListener('form-binder:change', (e) => {
-    changes.data = e instanceof CustomEvent && e.detail.data;
+    const event = /** @type {import('../../../src/components/form-binder').FormBinderChangeEvent<MockData>} */ (e);
+    eventDetail.data = event.detail.data;
+    eventDetail.jsonPointer = event.detail.jsonPointer;
+    eventDetail.value = event.detail.value;
+    eventDetail.validationResults = event.detail.validationResults;
   });
-  await formBinder.updateComplete;
-  return { formBinder, changes };
+  return { formBinder, eventDetail };
 }
 
 /** @type {import('../../../src/lib/validator-registry').Validator} */
@@ -68,7 +75,7 @@ describe('form-binder binding tests', () => {
     validatorRegistry.add(validateTextInput, true);
   });
   after(() => {
-    validatorRegistry.remove(validateTextInput, true);
+    validatorRegistry.remove(validateTextInput);
   });
   afterEach(() => {
     validatorRegistry.remove(patternValidator);
@@ -87,21 +94,21 @@ describe('form-binder binding tests', () => {
   });
   it('Should not change value when value is invalid', async () => {
     binderRegistry.add(...Object.values(binders));
-    const { changes } = await createFormBinder();
+    const { eventDetail } = await createFormBinder();
     validatorRegistry.add(patternValidator, true);
     validatorRegistry.add(maxValidator, true);
     inputValue('name', 'Bert');
     inputValue('age', '300');
     await wait();
-    expect(changes.data.name).to.equal('Johnny Five');
-    expect(changes.data.personalData.age).to.equal(34);
+    expect(eventDetail.data.name).to.equal('Johnny Five');
+    expect(eventDetail.data.personalData.age).to.equal(34);
     validatorRegistry.remove(patternValidator);
     validatorRegistry.remove(maxValidator);
     inputValue('name', 'Fred');
     inputValue('age', '20');
     await wait();
-    expect(changes.data.name).to.equal('Fred');
-    expect(changes.data.personalData.age).to.equal(20);
+    expect(eventDetail.data.name).to.equal('Fred');
+    expect(eventDetail.data.personalData.age).to.equal(20);
   });
   it('Should reflect changes to data', async () => {
     binderRegistry.add(...Object.values(binders));
@@ -111,7 +118,6 @@ describe('form-binder binding tests', () => {
     dataCopy.personalData.age = 62;
     dataCopy.student = false;
     formBinder.data = dataCopy;
-    await formBinder.updateComplete;
     expect(document.getElementById('name').value).to.equal('fred123');
     expect(document.getElementById('age').value).to.equal('62');
     expect(document.getElementById('student').checked).to.equal(false);
@@ -119,24 +125,24 @@ describe('form-binder binding tests', () => {
 
   it('Should use custom validation', async () => {
     binderRegistry.add(...Object.values(binders));
-    const { changes } = await createFormBinder();
+    const { eventDetail } = await createFormBinder();
     inputValue('whitelist', 'Bert');
     await wait();
-    expect(changes.data.name).to.equal('Johnny Five');
+    expect(eventDetail.data.name).to.equal('Johnny Five');
     inputValue('whitelist', 'bill');
     await wait();
-    expect(changes.data.name).to.equal('bill');
+    expect(eventDetail.data.name).to.equal('bill');
     inputValue('whitelist', 'ray');
     await wait();
-    expect(changes.data.name).to.equal('bill');
+    expect(eventDetail.data.name).to.equal('bill');
     inputValue('whitelist', 'rob');
     await wait();
-    expect(changes.data.name).to.equal('rob');
+    expect(eventDetail.data.name).to.equal('rob');
   });
 
   it('Should be able to patch values with object', async () => {
     binderRegistry.add(...Object.values(binders));
-    const { formBinder, changes } = await createFormBinder();
+    const { formBinder, eventDetail } = await createFormBinder();
     inputValue('whitelist', 'Bert');
     inputValue('age', '30');
     await wait();
@@ -144,14 +150,14 @@ describe('form-binder binding tests', () => {
     await wait();
     inputValue('whitelist', 'bob');
     await wait();
-    expect(changes.data.name).to.equal('bob');
-    expect(changes.data.personalData.age).to.equal(35);
-    expect(changes.data.student).to.equal(false);
+    expect(eventDetail.data.name).to.equal('bob');
+    expect(eventDetail.data.personalData.age).to.equal(35);
+    expect(eventDetail.data.student).to.equal(false);
   });
 
   it('Should be able to patch values with Map', async () => {
     binderRegistry.add(...Object.values(binders));
-    const { formBinder, changes } = await createFormBinder();
+    const { formBinder, eventDetail } = await createFormBinder();
     inputValue('whitelist', 'Bert');
     inputValue('age', '30');
     await wait();
@@ -162,14 +168,14 @@ describe('form-binder binding tests', () => {
     await wait();
     inputValue('whitelist', 'rob');
     await wait();
-    expect(changes.data.name).to.equal('rob');
-    expect(changes.data.personalData.age).to.equal(40);
-    expect(changes.data.student).to.equal(false);
+    expect(eventDetail.data.name).to.equal('rob');
+    expect(eventDetail.data.personalData.age).to.equal(40);
+    expect(eventDetail.data.student).to.equal(false);
   });
 
   it('Should be able to patch values with JSON pointer', async () => {
     binderRegistry.add(...Object.values(binders));
-    const { formBinder, changes } = await createFormBinder();
+    const { formBinder, eventDetail } = await createFormBinder();
     inputValue('whitelist', 'Bert');
     inputValue('age', '30');
     await wait();
@@ -180,14 +186,14 @@ describe('form-binder binding tests', () => {
     await wait();
     inputValue('whitelist', 'rob');
     await wait();
-    expect(changes.data.name).to.equal('rob');
-    expect(changes.data.personalData.age).to.equal(40);
-    expect(changes.data.student).to.equal(false);
+    expect(eventDetail.data.name).to.equal('rob');
+    expect(eventDetail.data.personalData.age).to.equal(40);
+    expect(eventDetail.data.student).to.equal(false);
   });
 
   it('Should update control values with patched data', async () => {
     binderRegistry.add(...Object.values(binders));
-    const { formBinder, changes } = await createFormBinder();
+    const { formBinder, eventDetail } = await createFormBinder();
     inputValue('age', 28);
     inputValue('age2', 28);
     await wait();
@@ -201,7 +207,7 @@ describe('form-binder binding tests', () => {
 
   it('Should be able to reset data', async () => {
     binderRegistry.add(...Object.values(binders));
-    const { formBinder, changes } = await createFormBinder();
+    const { formBinder, eventDetail } = await createFormBinder();
     inputValue('whitelist', 'Bert');
     inputValue('age', '30');
     await wait();
@@ -212,14 +218,14 @@ describe('form-binder binding tests', () => {
     await wait();
     inputValue('whitelist', 'rob');
     await wait();
-    formBinder.reset();
+    formBinder.rollback();
     await wait();
     expect(formBinder.data).to.eql(mockData);
   });
 
   it('Should bind attributes', async () => {
     binderRegistry.add(...Object.values(binders));
-    const { formBinder, changes } = await createFormBinder();
+    const { formBinder } = await createFormBinder();
     inputValue('start', '2021-03-04');
     inputValue('end', '2021-03-10');
     await wait();
@@ -238,18 +244,72 @@ describe('form-binder binding tests', () => {
     expect(occupationInput.hasAttribute('disabled')).to.equal(true);
   });
 
+  it('Should include changed JSON pointer and value in change event', async () => {
+    binderRegistry.add(...Object.values(binders));
+    const { formBinder, eventDetail } = await createFormBinder();
+    inputValue('whitelist', 'bob');
+    await wait();
+    expect(eventDetail.jsonPointer).to.equal('/name');
+    expect(eventDetail.value).to.equal('bob');
+    inputValue('age', '30');
+    await wait();
+    expect(eventDetail.jsonPointer).to.equal('/personalData/age');
+    expect(eventDetail.value).to.equal(30);
+  });
+
+  it('Should keep track of changes via patch', async () => {
+    binderRegistry.add(...Object.values(binders));
+    const { formBinder, eventDetail } = await createFormBinder();
+    expect(formBinder.getPatch()).to.eql({});
+    expect(formBinder.getPatchAsArray()).to.eql([]);
+    expect(formBinder.getPatchAsMap()).to.eql(new Map());
+    inputValue('whitelist', 'bob');
+    await wait();
+    expect(formBinder.getPatch()).to.eql({ name: 'bob' });
+    expect(formBinder.getPatchAsArray()).to.eql([['/name', 'bob']]);
+    expect(formBinder.getPatchAsMap()).to.eql(new Map([['/name', 'bob']]));
+    inputValue('age', '30');
+    await wait();
+    expect(eventDetail.jsonPointer).to.equal('/personalData/age');
+    expect(eventDetail.value).to.equal(30);
+    expect(formBinder.getPatch()).to.eql({ name: 'bob', personalData: { age: 30 } });
+    expect(formBinder.getPatchAsArray()).to.eql([
+      ['/name', 'bob'],
+      ['/personalData/age', 30],
+    ]);
+    expect(formBinder.getPatchAsMap()).to.eql(
+      new Map([
+        ['/name', 'bob'],
+        ['/personalData/age', 30],
+      ]),
+    );
+  });
+
+  it('Should reset to last commitChanges', async () => {
+    binderRegistry.add(...Object.values(binders));
+    const { formBinder, eventDetail } = await createFormBinder();
+    formBinder.data = {a: 1};
+    expect(formBinder.data).to.eql({a: 1});
+    formBinder.commit();
+    formBinder.patch({a:2});
+    expect(formBinder.data).to.eql({a: 2});
+    // reset
+    formBinder.rollback();
+    expect(formBinder.data).to.eql({a: 1});
+  });
+
   // Not currently supported as the binders get initialized with events when the control is added to the form
   // it("Should not change value when binder is removed", async () => {
   //   binder.add(binders.textInputBinder);
-  //   const { formBinder, changes } = await createFormBinder();
+  //   const { formBinder, eventDetail } = await createFormBinder();
   //   inputValue("name", "Bert");
   //   await formBinder.updateComplete;
-  //   expect(changes.data.name).to.equal("Bert");
+  //   expect(eventDetail.data.name).to.equal("Bert");
 
   //   binder.remove(binders.textInputBinder);
   //   inputValue("name", "Johnny Six");
   //   await formBinder.updateComplete;
-  //   expect(changes.data.name).to.equal("Bert");
+  //   expect(eventDetail.data.name).to.equal("Bert");
 
   //   // Not currently supported as the binders get initialized with events when the control is added to the form
   //   // The binder must currently be present when the control is added to the form
