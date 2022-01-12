@@ -1,4 +1,4 @@
-import { FormLayout } from 'a-wc-form-layout';
+import { FormLayout } from 'a-wc-form-layout/src/components/form-layout.js';
 import './json-schema-control.js';
 
 /** @typedef {import("../lib/models.js").JsonSchema} JsonSchema */
