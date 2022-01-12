@@ -63,7 +63,7 @@ function controlToLayout(schema, ref) {
           : typeMapping[currentSchema.type],
       description: currentSchema.description,
       label: currentSchema.title,
-      possibleValues: currentSchema.enum?.map((e) => e.toString()),
+      possibleValues: currentSchema.enum && currentSchema.enum.map((e) => e.toString()),
       readOnly: currentSchema.readOnly === true,
       validation: {
         max: currentSchema.maximum || currentSchema.exclusiveMaximum,

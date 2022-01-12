@@ -40,7 +40,7 @@ binderRegistry.add(gridBinder);
  */
 function gridTemplate(context) {
   return html`
-    ${context.component.properties?.label
+    ${context.component.properties && context.component.properties.label
       ? html` <div class="grid-title">${context.component.properties.label}</div> `
       : html``}
     <div
@@ -85,17 +85,10 @@ binderRegistry.add(arrayBinder);
  * @returns {import('lit-html/lit-html').TemplateResult}
  */
 function arrayTemplate(context) {
+  const { properties } = context.component;
   return html`
-    ${context.component.properties?.label
-      ? html` <div class="array-title">${context.component.properties.label}</div> `
-      : html``}
-    <div
-      form-layout-array
-      class="array-layout"
-      name=${context.component.properties.ref}
-      bind=${context.component.properties.ref}
-      .context=${context}
-    ></div>
+    ${properties && properties.label ? html` <div class="array-title">${properties.label}</div> ` : html``}
+    <div form-layout-array class="array-layout" name=${properties.ref} bind=${properties.ref} .context=${context}></div>
   `;
 }
 

@@ -25,6 +25,7 @@ function label(context) {
  */
 function genericInput(context) {
   const { properties } = context.component;
+  const { validation } = properties;
   return html`
     ${label(context)}<input
       type="${properties.type}"
@@ -32,16 +33,16 @@ function genericInput(context) {
       bind="${properties.ref}"
       aria-label=${ifDefined(properties.label)}
       aria-description=${ifDefined(properties.description)}
-      minlength="${ifDefined(properties.validation?.minLength)}"
-      maxlength="${ifDefined(properties.validation?.maxLength)}"
-      min="${ifDefined(properties.validation?.min)}"
-      aria-valuemin=${ifDefined(properties.validation?.min)}
-      max="${ifDefined(properties.validation?.max)}"
-      aria-valuemax=${ifDefined(properties.validation?.max)}
-      step="${ifDefined(properties.validation?.step)}"
-      ?required=${!!properties.validation?.required}
-      aria-required="${!!properties.validation?.required}"
-      pattern=${ifDefined(properties.validation?.pattern)}
+      minlength="${ifDefined(validation && validation.minLength)}"
+      maxlength="${ifDefined(validation && validation.maxLength)}"
+      min="${ifDefined(validation && validation.min)}"
+      aria-valuemin=${ifDefined(validation && validation.min)}
+      max="${ifDefined(validation && validation.max)}"
+      aria-valuemax=${ifDefined(validation && validation.max)}
+      step="${ifDefined(validation && validation.step)}"
+      ?required=${!!validation && validation.required}
+      aria-required="${!!validation && validation.required}"
+      pattern=${ifDefined(validation && validation.pattern)}
       title="${ifDefined(properties.description)}"
       aria-readonly="${ifDefined(properties.readOnly)}"
       ?readonly=${!!properties.readOnly}

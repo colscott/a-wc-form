@@ -17,19 +17,20 @@ import { setComponentTemplate } from 'a-wc-form-layout/src/lib/template-registry
  */
 function genericInput(context) {
   const { properties } = context.component;
+  const { validation } = properties;
 
   return html`
     <mwc-textfield
       type="${properties.type}"
       name="${properties.ref}"
       bind="${properties.ref}"
-      minlength="${ifDefined(properties.validation?.minLength)}"
-      maxlength="${ifDefined(properties.validation?.maxLength)}"
-      min="${ifDefined(properties.validation?.min)}"
-      max="${ifDefined(properties.validation?.max)}"
-      step="${ifDefined(properties.validation?.step)}"
-      pattern=${ifDefined(properties.validation?.pattern)}
-      ?required=${!!properties.validation?.required}
+      minlength="${ifDefined(validation && validation.minLength)}"
+      maxlength="${ifDefined(validation && validation.maxLength)}"
+      min="${ifDefined(validation && validation.min)}"
+      max="${ifDefined(validation && validation.max)}"
+      step="${ifDefined(validation && validation.step)}"
+      pattern=${ifDefined(validation && validation.pattern)}
+      ?required=${!!validation && validation.required}
       label=${ifDefined(properties.label)}
       title="${ifDefined(properties.description)}"
       ?readonly=${!!properties.readOnly}
@@ -45,10 +46,7 @@ export function checkboxTemplate(context) {
   const { properties } = context.component;
   return html`
     <mwc-formfield label=${ifDefined(properties.label)}>
-      <mwc-checkbox
-        name="${context.component.properties.ref}"
-        bind="${context.component.properties.ref}"
-      ></mwc-checkbox>
+      <mwc-checkbox name="${properties.ref}" bind="${properties.ref}"></mwc-checkbox>
     </mwc-formfield>
   `;
 }
@@ -59,16 +57,17 @@ export function checkboxTemplate(context) {
  */
 export function enumTemplate(context) {
   const { properties } = context.component;
+  const { validation } = properties;
   return html`
     <mwc-select
-      name="${context.component.properties.ref}"
-      bind="${context.component.properties.ref}"
+      name="${properties.ref}"
+      bind="${properties.ref}"
       label=${ifDefined(properties.label)}
-      ?required=${!!properties.validation?.required}
+      ?required=${!!validation && validation.required}
     >
-      ${!context.component.properties.validation?.required ? html` <mwc-list-item></mwc-list-item> ` : html``}
+      ${!(validation && validation.required) ? html`<mwc-list-item></mwc-list-item>` : html``}
       ${context.component.properties.possibleValues.map(
-        (e) => html` <mwc-list-item value="${e.toString()}">${e}</mwc-list-item> `,
+        (e) => html`<mwc-list-item value="${e.toString()}">${e}</mwc-list-item>`,
       )}
     </mwc-select>
   `;

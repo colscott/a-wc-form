@@ -16,10 +16,13 @@ function horizontalTemplate(context) {
   const { components } = context.component.properties;
 
   return html`
-    ${context.component.properties?.label
+    ${context.component.properties && context.component.properties.label
       ? html` <div class="horizontal-title">${context.component.properties.label}</div> `
       : html``}
-    <div class="horizontal-layout" aria-label=${ifDefined(context.component.properties?.label)}>
+    <div
+      class="horizontal-layout"
+      aria-label=${ifDefined(context.component.properties && context.component.properties.label)}
+    >
       ${components.map((component) => getComponentTemplate(component.template)({ component }))}
     </div>
   `;
@@ -32,12 +35,11 @@ setComponentTemplate('HorizontalLayout', horizontalTemplate);
  * @returns {import('lit-html/lit-html').TemplateResult}
  */
 function verticalTemplate(context) {
-  const { components } = context.component.properties;
+  const { properties } = context.component;
+  const { components } = properties;
   return html`
-    ${context.component.properties?.label
-      ? html` <div class="vertical-title">${context.component.properties.label}</div> `
-      : html``}
-    <div class="vertical-layout" aria-label=${ifDefined(context.component.properties?.label)}>
+    ${properties && properties.label ? html` <div class="vertical-title">${properties.label}</div> ` : html``}
+    <div class="vertical-layout" aria-label=${ifDefined(properties && properties.label)}>
       ${components.map((component) => getComponentTemplate(component.template)({ component }))}
     </div>
   `;
