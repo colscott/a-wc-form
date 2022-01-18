@@ -25,6 +25,35 @@ describe('validation - greater-than', () => {
     inputAge.dispatchEvent(new Event('change'));
     expect(await formBinder.checkValidity()).to.be.true;
   });
+
+  it('should validate different date formats', async () => {
+    const control = document.createElement('input');
+    control.setAttribute('greater-than', 'other');
+    const data = { other: '20100305' };
+    let result = validators.greaterThanValidator.validate(control, '20100304', data);
+    expect(result.valid).to.be.false;
+    result = validators.greaterThanValidator.validate(control, '20100310', data);
+    expect(result.valid).to.be.true;
+    data.other = '2010-03-05';
+    result = validators.greaterThanValidator.validate(control, '2010-03-04', data);
+    expect(result.valid).to.be.false;
+    result = validators.greaterThanValidator.validate(control, '2010-03-10', data);
+    expect(result.valid).to.be.true;
+    result = validators.greaterThanValidator.validate(control, '', data);
+    expect(result.valid).to.be.false;
+    data.other = '';
+    result = validators.greaterThanValidator.validate(control, '2010-03-10', data);
+    expect(result.valid).to.be.false;
+    result = validators.greaterThanValidator.validate(control, '', data);
+    expect(result.valid).to.be.false;
+    data.other = 123;
+    result = validators.greaterThanValidator.validate(control, 122, data);
+    expect(result.valid).to.be.false;
+    result = validators.greaterThanValidator.validate(control, 123, data);
+    expect(result.valid).to.be.false;
+    result = validators.greaterThanValidator.validate(control, 124, data);
+    expect(result.valid).to.be.true;
+  });
 });
 
 describe('validation - less-than', () => {
@@ -46,6 +75,35 @@ describe('validation - less-than', () => {
     inputAge.value = 15;
     inputAge.dispatchEvent(new Event('change'));
     expect(await formBinder.checkValidity()).to.be.true;
+  });
+
+  it('should validate different date formats', async () => {
+    const control = document.createElement('input');
+    control.setAttribute('less-than', 'other');
+    const data = { other: '20100305' };
+    let result = validators.lessThanValidator.validate(control, '20100304', data);
+    expect(result.valid).to.be.true;
+    result = validators.lessThanValidator.validate(control, '20100310', data);
+    expect(result.valid).to.be.false;
+    data.other = '2010-03-05';
+    result = validators.lessThanValidator.validate(control, '2010-03-04', data);
+    expect(result.valid).to.be.true;
+    result = validators.lessThanValidator.validate(control, '2010-03-10', data);
+    expect(result.valid).to.be.false;
+    result = validators.lessThanValidator.validate(control, '', data);
+    expect(result.valid).to.be.false;
+    data.other = '';
+    result = validators.lessThanValidator.validate(control, '2010-03-10', data);
+    expect(result.valid).to.be.false;
+    result = validators.lessThanValidator.validate(control, '', data);
+    expect(result.valid).to.be.false;
+    data.other = 123;
+    result = validators.lessThanValidator.validate(control, 122, data);
+    expect(result.valid).to.be.true;
+    result = validators.lessThanValidator.validate(control, 123, data);
+    expect(result.valid).to.be.false;
+    result = validators.lessThanValidator.validate(control, 124, data);
+    expect(result.valid).to.be.false;
   });
 });
 

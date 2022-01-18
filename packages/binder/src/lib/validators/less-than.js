@@ -1,11 +1,6 @@
 import { ValidationResult } from '../validation-result.js';
 import { getValue } from '../json-pointer.js';
-
-/**
- * @param {string} string to test is date
- * @returns {boolean} f string is date like
- */
-const isIsoDate = (string) => /\d{4}-\d{2}-\d{2}.*/.test(string) && isNaN(Date.parse(string)) === false;
+import { convertYYYYMMDD, isIsoDate, isYyyyMmDd } from './greater-than.js';
 
 /** @type {import('../validator-registry').Validator} */
 export const lessThanValidator = {
@@ -24,6 +19,9 @@ export const lessThanValidator = {
         }
         if (isIsoDate(value) && isIsoDate(otherValue)) {
           return new Date(value) < new Date(otherValue);
+        }
+        if (isYyyyMmDd(value) && isYyyyMmDd(otherValue)) {
+          return new Date(convertYYYYMMDD(value)) < new Date(convertYYYYMMDD(otherValue));
         }
         return false;
       })(),
