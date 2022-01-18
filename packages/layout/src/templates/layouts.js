@@ -1,5 +1,5 @@
-import { ifDefined } from 'lit-html/directives/if-defined.js';
-import { html } from 'lit-html/lit-html.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
+import { html } from 'lit';
 import { getComponentTemplate, setComponentTemplate } from '../lib/template-registry.js';
 import './array-layout.js';
 
@@ -10,7 +10,7 @@ import './array-layout.js';
 
 /**
  * @param {LayoutContext<import('a-wc-form-layout/src/lib/models').HorizontalLayout>} context
- * @returns {import('lit-html/lit-html').TemplateResult}
+ * @returns {import('lit').TemplateResult}
  */
 function horizontalTemplate(context) {
   const { components } = context.component.properties;
@@ -32,7 +32,7 @@ setComponentTemplate('HorizontalLayout', horizontalTemplate);
 
 /**
  * @param {LayoutContext<import('a-wc-form-layout/src/lib/models').VerticalLayout>} context
- * @returns {import('lit-html/lit-html').TemplateResult}
+ * @returns {import('lit').TemplateResult}
  */
 function verticalTemplate(context) {
   const { properties } = context.component;

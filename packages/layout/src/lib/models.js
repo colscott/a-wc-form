@@ -2,7 +2,7 @@ export {};
 
 // /**
 //  * @template TControl
-//  * @typedef {function(LayoutContext<TControl>):import('lit-html').TemplateResult|Array<import('lit-html').TemplateResult>} ComponentTemplate
+//  * @typedef {function(LayoutContext<TControl>):import('lit').TemplateResult|Array<import('lit').TemplateResult>} ComponentTemplate
 //  */
 
 /**

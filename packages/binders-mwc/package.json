@@ -12,15 +12,16 @@
   "dependencies": {
     "a-wc-form-binder": "file:../binder",
     "a-wc-form-json-schema": "file:../json-schema",
-    "a-wc-form-layout": "file:../layout"
+    "a-wc-form-layout": "file:../layout",
+    "lit": "^2.1.1"
   },
   "peerDependencies": {
-    "@material/mwc-checkbox": "^0.20.0",
-    "@material/mwc-formfield": "^0.20.0",
-    "@material/mwc-radio": "^0.20.0",
-    "@material/mwc-select": "^0.20.0",
-    "@material/mwc-slider": "^0.20.0",
-    "@material/mwc-switch": "^0.20.0",
-    "@material/mwc-textfield": "^0.20.0"
+    "@material/mwc-checkbox": "^0.25.3",
+    "@material/mwc-formfield": "^0.25.3",
+    "@material/mwc-radio": "^0.25.3",
+    "@material/mwc-select": "^0.25.3",
+    "@material/mwc-slider": "^0.25.3",
+    "@material/mwc-switch": "^0.25.3",
+    "@material/mwc-textfield": "^0.25.3"
   }
 }

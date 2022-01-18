@@ -1,4 +1,4 @@
-import { render, html } from 'lit-html';
+import { render, html } from 'lit';
 import { add as binderRegistryAdd } from 'a-wc-form-binder/src/lib/binder-registry.js';
 import { getComponentTemplate, setComponentTemplate } from '../lib/template-registry.js';
 
@@ -36,7 +36,7 @@ binderRegistryAdd(gridBinder);
 
 /**
  * @param {import("./layouts.js").LayoutContext<import("../lib/models.js").GridLayout>} context
- * @returns {import('lit-html/lit-html').TemplateResult}
+ * @returns {import('lit').TemplateResult}
  */
 function gridTemplate(context) {
   return html`
@@ -82,7 +82,7 @@ binderRegistryAdd(arrayBinder);
 
 /**
  * @param {import("./layouts.js").LayoutContext<import("../lib/models.js").ArrayLayout>} context
- * @returns {import('lit-html/lit-html').TemplateResult}
+ * @returns {import('lit').TemplateResult}
  */
 function arrayTemplate(context) {
   const { properties } = context.component;

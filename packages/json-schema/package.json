@@ -11,6 +11,7 @@
   ],
   "dependencies": {
     "a-wc-form-binder": "file:../binder",
-    "a-wc-form-layout": "file:../layout"
+    "a-wc-form-layout": "file:../layout",
+    "lit": "^2.1.1"
   }
 }

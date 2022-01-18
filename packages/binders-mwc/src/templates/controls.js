@@ -1,5 +1,5 @@
-import { html } from 'lit-html/lit-html.js';
-import { ifDefined } from 'lit-html/directives/if-defined.js';
+import { html } from 'lit';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import '@material/mwc-checkbox/mwc-checkbox.js';
 import '@material/mwc-formfield/mwc-formfield.js';
 import '@material/mwc-textfield/mwc-textfield.js';
@@ -9,7 +9,7 @@ import { setComponentTemplate } from 'a-wc-form-layout/src/lib/template-registry
 
 /** @typedef {import("a-wc-form-layout/src/lib/models").Control} Control */
 /** @typedef {import('a-wc-form-layout/src/lib/models').LayoutContext<Control>} ControlLayoutContext */
-/** @typedef {import('lit-element').TemplateResult} TemplateResult */
+/** @typedef {import('lit').TemplateResult} TemplateResult */
 
 /**
  * @param {ControlLayoutContext} context

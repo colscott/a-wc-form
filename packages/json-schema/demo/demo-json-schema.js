@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import { binderRegistry, binders, formCss } from 'a-wc-form-binder';
 import { data } from 'a-wc-form-binder/demo/mock.js';
 import 'a-wc-form-layout';

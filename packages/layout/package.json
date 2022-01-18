@@ -10,6 +10,7 @@
     "src"
   ],
   "dependencies": {
-    "a-wc-form-binder": "file:../binder"
+    "a-wc-form-binder": "file:../binder",
+    "lit": "^2.1.1"
   }
 }

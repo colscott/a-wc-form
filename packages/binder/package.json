@@ -10,8 +10,7 @@
     "src"
   ],
   "dependencies": {
-    "lit-element": "^2.4.0",
-    "lit-html": "^1.3.0"
+    "lit": "^2.1.1"
   },
   "gitHead": "202b610eefd801e61c15a5ac275b80ff3f79d7b3"
 }

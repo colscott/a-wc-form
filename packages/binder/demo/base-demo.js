@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import { data } from './mock.js';
 import { binderRegistry, binders, formCss } from '../src/index.js';
 
@@ -59,7 +59,7 @@ export class BaseDemo extends LitElement {
     `;
   }
 
-  /** @return {import('lit-element').TemplateResult} */
+  /** @return {import('lit').TemplateResult} */
   renderForm() {
     return null;
   }

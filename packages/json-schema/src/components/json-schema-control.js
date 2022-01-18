@@ -1,6 +1,6 @@
 import { getSchemaValue } from 'a-wc-form-binder/src/lib/json-pointer.js';
 import { getComponentTemplate, setComponentTemplate } from 'a-wc-form-layout/src/lib/template-registry.js';
-import { LitElement, html } from 'lit-element';
+import { LitElement, html } from 'lit';
 // import { jsonTypeMapping } from "../templates/controls.js";
 import { getLayout } from '../lib/layout-generator.js';
 
@@ -86,7 +86,7 @@ customElements.define('json-schema-control', JsonSchemaControl);
 
 /**
  * @param {import("../lib/models.js").SchemaLayoutContext<import("../lib/models").JsonSchemaControl>} context
- * @returns {import('lit-html').TemplateResult}
+ * @returns {import('lit').TemplateResult}
  */
 function jsonSchemaTemplate(context) {
   return html`

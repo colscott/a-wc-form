@@ -1,4 +1,4 @@
-import { html } from 'lit-element';
+import { html } from 'lit';
 import { binderRegistry, binders } from '../src/index.js';
 
 import { BaseDemo } from './base-demo.js';
@@ -17,7 +17,7 @@ const errorText = {
 customElements.define(
   'demo-form-binder',
   class extends BaseDemo {
-    /** @return {import('lit-element').TemplateResult} */
+    /** @return {import('lit').TemplateResult} */
     get renderForm() {
       return html`
         <form-binder

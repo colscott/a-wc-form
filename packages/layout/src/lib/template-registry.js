@@ -1,6 +1,6 @@
 /** @typedef {import('./models.js').ComponentTemplate} ComponentTemplate */
 /** @typedef {import('./models.js').LayoutContext<ComponentTemplate>} LayoutContext */
-/** @typedef {import('lit-html').TemplateResult} TemplateResult */
+/** @typedef {import('lit').TemplateResult} TemplateResult */
 
 /** @type {Map<string, (LayoutContext) => TemplateResult|Array<TemplateResult>>} */
 const componentTemplates = new Map();

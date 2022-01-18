@@ -1,4 +1,4 @@
-import { render } from 'lit-html';
+import { render } from 'lit';
 import { FormBinder } from 'a-wc-form-binder/src/components/form-binder.js';
 import { getComponentTemplate } from '../lib/template-registry.js';
 import '../templates/controls.js';

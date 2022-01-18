@@ -1,10 +1,10 @@
-import { html } from 'lit-html/lit-html.js';
-import { ifDefined } from 'lit-html/directives/if-defined.js';
+import { html } from 'lit';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { setComponentTemplate } from '../lib/template-registry.js';
 
 /** @typedef {import("../lib/models.js").Control} Control */
 /** @typedef {import('../lib/models.js').LayoutContext<Control>} ControlLayoutContext */
-/** @typedef {import('lit-element').TemplateResult} TemplateResult */
+/** @typedef {import('lit').TemplateResult} TemplateResult */
 
 /**
  * @param {ControlLayoutContext} context

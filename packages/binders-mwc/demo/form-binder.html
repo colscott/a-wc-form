@@ -2,7 +2,7 @@
 <html>
     <head>
         <script type="module">
-          import { LitElement, html, css } from 'lit-element';
+          import { LitElement, html, css } from 'lit';
           import { binderRegistry, formCss } from 'a-wc-form-binder';
           import { data } from 'a-wc-form-binder/demo/mock.js';
           import { schema } from "a-wc-form-json-schema/demo/mock.js";
@@ -42,7 +42,7 @@
                 <form-binder @form-binder:change=${e => {this.data = e.detail.data;this.requestUpdate();}} .data=${this.data}>
                   <mwc-textfield label="Full name" type="text" bind="#/name"></mwc-textfield>
                   <mwc-textfield label="Age" type="number" bind="#/personalData/age" min="0" max="120" step="1"></mwc-textfield>
-                  <mwc-slider label="Age Slider" bind="personalData/age" min="0" max="120" step="1"></mwc-slider>
+                  <mwc-slider label="Age Slider" bind="personalData/age" min="0" max="120" step="1" style="width: 100px;"></mwc-slider>
                   <mwc-textfield label="Telephone" bind="#/telephoneNumbers/1"></mwc-textfield>
                   <mwc-switch label="Student" id="student" bind="student"></mwc-switch>
                   <mwc-checkbox label="Student" id="student" bind="student"></mwc-checkbox>
