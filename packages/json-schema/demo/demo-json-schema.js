@@ -23,7 +23,6 @@ customElements.define(
             border: 1px solid red;
           }
         `,
-        ...formCss.allCss,
       ];
     }
 

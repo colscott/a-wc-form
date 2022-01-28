@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { data } from './mock.js';
-import { binderRegistry, binders, formCss } from '../src/index.js';
+import { binderRegistry, binders } from '../src/index.js';
 
 binderRegistry.add(...Object.values(binders));
 
@@ -40,7 +40,6 @@ export class BaseDemo extends LitElement {
           grid-template-columns: 1fr min-content min-content;
         }
       `,
-      ...formCss.allCss,
     ];
   }
 

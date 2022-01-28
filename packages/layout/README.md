@@ -68,11 +68,13 @@ formBinder.layout = {
   template: "VerticalLayout",
   // template properties are used to configure a template, they are passed to the template as parameters
   properties: {
+    label: 'My Vertical Layout', // Optional label that will be output in the form
     // The VerticalLayout template takes an array of components that it will render vertically
     components: [
       {
         template: "HorizontalLayout",
         properties: {
+          label: 'My Vertical Layout', // Optional label that will be output in the form
           // The HorizontalLayout template takes an array of components that it will render horizontally
           components: [
             {
@@ -120,6 +122,88 @@ formBinder.layout = {
         }
       },
       {
+        template: 'GridLayout', // Layout components in a CSS Grid layout
+        properties: {
+          columns: 16, // Optional. Change the number of columns from the default 12 column grid. Can also be set using the --form-grid-layout-columns CSS variable.
+          gap: '1rem', // Optional. Change the grid gap from the default of 16px. Can also be set using the --form-pad CSS variable.
+          flow: 'column', // Optional. Default 'row'. The direction the grid will render the component.
+          dense: true, // Optional. Default false. CSS Grid will attempt to fill all cells with the component Will even render the component out of order to do so.
+          label: 'My Grid layout', // Optional label that will be output in the form
+          // The GridLayout template takes an array of components that it will render in the grid
+          components: [
+            {
+              column: 1, // Optional. The column index to insert this component in the grid. Will default to the next available grid cell.
+              columns: 1, // Optional. Default is 1. The number of columns this component should span in the grid
+              row: 1, // Optional. The row index to insert this component in the grid. Will default to the next available grid cell.
+              rows: 1, // Optional. The number of rows this component should span in the grid.
+              // The component to insert into the grid is now defined just like in the other layouts.
+              component: {
+                template: "Control",
+                properties: {
+                  ref: "#/student",
+                  type: "checkbox"
+                }
+              }
+            },
+            {
+              columns: 4,
+              component: {
+                template: 'Control',
+                properties: {
+                  ref: '#/address/0',
+                  label: 'Unit',
+                  type: 'number',
+                },
+              },
+            },
+            {
+              columns: 4,
+              component: {
+                template: 'Control',
+                properties: {
+                  type: 'text',
+                  label: 'Tel #',
+                  pattern: '\\d{3}-\\d{3}-\\d{4}',
+                },
+              },
+            },
+            {
+              columns: 4,
+              component: {
+                template: 'Control',
+                properties: {
+                  type: 'date',
+                  label: 'Date 1',
+                  ref: 'date',
+                },
+              },
+            },
+            {
+              columns: 4,
+              component: {
+                template: 'Control',
+                properties: {
+                  type: 'date',
+                  label: 'Date 2',
+                  ref: 'date',
+                },
+              },
+            },
+            {
+              columns: 4,
+              component: {
+                template: 'Control',
+                properties: {
+                  type: 'date',
+                  label: 'Date 3',
+                  ref: 'date',
+                },
+              },
+            },
+          ],
+        },
+      },
+      {
         template: "HorizontalLayout",
         properties: {
           components: [
@@ -143,7 +227,7 @@ formBinder.layout = {
         }
       },
       {
-        template: "GridLayout",
+        template: "GridComponent", // used to render Array of same Objects e.g. data grid
         properties: {
           ref: "#/comments", // JSON pointer to the array of objects
           label: "",

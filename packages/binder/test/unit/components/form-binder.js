@@ -11,15 +11,15 @@ import { data as mockData } from '../../../demo/mock.js';
 
 /** @returns {Promise} that resolves when the form-binder:change event fires */
 export function wait() {
-  return new Promise((res) => setTimeout(res));
+  return new Promise(res => setTimeout(res));
 }
 
 /** @returns {Promise<{formBinder: FormBinder, eventDetail: FormBinderChangeEventDetail}>} */
 async function createFormBinder() {
   const data = JSON.parse(JSON.stringify(mockData));
-  const formBinder = /** @type {import('../../../src/components/form-binder.js').FormBinder<MockData>} */ (
-    document.createElement('form-binder')
-  );
+  const formBinder = /** @type {import('../../../src/components/form-binder.js').FormBinder<MockData>} */ (document.createElement(
+    'form-binder',
+  ));
   formBinder.data = data;
   document.body.appendChild(formBinder);
   formBinder.innerHTML = `
@@ -36,7 +36,7 @@ async function createFormBinder() {
   `;
   /** @type {import('../../../src/components/form-binder').FormBinderChangeEventDetail<MockData>} */
   const eventDetail = { data, jsonPointer: null, value: null, validationResults: null };
-  formBinder.addEventListener('form-binder:change', (e) => {
+  formBinder.addEventListener('form-binder:change', e => {
     const event = /** @type {import('../../../src/components/form-binder').FormBinderChangeEvent<MockData>} */ (e);
     eventDetail.data = event.detail.data;
     eventDetail.jsonPointer = event.detail.jsonPointer;
@@ -51,7 +51,7 @@ const validateTextInput = {
   controlSelector: 'input[whitelist]',
   validate: (control, value, data) => {
     const whitelist = control.getAttribute('whitelist').split(',');
-    const isValid = whitelist.some((v) => v === value);
+    const isValid = whitelist.some(v => v === value);
     return new ValidationResult('whitelist', whitelist, value, isValid);
   },
 };
@@ -81,7 +81,7 @@ describe('form-binder binding tests', () => {
     validatorRegistry.remove(patternValidator);
     validatorRegistry.remove(maxValidator);
     binderRegistry.remove(...Object.values(binders));
-    document.querySelectorAll('form-binder').forEach((e) => e.parentElement.removeChild(e));
+    document.querySelectorAll('form-binder').forEach(e => e.parentElement.removeChild(e));
   });
   it('Should populate controls', async () => {
     binderRegistry.add(...Object.values(binders));
@@ -288,14 +288,14 @@ describe('form-binder binding tests', () => {
   it('Should reset to last commitChanges', async () => {
     binderRegistry.add(...Object.values(binders));
     const { formBinder, eventDetail } = await createFormBinder();
-    formBinder.data = {a: 1};
-    expect(formBinder.data).to.eql({a: 1});
+    formBinder.data = { a: 1 };
+    expect(formBinder.data).to.eql({ a: 1 });
     formBinder.commit();
-    formBinder.patch({a:2});
-    expect(formBinder.data).to.eql({a: 2});
+    formBinder.patch({ a: 2 });
+    expect(formBinder.data).to.eql({ a: 2 });
     // reset
     formBinder.rollback();
-    expect(formBinder.data).to.eql({a: 1});
+    expect(formBinder.data).to.eql({ a: 1 });
   });
 
   // Not currently supported as the binders get initialized with events when the control is added to the form

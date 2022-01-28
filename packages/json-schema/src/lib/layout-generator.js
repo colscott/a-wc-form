@@ -102,7 +102,7 @@ function objectToLayout(schema, ref) {
 /**
  * @param {import("./models").JsonSchema} schema
  * @param {string} ref JSON pointer
- * @returns {import("../../../layout/src/lib/models").GridLayout | import("../../../layout/src/lib/models").HorizontalLayout | import("../../../layout/src/lib/models").ArrayLayout}
+ * @returns {import("../../../layout/src/lib/models").GridComponent | import("../../../layout/src/lib/models").HorizontalLayout | import("../../../layout/src/lib/models").ArrayLayout}
  */
 const arrayToLayout = (schema, ref) => {
   /** @type {import("../lib/models").JsonSchema} */
@@ -139,7 +139,7 @@ const arrayToLayout = (schema, ref) => {
   // List needs access to data, layout is not known yet as it depends on the amount of data
   if (items.properties) {
     return {
-      template: 'GridLayout',
+      template: 'GridComponent',
       properties: {
         ref,
         label: currentSchema.title,

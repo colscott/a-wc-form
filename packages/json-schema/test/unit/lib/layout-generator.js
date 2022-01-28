@@ -142,7 +142,7 @@ const expectedLayout = {
           label: undefined,
           ref: '#/children',
         },
-        template: 'GridLayout',
+        template: 'GridComponent',
       },
     ],
     label: undefined,

@@ -369,17 +369,3 @@ validatorRegistry.add(asyncValidator);
 
 ## Styles
 Since there is no shadow DOM applied, you are free to style the form-binder.
-
-Optional basic styling is provided via a lit-element [CSSResult](https://lit-element.polymer-project.org/api/classes/_lit_element_.cssresult.html).
-If using LitElement, they can be applied like so:
-
-```js
-import { formCss } from 'a-wc-form-binder';
-...
-/** @inheritdoc */
-    static get styles() {
-      return [
-        ...formCss.allCss
-      ];
-    }
-```

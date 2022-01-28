@@ -5,11 +5,13 @@ export {};
 //  * @typedef {function(LayoutContext<TControl>):import('lit').TemplateResult|Array<import('lit').TemplateResult>} ComponentTemplate
 //  */
 
+// ---------- LAYOUTS ----------
+
 /**
  * @typedef {object} HorizontalLayout
  * @property {'HorizontalLayout'} template
  * @property {object} properties
- * @property {Array<ComponentTemplate>} properties.components
+ * @property {Array<ComponentTemplate>} properties.components child Components (Controls or Layouts) that are in this layout
  * @property {string} [properties.label]
  */
 
@@ -17,7 +19,7 @@ export {};
  * @typedef {object} VerticalLayout
  * @property {'VerticalLayout'} template
  * @property {object} properties
- * @property {Array<ComponentTemplate>} properties.components
+ * @property {Array<ComponentTemplate>} properties.components child Components (Controls or Layouts) that are in this layout
  * @property {string} [properties.label]
  */
 
@@ -25,18 +27,41 @@ export {};
  * @typedef {object} ArrayLayout
  * @property {'ArrayLayout'} template
  * @property {object} properties
- * @property {ComponentTemplate} properties.component
+ * @property {ComponentTemplate} properties.component child Components (Controls or Layouts) that are in this layout
  * @property {string} properties.ref JSON pointer to the data value that will back this control
  * @property {string} [properties.label]
  */
 
 /**
- * @typedef {object} GridLayout
+ * @typedef {object} GridLayoutComponent Describes a component that goes into a GridLayout
+ * @property {ComponentTemplate} component Component to show in this position in the grid
+ * @property {number} [row] the row index to insert this component in the grid. Will default to the next available grid cell.
+ * @property {number} [column] the column index to insert this component in the grid. Will default to the next available grid cell.
+ * @property {number} [rows=1] the number of rows this component should span in the grid
+ * @property {number} [columns=1] the number of columns this component should span in the grid
+ */
+
+/**
+ * @typedef {object} GridLayout A Grid form layout with rows and columns
  * @property {'GridLayout'} template
+ * @property {object} properties
+ * @property {string} [properties.label]
+ * @property {string} [properties.gap] spacing between the components in the grid. Should be a valid CSS unit. Defaults to 16px. This can be overridden with the CSS variable --form-pad.
+ * @property {number} [properties.columns=12] number of columns in the grid. Defaults to a 12 column grid. This can be overridden with the CSS variable --form-grid-layout-columns.
+ * @property {boolean} [properties.dense=false] set to true to try and fill in every cell in the grid where possible
+ * @property {'row'|'column'} [properties.flow='row'] the direction the grid will render the component
+ * @property {Array<GridLayoutComponent>} properties.components The JSON pointer on the child components should be relative to the GridLayout
+ */
+
+// ---------- COMPONENTS ----------
+
+/**
+ * @typedef {object} GridComponent a data grid component. For example, could be implemented with HTML TABLE, or AG Grid, etc.
+ * @property {'GridComponent'} template
  * @property {object} properties
  * @property {string} properties.ref JSON pointer to the data value that will back this control
  * @property {string} [properties.label]
- * @property {Array<ComponentTemplate>} properties.components The JSON pointer on the child components should be relative to the GridLayout
+ * @property {Array<ComponentTemplate>} properties.components The JSON pointer on the child components should be relative to the GridComponent
  */
 
 /**
@@ -72,7 +97,7 @@ export {};
  * @typedef {ControlType & ControlProperties} Control
  */
 
-/** @typedef {HorizontalLayout | VerticalLayout | GridLayout | Label | Control} ComponentTemplate */
+/** @typedef {HorizontalLayout | VerticalLayout | GridComponent | Label | Control | GridLayout} ComponentTemplate */
 
 // /**
 //  * @typedef {Object} LayoutContext

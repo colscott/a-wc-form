@@ -1,3 +1,4 @@
+/** @type {import('../src/lib/models').ComponentTemplate} */
 export const layout = {
   template: 'VerticalLayout',
   label: 'Person',
@@ -83,7 +84,7 @@ export const layout = {
       },
       {
         // Array objects
-        template: 'GridLayout',
+        template: 'GridComponent',
         properties: {
           ref: '#/comments',
           label: 'Comments (Array<Object>)',
@@ -123,6 +124,71 @@ export const layout = {
               pattern: '\\d{3}-\\d{3}-\\d{4}',
             },
           },
+        },
+      },
+      {
+        template: 'GridLayout',
+        properties: {
+          columns: 10,
+          gap: '1rem',
+          label: 'My Grid layout',
+          components: [
+            {
+              columns: 4,
+              component: {
+                template: 'Control',
+                properties: {
+                  ref: '#/address/0',
+                  label: 'Unit',
+                  type: 'number',
+                },
+              },
+            },
+            {
+              columns: 4,
+              component: {
+                template: 'Control',
+                properties: {
+                  type: 'text',
+                  label: 'Tel #',
+                  pattern: '\\d{3}-\\d{3}-\\d{4}',
+                },
+              },
+            },
+            {
+              columns: 4,
+              component: {
+                template: 'Control',
+                properties: {
+                  type: 'date',
+                  label: 'Date 1',
+                  ref: 'date',
+                },
+              },
+            },
+            {
+              columns: 4,
+              component: {
+                template: 'Control',
+                properties: {
+                  type: 'date',
+                  label: 'Date 2',
+                  ref: 'date',
+                },
+              },
+            },
+            {
+              columns: 4,
+              component: {
+                template: 'Control',
+                properties: {
+                  type: 'date',
+                  label: 'Date 3',
+                  ref: 'date',
+                },
+              },
+            },
+          ],
         },
       },
       {

@@ -14,7 +14,11 @@ function label(context) {
   const { properties } = context.component;
   return html`
     ${context.component.template && properties.label
-      ? html` <label for=${properties.ref} title=${ifDefined(properties.description)}>${properties.label}</label> `
+      ? html`
+          <label style="display: block;" for=${properties.ref} title=${ifDefined(properties.description)}
+            >${properties.label}</label
+          >
+        `
       : html``}
   `;
 }
@@ -27,26 +31,28 @@ function genericInput(context) {
   const { properties } = context.component;
   const { validation } = properties;
   return html`
-    ${label(context)}<input
-      type="${properties.type}"
-      name="${properties.ref}"
-      bind="${properties.ref}"
-      aria-label=${ifDefined(properties.label)}
-      aria-description=${ifDefined(properties.description)}
-      minlength="${ifDefined(validation && validation.minLength)}"
-      maxlength="${ifDefined(validation && validation.maxLength)}"
-      min="${ifDefined(validation && validation.min)}"
-      aria-valuemin=${ifDefined(validation && validation.min)}
-      max="${ifDefined(validation && validation.max)}"
-      aria-valuemax=${ifDefined(validation && validation.max)}
-      step="${ifDefined(validation && validation.step)}"
-      ?required=${!!validation && validation.required}
-      aria-required="${!!validation && validation.required}"
-      pattern=${ifDefined(validation && validation.pattern)}
-      title="${ifDefined(properties.description)}"
-      aria-readonly="${ifDefined(properties.readOnly)}"
-      ?readonly=${!!properties.readOnly}
-    />
+    <span>
+      ${label(context)}<input
+        type="${properties.type}"
+        name="${properties.ref}"
+        bind="${properties.ref}"
+        aria-label=${ifDefined(properties.label)}
+        aria-description=${ifDefined(properties.description)}
+        minlength="${ifDefined(validation && validation.minLength)}"
+        maxlength="${ifDefined(validation && validation.maxLength)}"
+        min="${ifDefined(validation && validation.min)}"
+        aria-valuemin=${ifDefined(validation && validation.min)}
+        max="${ifDefined(validation && validation.max)}"
+        aria-valuemax=${ifDefined(validation && validation.max)}
+        step="${ifDefined(validation && validation.step)}"
+        ?required=${!!validation && validation.required}
+        aria-required="${!!validation && validation.required}"
+        pattern=${ifDefined(validation && validation.pattern)}
+        title="${ifDefined(properties.description)}"
+        aria-readonly="${ifDefined(properties.readOnly)}"
+        ?readonly=${!!properties.readOnly}
+      />
+    </span>
   `;
 }
 
@@ -56,14 +62,16 @@ function genericInput(context) {
  */
 function enumTemplate(context) {
   return html`
-    ${label(context)}<select name="${context.component.properties.ref}" bind="${context.component.properties.ref}">
-      ${context.component.properties.possibleValues.map(
-        (e) =>
-          html`
-            <option value="${typeof e === 'string' ? e : e.value}">${typeof e === 'string' ? e : e.label}</option>
-          `,
-      )}
-    </select>
+    <span>
+      ${label(context)}<select name="${context.component.properties.ref}" bind="${context.component.properties.ref}">
+        ${context.component.properties.possibleValues.map(
+          e =>
+            html`
+              <option value="${typeof e === 'string' ? e : e.value}">${typeof e === 'string' ? e : e.label}</option>
+            `,
+        )}
+      </select>
+    </span>
   `;
 }
 
