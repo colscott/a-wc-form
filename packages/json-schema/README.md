@@ -164,30 +164,39 @@ import { layoutGeneratorRegistry } from 'a-wc-form-json-schema';
 import { jsonPointer } from 'a-wc-form-binder';
 
 // The function takes in the full JSON Schema and a JSON Pointer the the part of the JSON Schema being processed.
-// It returns a Layout Component. In this case a GridLayout.
+// It returns a Layout Component. In this case a 2 column GridLayout.
 
 /**
  * @param {import("a-wc-form-json-schema/src/lib/models").JsonSchema} schema to generate uiSchema for
  * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
  * @returns {import("a-wc-form-layout/src/lib/models").GridLayout}
  */
-const newObjectGenerator = function(schema, ref) {
-  // The full JSON Schema is passed in so we get the part of the schema currently targeted using the ref (JSON Pointer)
-  /** @type {import("a-wc-form-json-schema/src/lib/models").JsonSchema} schema to generate layout Schema for */
-  const currentSchema = jsonPointer.getSchemaValue(schema, ref);
-  return {
-    template: 'GridLayout',
-    properties: {
-      columns: 2,
-      label: currentSchema.title,
-      // Generate child component layouts
-      components: Object.entries(currentSchema.properties).map(entry => {
-          const componentJsonPointer = `${ref}/${entry[0]}`;
-          return layoutGeneratorRegistry.getLayoutGenerator(entry[1].type)(schema, componentJsonPointer);
-      }),
-    }
-  }
-}
+const newObjectGenerator = function (schema, ref) {
+    // The full JSON Schema is passed in so we get the part of the schema currently targeted using the ref (JSON Pointer)
+    /** @type {import("a-wc-form-json-schema/src/lib/models").JsonSchema} schema to generate layout Schema for */
+    const currentSchema = jsonPointer.getSchemaValue(schema, ref);
+    return {
+        template: 'GridLayout',
+        properties: {
+            columns: 2,
+            label: currentSchema.title,
+            // Generate child component layouts
+            components: Object.entries(currentSchema.properties).map((entry) => {
+                const componentJsonPointer = `${ref}/${entry[0]}`;
+                if (typeof entry[1] !== 'boolean' && typeof entry[1].type === 'string') {
+                    return {
+                        columns: entry[1].type === 'array' ? 2 : 1,
+                        component: layoutGeneratorRegistry.getLayoutGenerator(entry[1].type)(
+                            schema,
+                            componentJsonPointer,
+                        ),
+                    };
+                }
+                return null;
+            }),
+        },
+    };
+};
 
 layoutGeneratorRegistry.setLayoutGenerator('object', newObjectGenerator);
 
