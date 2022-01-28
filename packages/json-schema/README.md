@@ -154,6 +154,47 @@ jsonSchemaForm.schema = {
 jsonSchemaForm.addEventListener('form-binder:change', e => console.info(e.detail.data));
 ```
 
+## Customization of JSON Schema to Layout Schema
+It is possible to change how the JSON Schema gets transformed into Layout Schema. There is a function responsible for the transformation of each JSON Schema type ('string', 'number', 'integer', 'boolean', 'object', 'array') into a Layout Component. These functions can be replaced.
+
+For example, by default the transformation of a JSON Schema type 'object' is to a VerticalLayout. e.g. each property in the object is rendered in a single column. If you want to switch this to a two column GridLayout you can override the function to generate 'object' JSON Schema types like so:
+
+```js
+import { layoutGeneratorRegistry } from 'a-wc-form-json-schema';
+import { jsonPointer } from 'a-wc-form-binder';
+
+// The function takes in the full JSON Schema and a JSON Pointer the the part of the JSON Schema being processed.
+// It returns a Layout Component. In this case a GridLayout.
+
+/**
+ * @param {import("a-wc-form-json-schema/src/lib/models").JsonSchema} schema to generate uiSchema for
+ * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
+ * @returns {import("a-wc-form-layout/src/lib/models").GridLayout}
+ */
+const newObjectGenerator = function(schema, ref) {
+  // The full JSON Schema is passed in so we get the part of the schema currently targeted using the ref (JSON Pointer)
+  /** @type {import("a-wc-form-json-schema/src/lib/models").JsonSchema} schema to generate layout Schema for */
+  const currentSchema = jsonPointer.getSchemaValue(schema, ref);
+  return {
+    template: 'GridLayout',
+    properties: {
+      columns: 2,
+      label: currentSchema.title,
+      // Generate child component layouts
+      components: Object.entries(currentSchema.properties).map(entry => {
+          const componentJsonPointer = `${ref}/${entry[0]}`;
+          return layoutGeneratorRegistry.getLayoutGenerator(entry[1].type)(schema, componentJsonPointer);
+      }),
+    }
+  }
+}
+
+layoutGeneratorRegistry.setLayoutGenerator('object', newObjectGenerator);
+
+```
+
+This layout generator must be registered before the json form is instantiated.
+
 ## API - json-schema-form
 ### Attributes and properties
 | Name | Type | Description |

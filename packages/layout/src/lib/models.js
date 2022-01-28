@@ -97,7 +97,7 @@ export {};
  * @typedef {ControlType & ControlProperties} Control
  */
 
-/** @typedef {HorizontalLayout | VerticalLayout | GridComponent | Label | Control | GridLayout} ComponentTemplate */
+/** @typedef {HorizontalLayout | VerticalLayout | GridComponent | Label | Control | GridLayout | ArrayLayout} ComponentTemplate */
 
 // /**
 //  * @typedef {Object} LayoutContext

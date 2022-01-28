@@ -1,4 +1,5 @@
 import { getSchemaValue } from 'a-wc-form-binder/src/lib/json-pointer.js';
+import { getLayoutGenerator, setLayoutGenerator } from './layout-generator-registry.js';
 
 /** @typedef {import('../lib/models.js').JsonSchema} JsonSchema */
 
@@ -12,7 +13,10 @@ import { getSchemaValue } from 'a-wc-form-binder/src/lib/json-pointer.js';
 export function getLayout(schema, startRef) {
   /** @type {import("../lib/models").JsonSchema} */
   const currentSchema = getSchemaValue(schema, startRef || '#');
-  return schema2Layout[currentSchema.type](schema, startRef || '#');
+  if (typeof currentSchema.type === 'string') {
+    return getLayoutGenerator(currentSchema.type)(schema, startRef || '#');
+  }
+  throw new Error(`Unsupported JSON Schema type: ${currentSchema.type}`);
 }
 
 /**
@@ -20,7 +24,7 @@ export function getLayout(schema, startRef) {
  * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
  * @returns {boolean} if the schema field is required
  */
-function isRequired(schema, ref) {
+export function isRequired(schema, ref) {
   const innerProperties = ref.substr(0, ref.lastIndexOf('/'));
   /** @type {import("./models").JsonSchema} */
   const parentSchema = getSchemaValue(schema, innerProperties);
@@ -63,7 +67,7 @@ function controlToLayout(schema, ref) {
           : typeMapping[currentSchema.type],
       description: currentSchema.description,
       label: currentSchema.title,
-      possibleValues: currentSchema.enum && currentSchema.enum.map((e) => e.toString()),
+      possibleValues: currentSchema.enum && currentSchema.enum.map(e => e.toString()),
       readOnly: currentSchema.readOnly === true,
       validation: {
         max: currentSchema.maximum || currentSchema.exclusiveMaximum,
@@ -79,6 +83,11 @@ function controlToLayout(schema, ref) {
   return component;
 }
 
+setLayoutGenerator('boolean', controlToLayout);
+setLayoutGenerator('integer', controlToLayout);
+setLayoutGenerator('number', controlToLayout);
+setLayoutGenerator('string', controlToLayout);
+
 /**
  * @param {import("../lib/models").JsonSchema} schema to generate uiSchema for
  * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
@@ -91,13 +100,18 @@ function objectToLayout(schema, ref) {
   return {
     template: arrayItemIndex && arrayItemIndex[1] ? 'HorizontalLayout' : 'VerticalLayout',
     properties: {
-      components: Object.entries(currentSchema.properties).map((entry) =>
-        schema2Layout[typeof entry[1] !== 'boolean' && entry[1].type](schema, `${ref}/${entry[0]}`),
-      ),
+      components: Object.entries(currentSchema.properties).map(entry => {
+        if (typeof entry[1] !== 'boolean' && typeof entry[1].type === 'string') {
+          return getLayoutGenerator(entry[1].type)(schema, `${ref}/${entry[0]}`);
+        }
+        throw new Error(`Unsupported JSON Schema type: ${entry[1]}`);
+      }),
       label: currentSchema.title,
     },
   };
 }
+
+setLayoutGenerator('object', objectToLayout);
 
 /**
  * @param {import("./models").JsonSchema} schema
@@ -127,9 +141,7 @@ const arrayToLayout = (schema, ref) => {
       template: 'HorizontalLayout',
       properties: {
         label: currentSchema.title,
-        components: items
-          .filter((item) => typeof item !== 'boolean')
-          .map((item, i) => getLayout(schema, `${ref}/${i}`)),
+        components: items.filter(item => typeof item !== 'boolean').map((item, i) => getLayout(schema, `${ref}/${i}`)),
       },
     };
   }
@@ -143,7 +155,7 @@ const arrayToLayout = (schema, ref) => {
       properties: {
         ref,
         label: currentSchema.title,
-        components: Object.entries(items.properties).map((entry) => getLayout(schema, `${ref}/items/${entry[0]}`)),
+        components: Object.entries(items.properties).map(entry => getLayout(schema, `${ref}/items/${entry[0]}`)),
       },
     };
   }
@@ -157,11 +169,4 @@ const arrayToLayout = (schema, ref) => {
   };
 };
 
-const schema2Layout = {
-  boolean: controlToLayout,
-  integer: controlToLayout,
-  number: controlToLayout,
-  string: controlToLayout,
-  array: arrayToLayout,
-  object: objectToLayout,
-};
+setLayoutGenerator('array', arrayToLayout);
