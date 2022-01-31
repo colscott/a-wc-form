@@ -1,6 +1,6 @@
 import { initialize } from '../lib/binder-registry.js';
 import { filterValidationResults, matchingValidators, add } from '../lib/validator-registry.js';
-import * as validators from '../lib/validators/index.js';
+import '../lib/validators/index.js';
 import { getValue, normalize, objectFlat, setValue } from '../lib/json-pointer.js';
 import { ShadowDomMutationObserver } from '../lib/observer.js';
 
@@ -19,12 +19,6 @@ import { ShadowDomMutationObserver } from '../lib/observer.js';
 /** @typedef {import("../lib/validator-registry.js").ValidationElement} ValidationElement */
 /** @typedef {import("../lib/validator-registry.js").ValidationResults} ValidationResults */
 /** @typedef {import("../lib/validator-registry.js").FormValidationResult} FormValidationResult */
-
-// Add built-in validators
-// eslint-disable-next-line guard-for-in,no-restricted-syntax
-for (const validator in validators) {
-  add(validators[validator]);
-}
 
 const ATTRIBUTE_BINDER_PREFIX = 'bind-attr:';
 
