@@ -1,4 +1,5 @@
 import { ValidationResult } from '../validation-result.js';
+import { add } from '../validator-registry.js';
 
 /** @type {import('../validator-registry').Validator} */
 export const requiredValidator = {
@@ -7,3 +8,5 @@ export const requiredValidator = {
     return new ValidationResult('required', true, value, !!value);
   },
 };
+
+add(requiredValidator);

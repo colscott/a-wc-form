@@ -1,4 +1,5 @@
 import { ValidationResult } from '../validation-result.js';
+import { add } from '../validator-registry.js';
 
 /** @type {import('../validator-registry').Validator} */
 export const minValidator = {
@@ -9,3 +10,5 @@ export const minValidator = {
     return new ValidationResult('min', minValue, value, value >= minValue);
   },
 };
+
+add(minValidator);

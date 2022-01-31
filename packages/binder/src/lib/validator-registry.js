@@ -23,23 +23,27 @@
 const validatorRegistry = [];
 
 /**
- * @param {Validator} validator
+ * @param {Validator|Array<Validator>} validator
  * @param {boolean} [addToBeginning=false] to add the binder to the start of the binders, true to insert at the start.
  */
 export function add(validator, addToBeginning) {
+  const validators = validator instanceof Array ? validator : [validator];
   if (addToBeginning === true) {
-    validatorRegistry.unshift(validator);
+    validatorRegistry.unshift(...validators);
   } else {
-    validatorRegistry.push(validator);
+    validatorRegistry.push(...validators);
   }
 }
 
-/** @param {Validator} validator to remove */
+/** @param {Validator|Array<Validator>} validator to remove */
 export function remove(validator) {
-  const index = validatorRegistry.findIndex((b) => b === validator);
-  if (index > -1) {
-    validatorRegistry.splice(index, 1);
-  }
+  const validators = validator instanceof Array ? validator : [validator];
+  validators.forEach(_validator => {
+    const index = validatorRegistry.findIndex(b => b === _validator);
+    if (index > -1) {
+      validatorRegistry.splice(index, 1);
+    }
+  });
 }
 
 /**
@@ -47,7 +51,7 @@ export function remove(validator) {
  * @returns {Array<Validator>} matching validators
  */
 export function matchingValidators(control) {
-  return validatorRegistry.filter((v) => control.matches(v.controlSelector));
+  return validatorRegistry.filter(v => control.matches(v.controlSelector));
 }
 
 /**
@@ -58,8 +62,8 @@ export function matchingValidators(control) {
 export function filterValidationResults(validationResult, predicate) {
   /** @type {Array<ValidationControlResult>} */
   const result = [];
-  validationResult.forEach((validationControlResult) => {
-    const filteredResult = validationControlResult.controlValidationResults.filter((controlValidationResult) =>
+  validationResult.forEach(validationControlResult => {
+    const filteredResult = validationControlResult.controlValidationResults.filter(controlValidationResult =>
       predicate(controlValidationResult),
     );
     if (filteredResult.length) {

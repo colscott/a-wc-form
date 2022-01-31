@@ -1,6 +1,7 @@
 import { ValidationResult } from '../validation-result.js';
 import { getValue } from '../json-pointer.js';
 import { convertYYYYMMDD, isIsoDate, isYyyyMmDd } from './greater-than.js';
+import { add } from '../validator-registry.js';
 
 /** @type {import('../validator-registry').Validator} */
 export const lessThanValidator = {
@@ -28,3 +29,5 @@ export const lessThanValidator = {
     );
   },
 };
+
+add(lessThanValidator);

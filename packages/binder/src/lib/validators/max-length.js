@@ -1,4 +1,5 @@
 import { ValidationResult } from '../validation-result.js';
+import { add } from '../validator-registry.js';
 
 /** @type {import('../validator-registry').Validator} */
 export const maxLengthValidator = {
@@ -13,3 +14,5 @@ export const maxLengthValidator = {
     return result;
   },
 };
+
+add(maxLengthValidator);

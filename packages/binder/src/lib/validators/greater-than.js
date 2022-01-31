@@ -1,5 +1,6 @@
 import { getValue } from '../json-pointer.js';
 import { ValidationResult } from '../validation-result.js';
+import { add } from '../validator-registry.js';
 
 /**
  * @param {string} yyyymmdd to convert to yyyy-mm-dd
@@ -46,3 +47,5 @@ export const greaterThanValidator = {
     );
   },
 };
+
+add(greaterThanValidator);

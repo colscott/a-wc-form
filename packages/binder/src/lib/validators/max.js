@@ -1,4 +1,5 @@
 import { ValidationResult } from '../validation-result.js';
+import { add } from '../validator-registry.js';
 
 /** @type {import('../validator-registry').Validator} */
 export const maxValidator = {
@@ -9,3 +10,5 @@ export const maxValidator = {
     return new ValidationResult('max', maxValue, value, value <= maxValue);
   },
 };
+
+add(maxValidator);
