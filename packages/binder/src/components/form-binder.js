@@ -63,7 +63,17 @@ function getChildElements(parentElement) {
   const elements = Array.from(parentElement.querySelectorAll('*'));
   return [
     ...elements,
+    // Get all child shadow root elements
     ...elements.filter((element) => !!element.shadowRoot).flatMap((element) => getChildElements(element)),
+    // Get all elements assigned to a slot
+    ...elements.filter((element) => element instanceof HTMLSlotElement).flatMap((slot) => slot instanceof HTMLSlotElement && slot.assignedElements()),
+    // Get all child elements of elements assign to a slot
+    ...elements.filter((element) => element instanceof HTMLSlotElement).flatMap((slot) => {
+        if (slot instanceof HTMLSlotElement) {
+          return [...slot.assignedElements().flatMap(element => getChildElements(element))];
+        }
+        return [];
+      }),
   ];
 }
 

@@ -15,17 +15,23 @@ export function wait() {
 }
 
 /** @returns {Promise<{formBinder: FormBinder, eventDetail: FormBinderChangeEventDetail}>} */
-async function createFormBinder() {
+async function createFormBinder(useShadowRoot = false) {
   const data = JSON.parse(JSON.stringify(mockData));
   const formBinder = /** @type {import('../../../src/components/form-binder.js').FormBinder<MockData>} */ (document.createElement(
     'form-binder',
   ));
+  let container = formBinder;
+  if (useShadowRoot) {
+    container = document.createElement('div');
+  }
   formBinder.data = data;
-  document.body.appendChild(formBinder);
-  formBinder.innerHTML = `
+  document.body.appendChild(container);
+  container.innerHTML = `
     <input id="name" required pattern="Fred.*" type="text" bind="/name" />
     <input id="whitelist" whitelist="bill,bob,rob" type="text" bind="#/name" />
-    <input id="age" min="18" max="65" type="number" bind="#/personalData/age" />
+    <div>
+      <input id="age" min="18" max="65" type="number" bind="#/personalData/age" />
+    </div>
     <input id="age2" min="18" max="65" type="number" bind="#/personalData/age" />
     <input id="tel" bind="telephoneNumbers/1" />
     <input id="message" bind="#/comments/1/message" />
@@ -34,6 +40,12 @@ async function createFormBinder() {
     <input id="end" type="date" bind="/end" bind-attr:min="/start" />
     <input id="occupation" bind="/occupation" bind-attr:disabled="/student" />
   `;
+  if (useShadowRoot) {
+    container.attachShadow({ mode: 'open', delegatesFocus: true });
+    formBinder.innerHTML = '<slot></slot>';
+    container.shadowRoot.appendChild(formBinder);
+  }
+
   /** @type {import('../../../src/components/form-binder').FormBinderChangeEventDetail<MockData>} */
   const eventDetail = { data, jsonPointer: null, value: null, validationResults: null };
   formBinder.addEventListener('form-binder:change', e => {
@@ -82,6 +94,7 @@ describe('form-binder binding tests', () => {
     validatorRegistry.remove(maxValidator);
     binderRegistry.remove(...Object.values(binders));
     document.querySelectorAll('form-binder').forEach(e => e.parentElement.removeChild(e));
+    document.querySelectorAll('div').forEach(e => e.parentElement.removeChild(e));
   });
   it('Should populate controls', async () => {
     binderRegistry.add(...Object.values(binders));
@@ -92,9 +105,36 @@ describe('form-binder binding tests', () => {
     expect(document.getElementById('message').value).to.equal('Thdsdfsdfsdf');
     expect(document.getElementById('student').checked).to.equal(true);
   });
+  it('Should populate slotted controls', async () => {
+    binderRegistry.add(...Object.values(binders));
+    await createFormBinder(true);
+    expect(document.getElementById('name').value).to.equal('Johnny Five');
+    expect(document.getElementById('age').value).to.equal('34');
+    expect(document.getElementById('tel').value).to.equal('123-8901234');
+    expect(document.getElementById('message').value).to.equal('Thdsdfsdfsdf');
+    expect(document.getElementById('student').checked).to.equal(true);
+  });
   it('Should not change value when value is invalid', async () => {
     binderRegistry.add(...Object.values(binders));
     const { eventDetail } = await createFormBinder();
+    validatorRegistry.add(patternValidator, true);
+    validatorRegistry.add(maxValidator, true);
+    inputValue('name', 'Bert');
+    inputValue('age', '300');
+    await wait();
+    expect(eventDetail.data.name).to.equal('Johnny Five');
+    expect(eventDetail.data.personalData.age).to.equal(34);
+    validatorRegistry.remove(patternValidator);
+    validatorRegistry.remove(maxValidator);
+    inputValue('name', 'Fred');
+    inputValue('age', '20');
+    await wait();
+    expect(eventDetail.data.name).to.equal('Fred');
+    expect(eventDetail.data.personalData.age).to.equal(20);
+  });
+  it('Should handle change to slotted controls', async () => {
+    binderRegistry.add(...Object.values(binders));
+    const { eventDetail } = await createFormBinder(true);
     validatorRegistry.add(patternValidator, true);
     validatorRegistry.add(maxValidator, true);
     inputValue('name', 'Bert');
