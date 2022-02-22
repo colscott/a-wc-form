@@ -3,7 +3,7 @@ import { getLayoutGenerator, setLayoutGenerator } from './layout-generator-regis
 
 /** @typedef {import('../lib/models.js').JsonSchema} JsonSchema */
 
-/** @typedef {import("../../../layout/src/lib/models").ComponentTemplate} ComponentTemplate */
+/** @typedef {import("a-wc-form-layout/src/lib/models").ComponentTemplate} ComponentTemplate */
 
 /**
  * @param {import("./models").JsonSchema} schema to generate uiSchema for
@@ -91,7 +91,7 @@ setLayoutGenerator('string', controlToLayout);
 /**
  * @param {import("../lib/models").JsonSchema} schema to generate uiSchema for
  * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
- * @returns {import("../../../layout/src/lib/models").HorizontalLayout|import("../../../layout/src/lib/models").VerticalLayout}
+ * @returns {import("a-wc-form-layout/src/lib/models").HorizontalLayout|import("a-wc-form-layout/src/lib/models").VerticalLayout}
  */
 function objectToLayout(schema, ref) {
   /** @type {import("../lib/models").JsonSchema} schema to generate uiSchema for */
@@ -116,7 +116,7 @@ setLayoutGenerator('object', objectToLayout);
 /**
  * @param {import("./models").JsonSchema} schema
  * @param {string} ref JSON pointer
- * @returns {import("../../../layout/src/lib/models").GridComponent | import("../../../layout/src/lib/models").HorizontalLayout | import("../../../layout/src/lib/models").ArrayLayout}
+ * @returns {import("a-wc-form-layout/src/lib/models").GridComponent | import("a-wc-form-layout/src/lib/models").HorizontalLayout | import("a-wc-form-layout/src/lib/models").ArrayLayout}
  */
 const arrayToLayout = (schema, ref) => {
   /** @type {import("../lib/models").JsonSchema} */

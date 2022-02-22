@@ -1,4 +1,4 @@
-/** @typedef {import("../../../layout/src/lib/models").ComponentTemplate} ComponentTemplate */
+/** @typedef {import("a-wc-form-layout/src/lib/models").ComponentTemplate} ComponentTemplate */
 
 /** @typedef {import("./models").JsonSchemaTypeName} JsonSchemaTypeName */
 /** @typedef {import("./models").JsonSchema} JsonSchema */

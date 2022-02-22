@@ -5,7 +5,7 @@ import './json-schema-control.js';
 
 /**  */
 export class JsonSchemaForm extends FormLayout {
-  /** @returns {import("../../../layout/src/lib/models").ComponentTemplate} */
+  /** @returns {import("a-wc-form-layout/src/lib/models").ComponentTemplate} */
   get layout() {
     return (
       this._layout || {
@@ -18,7 +18,7 @@ export class JsonSchemaForm extends FormLayout {
     );
   }
 
-  /** @param {import("../../../layout/src/lib/models").ComponentTemplate} component to use for form layout */
+  /** @param {import("a-wc-form-layout/src/lib/models").ComponentTemplate} component to use for form layout */
   set layout(component) {
     super.layout = component;
   }
@@ -36,7 +36,7 @@ export class JsonSchemaForm extends FormLayout {
     }
   }
 
-  /** @returns {import("../lib/models.js").SchemaLayoutContext<import("../../../layout/src/lib/models").ComponentTemplate>} */
+  /** @returns {import("../lib/models.js").SchemaLayoutContext<import("a-wc-form-layout/src/lib/models").ComponentTemplate>} */
   get context() {
     return {
       ...super.context,
