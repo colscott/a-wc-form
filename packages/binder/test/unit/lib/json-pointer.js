@@ -74,6 +74,12 @@ describe('JSON Pointer', () => {
     testSetValue({}, '#/comments/1/message', 'foobar', { comments: [undefined, { message: 'foobar' }] });
   });
 
+  it('Should return null for empty data', () => {
+    expect(getValue({}, '#/name')).to.equal(undefined);
+    expect(getValue({}, '/name')).to.equal(undefined);
+    expect(getValue({}, 'name')).to.equal(undefined);
+  });
+
   // xit("Should correctly set data", async () => {});
 });
 

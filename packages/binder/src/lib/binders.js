@@ -12,7 +12,7 @@ export const textInputBinder = {
     control.addEventListener('blur', () => onTouch());
   },
   writeValue: /** @param {HTMLInputElement} control */ (control, value) => {
-    control.value = value.toString();
+    control.value = (value || '').toString();
   },
 };
 
@@ -27,7 +27,7 @@ export const numberInputBinder = {
     }),
   writeValue: (control, value) => {
     if (control instanceof HTMLInputElement) {
-      control.value = value.toString();
+      control.value = (value || '').toString();
     }
   },
 };
@@ -62,7 +62,7 @@ export const selectBinder = {
     }),
   writeValue: (control, value) => {
     if (control instanceof HTMLSelectElement) {
-      control.value = value.toString();
+      control.value = (value || '').toString();
     }
   },
 };

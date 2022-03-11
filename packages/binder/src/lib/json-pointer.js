@@ -43,16 +43,12 @@ const buildOutObject = (data, ref) => {
  * @returns {any} value
  */
 const getDataProperty = (dataAndProperty) => {
-  if (dataAndProperty.property === '#') {
+  if (!dataAndProperty.property || dataAndProperty.property === '#' || dataAndProperty.property === '#/') {
     return dataAndProperty.data;
   }
 
   const value = dataAndProperty.data[dataAndProperty.property];
-  if (value !== undefined) {
-    return value;
-  }
-
-  return dataAndProperty.data;
+  return value;
 };
 
 /**
