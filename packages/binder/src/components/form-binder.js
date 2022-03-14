@@ -353,7 +353,12 @@ export class FormBinder extends HTMLElement {
           validationResults,
         };
         /** @type {FormBinderChangeEvent<TData>} */
-        const event = new CustomEvent('form-binder:change', { detail });
+        const event = new CustomEvent('form-binder:change', {
+          bubbles: true,
+          cancelable: false,
+          composed: true,
+          detail,
+        });
         this.dispatchEvent(event);
       }
     }
