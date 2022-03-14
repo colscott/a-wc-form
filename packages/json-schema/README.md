@@ -17,7 +17,7 @@ npm i -save a-wc-form-json-schema
 Example of binding data to JSON Schema generated form controls. This example does not use [a-wc-form-layout](https://github.com/colscott/a-wc-form/tree/master/packages/layout) and instead relies on you to manually create the form control structure using [a-wc-form-binder](https://github.com/colscott/a-wc-form/tree/master/packages/binder).
 #### HTML
 ```html
-<form-binder>
+<json-schema-form>
   <!-- Each json-schema-control will create the control for the data type from a set  -->
   <json-schema-control ref="/name/first"></json-schema-control>
   <json-schema-control ref="/name/second"></json-schema-control>
@@ -25,12 +25,13 @@ Example of binding data to JSON Schema generated form controls. This example doe
   <json-schema-control ref="#"></json-schema-control>
   <!-- Opt out of json-schema-form but still take advantage of a-wc-form-binder data binding and validation -->
   <input type="text" bind="/name/middle">
-</form-binder>
+</json-schema-form>
 ```
 #### Javascript
 See [a-wc-form-binder](https://github.com/colscott/a-wc-form/tree/master/packages/binder) package for more info on binders and validation.
 ```js
 import { binderRegistry binders } from "a-wc-form-binder";
+import "a-wc-form-json-schema/src/components/json-schema-form.js";
 import "a-wc-form-json-schema/src/components/json-schema-control.js";
 
 // add the control binders to bind data to controls

@@ -25,10 +25,18 @@ export function getLayout(schema, startRef) {
  * @returns {boolean} if the schema field is required
  */
 export function isRequired(schema, ref) {
-  const innerProperties = ref.substr(0, ref.lastIndexOf('/'));
+  let innerProperties = ref
+    // strip the property name to get the parent
+    .substring(0, ref.lastIndexOf('/'))
+    // strip any trailing array indexes to get the main parent object
+    .replace(/\/\d+$/, '');
+  if (innerProperties.match(/\/items/)) {
+    // if an Array change ref to be parent object that has the required property
+    innerProperties = innerProperties.substring(0, innerProperties.lastIndexOf('/'));
+  }
   /** @type {import("./models").JsonSchema} */
   const parentSchema = getSchemaValue(schema, innerProperties);
-  const property = ref.substr(ref.lastIndexOf('/') + 1);
+  const property = ref.substring(ref.lastIndexOf('/') + 1);
   return parentSchema.required != null && parentSchema.required.indexOf(property) > -1;
 }
 

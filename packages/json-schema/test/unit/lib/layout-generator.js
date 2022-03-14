@@ -1,6 +1,6 @@
 /* global describe, it */
 import { expect } from '@esm-bundle/chai/esm/chai.js';
-import { getLayout } from '../../../src/lib/layout-generator.js';
+import { getLayout, isRequired } from '../../../src/lib/layout-generator.js';
 
 const jsonSchema = {
   type: 'object',
@@ -27,8 +27,16 @@ const jsonSchema = {
           },
         },
       },
+      required: ['name'],
+    },
+    telephoneNumbers: {
+      items: {
+        type: 'string',
+      },
+      type: 'array',
     },
   },
+  required: ['name'],
 };
 
 const expectedLayout = {
@@ -49,7 +57,7 @@ const expectedLayout = {
             min: undefined,
             minLength: undefined,
             pattern: undefined,
-            required: false,
+            required: true,
             step: undefined,
           },
         },
@@ -112,7 +120,7 @@ const expectedLayout = {
                   min: undefined,
                   minLength: undefined,
                   pattern: undefined,
-                  required: false,
+                  required: true,
                   step: undefined,
                 },
               },
@@ -144,6 +152,33 @@ const expectedLayout = {
         },
         template: 'GridComponent',
       },
+      {
+        template: 'ArrayLayout',
+        properties: {
+          component: {
+            properties: {
+              description: undefined,
+              label: undefined,
+              possibleValues: undefined,
+              readOnly: false,
+              ref: '#/telephoneNumbers/items',
+              type: 'text',
+              validation: {
+                max: undefined,
+                maxLength: undefined,
+                min: undefined,
+                minLength: undefined,
+                pattern: undefined,
+                required: false,
+                step: undefined,
+              },
+            },
+            template: 'Control',
+          },
+          label: undefined,
+          ref: '#/telephoneNumbers',
+        },
+      },
     ],
     label: undefined,
   },
@@ -152,5 +187,36 @@ const expectedLayout = {
 describe('Layout', () => {
   it('Generate from layout', () => {
     expect(getLayout(jsonSchema)).to.deep.equal(expectedLayout);
+  });
+
+  it('Should correctly return if required', () => {
+    expect(isRequired(jsonSchema, '#/name')).to.be.true;
+    expect(isRequired(jsonSchema, '/name')).to.be.true;
+    expect(isRequired(jsonSchema, 'name')).to.be.true;
+    expect(isRequired(jsonSchema, '#/age')).to.be.false;
+    expect(isRequired(jsonSchema, '/age')).to.be.false;
+    expect(isRequired(jsonSchema, 'age')).to.be.false;
+    expect(isRequired(jsonSchema, '#/children/1/name')).to.be.true;
+    expect(isRequired(jsonSchema, '/children/1/name')).to.be.true;
+    expect(isRequired(jsonSchema, 'children/1/name')).to.be.true;
+    expect(isRequired(jsonSchema, '#/children/1/age')).to.be.false;
+    expect(isRequired(jsonSchema, '/children/1/age')).to.be.false;
+    expect(isRequired(jsonSchema, 'children/1/age')).to.be.false;
+    const arraySchema = {
+      type: 'object',
+      properties: {
+        children: {
+          type: 'array',
+          items: { type: 'object', properties: { name: { type: 'string' }, age: { type: 'number' } } },
+          required: ['name'],
+        },
+      },
+    };
+    expect(isRequired(arraySchema, '#/children/1/name')).to.be.true;
+    expect(isRequired(arraySchema, '/children/1/name')).to.be.true;
+    expect(isRequired(arraySchema, 'children/1/name')).to.be.true;
+    expect(isRequired(arraySchema, '#/children/1/age')).to.be.false;
+    expect(isRequired(arraySchema, '/children/1/age')).to.be.false;
+    expect(isRequired(arraySchema, 'children/1/age')).to.be.false;
   });
 });

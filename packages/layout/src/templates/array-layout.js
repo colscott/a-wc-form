@@ -22,7 +22,11 @@ const gridBinder = {
             /** @type {import("../lib/models.js").ComponentTemplate & {properties: {ref: string, label: string}}} context */
             const component = JSON.parse(JSON.stringify(c));
             component.properties.label = '';
-            component.properties.ref = `${ref}/${i}/${component.properties.ref}`;
+            const childRef =
+              component.properties.ref.indexOf(`${ref}/items`) === 0
+                ? component.properties.ref.replace('/items/', `/${i}/`)
+                : `${ref}/${i}/${component.properties.ref}`;
+            component.properties.ref = childRef;
             const context = {
               component,
             };

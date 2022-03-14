@@ -16,7 +16,7 @@ export class FormLayout extends FormBinder {
   set layout(component) {
     if (this._layout !== component) {
       this._layout = component;
-      setTimeout(() => this.render());
+      this.requestUpdate();
     }
   }
 
@@ -24,6 +24,7 @@ export class FormLayout extends FormBinder {
   constructor() {
     super();
 
+    this._requestedUpdate = false;
     this.layout = null;
     this.hasSlottedContent = false;
   }
@@ -33,6 +34,17 @@ export class FormLayout extends FormBinder {
     this.hasSlottedContent = !!this.children.length;
     this.setAttribute('role', 'form');
     super.connectedCallback();
+  }
+
+  /** @protected */
+  requestUpdate() {
+    if (!this._requestedUpdate) {
+      this._requestedUpdate = true;
+      setTimeout(() => {
+        this._requestedUpdate = false;
+        this.render();
+      });
+    }
   }
 
   /** Renders the UI based on uiSchema only if user did not populate HTML themselves */

@@ -20,8 +20,8 @@ const getDataRef = (data, ref) => {
 const isIntRegEx = /^[0-9]+$/;
 
 /**
- * @param {*} data 
- * @param {string} ref 
+ * @param {*} data
+ * @param {string} ref
  */
 const buildOutObject = (data, ref) => {
   const keys = ref.split('/');
@@ -42,8 +42,13 @@ const buildOutObject = (data, ref) => {
  * @param {{data: any; property: string;}} dataAndProperty
  * @returns {any} value
  */
-const getDataProperty = (dataAndProperty) => {
-  if (!dataAndProperty.property || dataAndProperty.property === '#' || dataAndProperty.property === '#/') {
+const getDataProperty = dataAndProperty => {
+  if (
+    !dataAndProperty.property ||
+    dataAndProperty.property === '#' ||
+    dataAndProperty.property === '#/' ||
+    dataAndProperty.property === '/'
+  ) {
     return dataAndProperty.data;
   }
 
@@ -78,8 +83,20 @@ export const setValue = (data, ref, value) => {
  * @returns {any}
  */
 export const getSchemaValue = (data, ref) => {
-  const dataAndProperty = getDataRef(data, ref.replace(/\//g, '/properties/').replace(/\/(\d+)/g, '/items/$1'));
-  return getDataProperty(dataAndProperty);
+  // Make sure ref starts with # or /
+  let refForJsonSchema = ref && ref[0] !== '#' && ref[0] !== '/' ? `/${ref}` : ref;
+  // add 'properties' and 'items' throughout the ref
+  refForJsonSchema = refForJsonSchema
+    .replace(/\/(\d+)/g, '/items/$1')
+    .replace(/\//g, '/properties/')
+    .replace('__index__', '/items/');
+  const dataAndProperty = getDataRef(data, refForJsonSchema);
+  // Handle Array of single type
+  if (isIntRegEx.test(dataAndProperty.property) && dataAndProperty.data instanceof Array === false) {
+    return dataAndProperty.data;
+  }
+  const result = getDataProperty(dataAndProperty);
+  return result;
 };
 
 /**

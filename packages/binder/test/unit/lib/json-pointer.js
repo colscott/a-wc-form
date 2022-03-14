@@ -37,6 +37,8 @@ describe('JSON Pointer', () => {
     expect(getSchemaValue(schema, '/comments/0/date')).to.equal(schema.properties.comments.items.properties.date);
     expect(getSchemaValue(schema, '#/address/1')).to.equal(schema.properties.address.items[1]);
     expect(getSchemaValue(schema, '/address/1')).to.equal(schema.properties.address.items[1]);
+    expect(getSchemaValue(schema, '#/telephoneNumbers/1')).to.equal(schema.properties.telephoneNumbers.items);
+    expect(getSchemaValue(schema, '/telephoneNumbers/1')).to.equal(schema.properties.telephoneNumbers.items);
   });
 
   it('Should set values', () => {

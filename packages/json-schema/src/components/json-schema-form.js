@@ -7,12 +7,14 @@ import './json-schema-control.js';
 export class JsonSchemaForm extends FormLayout {
   /** @returns {import("a-wc-form-layout/src/lib/models").ComponentTemplate} */
   get layout() {
+    // @ts-ignore
     return (
-      this._layout || {
+      super.layout || {
         template: 'JsonSchemaControl',
         properties: {
           ref: '#',
           type: 'text',
+          schema: this.schema,
         },
       }
     );
@@ -32,7 +34,7 @@ export class JsonSchemaForm extends FormLayout {
   set schema(schema) {
     if (this._schema !== schema) {
       this._schema = schema;
-      setTimeout(() => this.render());
+      this.requestUpdate();
     }
   }
 
