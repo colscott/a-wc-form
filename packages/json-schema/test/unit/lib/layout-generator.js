@@ -1,6 +1,6 @@
 /* global describe, it */
 import { expect } from '@esm-bundle/chai/esm/chai.js';
-import { getLayout, isRequired } from '../../../src/lib/layout-generator.js';
+import { getLayout, isRequired, getPossibleValues } from '../../../src/lib/layout-generator.js';
 
 const jsonSchema = {
   type: 'object',
@@ -218,5 +218,38 @@ describe('Layout', () => {
     expect(isRequired(arraySchema, '#/children/1/age')).to.be.false;
     expect(isRequired(arraySchema, '/children/1/age')).to.be.false;
     expect(isRequired(arraySchema, 'children/1/age')).to.be.false;
+  });
+
+  it('should generate possible values', async () => {
+    const actual1 = getPossibleValues({
+      type: 'integer',
+      oneOf: [
+        { enum: [0], description: 'value0' },
+        { enum: [1], description: 'value1' },
+      ],
+    });
+
+    const expected = [
+      { label: 'value0', value: '0' },
+      { label: 'value1', value: '1' },
+    ];
+    expect(actual1).to.eql(expected);
+
+    const actual2 = getPossibleValues({
+      type: 'integer',
+      oneOf: [
+        { const: 0, description: 'value0' },
+        { const: 1, description: 'value1' },
+      ],
+    });
+    expect(actual2).to.eql(expected);
+
+    const actual3 = getPossibleValues({ type: 'integer', enum: [0, 1], 'x-enumNames': ['value0', 'value1'] });
+    expect(actual3).to.eql(expected);
+
+    const actual4 = getPossibleValues({ type: 'integer', enum: [0, 1], 'x-enum-varnames': ['value0', 'value1'] });
+    expect(actual4).to.eql(expected);
+
+    expect(getPossibleValues({ type: 'string', enum: ['value0', 'value1']})).to.eql(['value0', 'value1']);
   });
 });

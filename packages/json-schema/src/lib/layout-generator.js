@@ -4,6 +4,7 @@ import { getLayoutGenerator, setLayoutGenerator } from './layout-generator-regis
 /** @typedef {import('../lib/models.js').JsonSchema} JsonSchema */
 
 /** @typedef {import("a-wc-form-layout/src/lib/models").ComponentTemplate} ComponentTemplate */
+/** @typedef {import("a-wc-form-layout/src/lib/models").PossibleValues} PossibleValues */
 
 /**
  * @param {import("./models").JsonSchema} schema to generate uiSchema for
@@ -56,6 +57,45 @@ const formatMapping = {
 };
 
 /**
+ * Extracts the possible available values from a JSON Schema
+ * @param {import("../lib/models").JsonSchema} schema
+ * @return {PossibleValues}
+ */
+export function getPossibleValues(schema) {
+  let possibleValues = [];
+  if (schema.oneOf) {
+    // { type: 'integer', oneOf: [ { enum: [0], description: 'value0'}, { enum: [1], description: 'value1'} ] }
+    // { type: 'integer', oneOf: [ { const: 0, description: 'value0'}, { const: 1, description: 'value1'} ] }
+    return schema.oneOf
+      .filter(oneOf => typeof oneOf !== 'boolean')
+      .map(oneOf => {
+        if (typeof oneOf !== 'boolean' && oneOf.description) {
+          return {
+            value: 'const' in oneOf ? oneOf.const.toString() : oneOf.enum[0].toString(),
+            label: oneOf.description,
+          };
+        }
+        return '';
+      });
+  }
+
+  // Support for some proprietary libraries
+  // { type: 'integer', enum: [0, 1], x-enumNames: ['zero', 'one']}
+  // { type: 'integer', enum: [0, 1], x-enum-varnames: ['zero', 'one']}
+  // { type: 'string', enum: ['value0', 'value1']}
+  if (schema.enum instanceof Array) {
+    if (schema['x-enumNames']) {
+      return schema.enum.map((e, i) => ({ label: schema['x-enumNames'][i].toString(), value: e.toString() }));
+    }
+    if (schema['x-enum-varnames']) {
+      return schema.enum.map((e, i) => ({ label: schema['x-enum-varnames'][i].toString(), value: e.toString() }));
+    }
+    return schema.enum.map(e => e.toString());
+  }
+  return [];
+}
+
+/**
  * @param {import("../lib/models").JsonSchema} schema to generate uiSchema for
  * @param {string} ref JSON pointer string to use as a starting point. Use if we are generating uiSchema for only a part of the schema.
  * @returns {ComponentTemplate}
@@ -63,6 +103,8 @@ const formatMapping = {
 function controlToLayout(schema, ref) {
   /** @type {import("../lib/models").JsonSchema} */
   const currentSchema = getSchemaValue(schema, ref);
+
+  const possibleValues = getPossibleValues(currentSchema);
 
   /** @type {ComponentTemplate} */
   const component = {
@@ -75,7 +117,7 @@ function controlToLayout(schema, ref) {
           : typeMapping[currentSchema.type],
       description: currentSchema.description,
       label: currentSchema.title,
-      possibleValues: currentSchema.enum && currentSchema.enum.map(e => e.toString()),
+      possibleValues: possibleValues.length ? possibleValues : undefined,
       readOnly: currentSchema.readOnly === true,
       validation: {
         max: currentSchema.maximum || currentSchema.exclusiveMaximum,

@@ -5,6 +5,8 @@ export {};
 //  * @typedef {function(LayoutContext<TControl>):import('lit').TemplateResult|Array<import('lit').TemplateResult>} ComponentTemplate
 //  */
 
+/** @typedef {Array<string|{label: string, value: string}>} PossibleValues */
+
 // ---------- LAYOUTS ----------
 
 /**
@@ -91,7 +93,7 @@ export {};
  * @property {string} [properties.label] to apply to the control as a standard label and aria
  * @property {string} [properties.description] more description for the user
  * @property {boolean} [properties.readOnly=false] whether the control is in a read only state
- * @property {Array<string|{label: string, value: string}>} [properties.possibleValues] to constrain the value to
+ * @property {PossibleValues} [properties.possibleValues] to constrain the value to
  * @property {ControlValidation} [properties.validation]
  *
  * @typedef {ControlType & ControlProperties} Control
