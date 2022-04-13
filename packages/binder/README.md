@@ -275,7 +275,7 @@ validatorRegistry.remove(validateLowerCase);
 ```
 ## Custom cross-field validation
 
-Let say we want to odo some cross field validation in the form:
+Let say we want to do some cross field validation in the form:
 
 ```html
 <input type="number" bind="/from" />
@@ -285,14 +285,14 @@ Let say we want to odo some cross field validation in the form:
 Below is an example of validation that uses another field in calculating validity:
 
 ```js
-import { validatorRegistry, ValidationResult } from "a-wc-form-binder";
+import { jsonPointer, validatorRegistry, ValidationResult } from "a-wc-form-binder";
 
 // Define the greater than validator
 const greaterThanValidator = {
   controlSelector: "[greater-than]",
   validate: (control, value, data) => {
     const otherField = control.getAttribute("greater-than");
-    const otherValue = getValue(data, otherField);
+    const otherValue = jsonPointer.getValue(data, otherField);
     const isValid = value > otherValue;
 
     return new ValidationResult(
