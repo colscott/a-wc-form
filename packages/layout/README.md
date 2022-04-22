@@ -117,7 +117,53 @@ formBinder.layout = {
                 ref: "#/student",
                 type: "checkbox"
               }
-            }
+            },
+            {
+              // Single select
+              template: 'Control',
+              properties: {
+                label: 'Enum label',
+                description: 'Enum description',
+                possibleValues: ['pizza', 'cheese', 'humus'],
+                readOnly: false,
+                ref: '#/favoriteFood',
+                type: 'text',
+                validation: {
+                  required: false,
+                },
+              },
+            },
+            {
+              // Multi select
+              template: 'ArrayControl',
+              properties: {
+                label: 'ArrayControl label',
+                description: 'ArrayControl description',
+                possibleValues: ['pizza', 'cheese', 'humus'],
+                readOnly: false,
+                ref: '#/favoriteFoods',
+                validation: {
+                  required: false,
+                },
+              },
+            },
+            {
+              // Textarea control
+              template: 'Textarea',
+              properties: {
+                description: 'description description',
+                label: 'description label',
+                ref: '#/description',
+                cols: 20,
+                rows: 5,
+                readOnly: false,
+                validation: {
+                  minLength: 10,
+                  maxLength: 50,
+                  required: true,
+                },
+              },
+            },
           ]
         }
       },

@@ -62,7 +62,6 @@ const formatMapping = {
  * @return {PossibleValues}
  */
 export function getPossibleValues(schema) {
-  let possibleValues = [];
   if (schema.oneOf) {
     // { type: 'integer', oneOf: [ { enum: [0], description: 'value0'}, { enum: [1], description: 'value1'} ] }
     // { type: 'integer', oneOf: [ { const: 0, description: 'value0'}, { const: 1, description: 'value1'} ] }
@@ -166,7 +165,7 @@ setLayoutGenerator('object', objectToLayout);
 /**
  * @param {import("./models").JsonSchema} schema
  * @param {string} ref JSON pointer
- * @returns {import("a-wc-form-layout/src/lib/models").GridComponent | import("a-wc-form-layout/src/lib/models").HorizontalLayout | import("a-wc-form-layout/src/lib/models").ArrayLayout}
+ * @returns {import("a-wc-form-layout/src/lib/models").GridComponent | import("a-wc-form-layout/src/lib/models").HorizontalLayout | import("a-wc-form-layout/src/lib/models").ArrayLayout | import('a-wc-form-layout/src/lib/models').ArrayComponent}
  */
 const arrayToLayout = (schema, ref) => {
   /** @type {import("../lib/models").JsonSchema} */
@@ -197,7 +196,7 @@ const arrayToLayout = (schema, ref) => {
   }
   // List
   // items: { type: object }
-  // items: { type: number|string|boolean }
+  // items: { properties: { foo: { type: number|string|boolean }, bar: { type: object }, ... }
   // List needs access to data, layout is not known yet as it depends on the amount of data
   if (items.properties) {
     return {
@@ -209,6 +208,25 @@ const arrayToLayout = (schema, ref) => {
       },
     };
   }
+
+  // items: { type: number|string, enum: [], uniqueItems: true, minItems: 1 }
+  // Select control
+  if ((items.type === 'string' || items.type === 'number') && items.enum instanceof Array) {
+    return {
+      template: 'ArrayControl',
+      properties: {
+        ref,
+        label: currentSchema.title,
+        readOnly: currentSchema.readOnly === true,
+        possibleValues: getPossibleValues(items),
+        validation: {
+          required: isRequired(schema, ref),
+        },
+      },
+    };
+  }
+
+  // items: { type: number|string|boolean }
   return {
     template: 'ArrayLayout',
     properties: {

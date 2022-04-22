@@ -35,6 +35,19 @@ const jsonSchema = {
       },
       type: 'array',
     },
+    favoriteFoods: {
+      type: 'array',
+      items: {
+        type: 'string',
+        enum: ['pizza', 'cheese', 'humus'],
+        uniqueItems: true,
+        minItems: 1,
+      },
+    },
+    favoriteFood: {
+      type: 'string',
+      enum: ['pizza', 'cheese', 'humus'],
+    },
   },
   required: ['name'],
 };
@@ -179,6 +192,38 @@ const expectedLayout = {
           ref: '#/telephoneNumbers',
         },
       },
+      {
+        template: 'ArrayControl',
+        properties: {
+          label: undefined,
+          possibleValues: ['pizza', 'cheese', 'humus'],
+          readOnly: false,
+          ref: '#/favoriteFoods',
+          validation: {
+            required: false,
+          },
+        },
+      },
+      {
+        template: 'Control',
+        properties: {
+          description: undefined,
+          label: undefined,
+          possibleValues: ['pizza', 'cheese', 'humus'],
+          readOnly: false,
+          ref: '#/favoriteFood',
+          type: 'text',
+          validation: {
+            max: undefined,
+            maxLength: undefined,
+            min: undefined,
+            minLength: undefined,
+            pattern: undefined,
+            required: false,
+            step: undefined,
+          },
+        },
+      },
     ],
     label: undefined,
   },
@@ -250,6 +295,6 @@ describe('Layout', () => {
     const actual4 = getPossibleValues({ type: 'integer', enum: [0, 1], 'x-enum-varnames': ['value0', 'value1'] });
     expect(actual4).to.eql(expected);
 
-    expect(getPossibleValues({ type: 'string', enum: ['value0', 'value1']})).to.eql(['value0', 'value1']);
+    expect(getPossibleValues({ type: 'string', enum: ['value0', 'value1'] })).to.eql(['value0', 'value1']);
   });
 });

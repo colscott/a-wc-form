@@ -4,10 +4,14 @@ import { setComponentTemplate } from '../lib/template-registry.js';
 
 /** @typedef {import("../lib/models.js").Control} Control */
 /** @typedef {import('../lib/models.js').LayoutContext<Control>} ControlLayoutContext */
+/** @typedef {import("../lib/models.js").Textarea} Textarea */
+/** @typedef {import('../lib/models.js').LayoutContext<Textarea>} TextareaLayoutContext */
+/** @typedef {import("../lib/models.js").ArrayComponent} ArrayComponent */
+/** @typedef {import('../lib/models.js').LayoutContext<ArrayComponent>} ArrayComponentLayoutContext */
 /** @typedef {import('lit').TemplateResult} TemplateResult */
 
 /**
- * @param {ControlLayoutContext} context
+ * @param {ControlLayoutContext|TextareaLayoutContext|ArrayComponentLayoutContext} context
  * @returns {TemplateResult}
  */
 function label(context) {
@@ -87,3 +91,60 @@ function controlTemplate(context) {
 }
 
 setComponentTemplate('Control', controlTemplate);
+
+/**
+ * @param {TextareaLayoutContext} context
+ * @returns {TemplateResult} matching the context passed in
+ */
+function textarea(context) {
+  const { properties } = context.component;
+  const { validation } = properties;
+  return html`
+    <span
+      >${label(context)}<textarea
+        name="${properties.ref}"
+        bind="${properties.ref}"
+        aria-label=${ifDefined(properties.label)}
+        aria-description=${ifDefined(properties.description)}
+        rows="${ifDefined(properties.rows)}"
+        cols="${ifDefined(properties.cols)}"
+        minlength="${ifDefined(validation && validation.minLength)}"
+        maxlength="${ifDefined(validation && validation.maxLength)}"
+        ?required=${!!validation && validation.required}
+        aria-required="${!!validation && validation.required}"
+        aria-readonly="${ifDefined(properties.readOnly)}"
+        ?readonly=${!!properties.readOnly}
+      ></textarea
+    ></span>
+  `;
+}
+
+setComponentTemplate('Textarea', textarea);
+
+/**
+ * @param {ArrayComponentLayoutContext} context
+ * @returns {TemplateResult} matching the context passed in
+ */
+function arrayTemplate(context) {
+  const { properties } = context.component;
+  const { validation } = properties;
+  return html`
+    <span
+      >${label(context)}<select
+        name="${context.component.properties.ref}"
+        bind="${context.component.properties.ref}"
+        ?required=${!!validation && validation.required}
+        multiple
+      >
+        ${context.component.properties.possibleValues.map(
+          e =>
+            html`
+              <option value="${typeof e === 'string' ? e : e.value}">${typeof e === 'string' ? e : e.label}</option>
+            `,
+        )}
+      </select></span
+    >
+  `;
+}
+
+setComponentTemplate('ArrayControl', arrayTemplate);

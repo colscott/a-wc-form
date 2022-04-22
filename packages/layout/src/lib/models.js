@@ -82,7 +82,7 @@ export {};
  * @property {number} [maxLength] for text based controls
  * @property {number} [min] for number based controls
  * @property {number} [max] for number based controls
- * @property {number} [step] for number based controls
+ * @property {number} [step] for number based controls. Can be used for number of decimal places or precision. Default is 1 (integer)
  * @property {boolean} [required=false] whether the control value is required
  * @property {string} [pattern] regular expression to validate text input values against
  *
@@ -99,7 +99,48 @@ export {};
  * @typedef {ControlType & ControlProperties} Control
  */
 
-/** @typedef {HorizontalLayout | VerticalLayout | GridComponent | Label | Control | GridLayout | ArrayLayout} ComponentTemplate */
+/**
+ * @typedef {Object} TextareaType
+ * @property {'Textarea'} template
+ *
+ * @typedef {Object} TextareaValidation
+ * @property {number} [minLength] the minimum number of characters required that the user should enter.
+ * @property {number} [maxLength] the maximum number of characters that the user can enter. If this value isn't specified, the user can enter an unlimited number of characters.
+ * @property {boolean} [required=false] whether the control value is required
+ *
+ * @typedef {Object} TextareaProperties
+ * @property {Object} properties
+ * @property {string} properties.ref JSON pointer to the data value that will back this control
+ * @property {string} [properties.label] to apply to the control as a standard label and aria
+ * @property {string} [properties.description] more description for the user
+ * @property {number} [properties.cols] the visible width of the text control, in average character widths.
+ * @property {number} [properties.rows] the number of visible text lines for the control.
+ * @property {boolean} [properties.readOnly=false] whether the control is in a read only state
+ * @property {TextareaValidation} [properties.validation]
+ *
+ * @typedef {TextareaType & TextareaProperties} Textarea
+ */
+
+/**
+ * @typedef {Object} ArrayType
+ * @property {'ArrayControl'} template
+ *
+ * @typedef {Object} ArrayValidation
+ * @property {boolean} [required=false] whether the control value is required
+ *
+ * @typedef {Object} ArrayProperties
+ * @property {Object} properties
+ * @property {string} properties.ref JSON pointer to the data value that will back this control
+ * @property {string} [properties.label] to apply to the control as a standard label and aria
+ * @property {string} [properties.description] more description for the user
+ * @property {boolean} [properties.readOnly=false] whether the control is in a read only state
+ * @property {PossibleValues} [properties.possibleValues] to constrain the value to
+ * @property {ArrayValidation} [properties.validation]
+ *
+ * @typedef {ArrayType & ArrayProperties} ArrayComponent Can be thought of as a multi-select
+ */
+
+/** @typedef {HorizontalLayout | VerticalLayout | GridComponent | Label | Control | Textarea | ArrayComponent | GridLayout | ArrayLayout} ComponentTemplate */
 
 // /**
 //  * @typedef {Object} LayoutContext
