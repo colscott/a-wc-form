@@ -15,7 +15,7 @@ import './array-layout.js';
 function horizontalTemplate(context) {
   const { components } = context.component.properties;
 
-  const style = `display: flex; align-items: center; gap: var(--form-pad, 16px); flex-wrap: wrap; flex-basis: 100%;`;
+  const style = `display: flex; align-items: flex-start; gap: var(--form-pad, 16px); flex-wrap: wrap; flex-basis: 100%;`;
 
   return html`
     ${context.component.properties && context.component.properties.label
