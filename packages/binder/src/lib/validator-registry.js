@@ -47,6 +47,13 @@ export function remove(validator) {
 }
 
 /**
+ * Removes all registered validators from the registry. Use this if you want to replace the existing validators.
+ */
+export function clear() {
+  validatorRegistry.length = 0;
+}
+
+/**
  * @param {ValidationElement} control to find validators for
  * @returns {Array<Validator>} matching validators
  */
