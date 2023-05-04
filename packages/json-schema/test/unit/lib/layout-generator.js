@@ -48,6 +48,10 @@ const jsonSchema = {
       type: 'string',
       enum: ['pizza', 'cheese', 'humus'],
     },
+    password: {
+      type: 'string',
+      format: 'password',
+    },
   },
   required: ['name'],
 };
@@ -223,6 +227,26 @@ const expectedLayout = {
             step: undefined,
           },
         },
+      },
+      {
+        properties: {
+          description: undefined,
+          label: undefined,
+          possibleValues: undefined,
+          readOnly: false,
+          ref: '#/password',
+          type: 'password',
+          validation: {
+            max: undefined,
+            maxLength: undefined,
+            min: undefined,
+            minLength: undefined,
+            pattern: undefined,
+            required: false,
+            step: undefined,
+          },
+        },
+        template: 'Control',
       },
     ],
     label: undefined,

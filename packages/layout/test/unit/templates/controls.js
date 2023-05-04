@@ -136,6 +136,25 @@ const layoutSchema = {
           },
         },
       },
+      {
+        template: 'Control',
+        properties: {
+          label: 'Password label',
+          description: 'Password description',
+          readOnly: false,
+          ref: '#/password',
+          type: 'password',
+          validation: {
+            max: undefined,
+            maxLength: undefined,
+            min: undefined,
+            minLength: undefined,
+            pattern: undefined,
+            required: false,
+            step: undefined,
+          },
+        },
+      },
     ],
     label: 'Vertical Layout label',
   },
@@ -184,6 +203,11 @@ const expectedHtml = `
       <option value="cheese">cheese</option>
       <option value="humus">humus</option>
     </select>
+  </span>
+
+  <span>
+    <label style="display: block;" for="#/password" title="Password description">Password label</label>
+    <input type="password" name="#/password" bind="#/password" aria-label="Password label" aria-description="Password description" aria-required="false" title="Password description" aria-readonly="false">
   </span>
 </div>
 `;

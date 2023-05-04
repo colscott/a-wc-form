@@ -54,6 +54,7 @@ const formatMapping = {
   time: 'time',
   duration: 'text',
   email: 'email',
+  password: 'password',
 };
 
 /**
