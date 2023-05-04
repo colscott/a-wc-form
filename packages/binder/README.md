@@ -257,6 +257,7 @@ Example validator:
 import { ValidationResult, validatorRegistry } from "a-wc-form-binder";
 
 // Define the validator
+/** @type {import('a-wc-form-binder/src/lib/validator-registry.js').Validator} */
 const validateLowerCase = {
   controlSelector: "[lower-case]",
   validate: (control, value, data) => {
@@ -288,6 +289,7 @@ Below is an example of validation that uses another field in calculating validit
 import { jsonPointer, validatorRegistry, ValidationResult } from "a-wc-form-binder";
 
 // Define the greater than validator
+/** @type {import('a-wc-form-binder/src/lib/validator-registry.js').Validator} */
 const greaterThanValidator = {
   controlSelector: "[greater-than]",
   validate: (control, value, data) => {
@@ -316,6 +318,7 @@ Example that asynchronously checks the value equals 'foobar'.
 import { validatorRegistry, ValidationResult } from "a-wc-form-binder";
 
 // Define the greater than validator
+/** @type {import('a-wc-form-binder/src/lib/validator-registry.js').Validator} */
 const asyncValidator = {
   controlSelector: "[async-validator-foobar]",
   validate: (control, value, data) => {
@@ -334,6 +337,46 @@ const asyncValidator = {
 validatorRegistry.add(asyncValidator);
 
 ```
+
+## If the control evaluates and displays its own validity
+
+Sometimes validation and the displaying of error messages is taken care of outside of the form binder. An example might be controls handling their own validity (like HTML [constraint validation API](https://developer.mozilla.org/en-US/docs/Web/API/Constraint_validation)) and message rendering. In these cases the form-binder validation can conflict if it also runs the same/similar validation against the component.
+To resolve this we need to disable the form-binder validation. We can do this by clearing unwanted form-binder validators.
+
+However, the form-binder still needs to be able to know if a component is valid. We can do this with a custom validator that asks the control for its current validity state.
+
+Here is the example custom validator that simply asks the control if it is valid and assumes that the control has taken care of its own validation checks and validation message rendering.
+
+```js
+import { validatorRegistry, ValidationResult } from "a-wc-form-binder";
+
+// Clear any validators that we don't want. Here we'll just remove them all
+validatorRegistry.clear();
+
+// For this example we assume the component uses the HTML constraint validation API and we're going to defer to it
+/** @type {import('a-wc-form-binder/src/lib/validator-registry.js').Validator} */
+const nativeValidityValidator = {
+    // In this example we want this to apply to all controls so we use '*' CSS selector
+    controlSelector: '*',
+    validate: (control, value, data) => {
+        // First make sure that the control is implementing the HTML 
+        const input = /** @type {HTMLInputElement} */ (control);
+        if (input.checkValidity) {
+            // Call the HTML constraint validation API
+            const isValid = input.checkValidity();
+            const result = new ValidationResult('native-validity', true, isValid, isValid);
+            return result;
+        }
+        return new ValidationResult('native-validity', null, null, true);
+    },
+};
+
+// register the validator
+validatorRegistry.add(nativeValidityValidator);
+```
+
+The form-binder will now use the controls own validation state to decide if the form is valid of not.
+In this case form-binder would not be handling and displaying error messages as we are assuming the control does that for us.
 
 ## API
 ### Attributes and properties
