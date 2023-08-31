@@ -90,9 +90,7 @@ describe('Layout', () => {
     await new Promise(res => setTimeout(res));
     let jsonSchemaControl = form.jsonSchemaForm.querySelector('json-schema-control');
     await new Promise(res => setTimeout(res));
-    const inputBinders = Array.from(jsonSchemaControl.querySelectorAll('input')).map(input =>
-      input.getAttribute('bind'),
-    );
+    let inputBinders = Array.from(jsonSchemaControl.querySelectorAll('input')).map(input => input.getAttribute('bind'));
     expect(inputBinders.length).to.equal(7);
     expect(inputBinders).to.eql([
       '#/name',
@@ -103,18 +101,16 @@ describe('Layout', () => {
       '#/children/1/name',
       '#/children/1/age',
     ]);
-    const newSchema = JSON.parse(JSON.stringify(form.schema));
-    delete newSchema.children;
-    newSchema.foobar = {
+    const newSchema = JSON.parse(JSON.stringify(form.jsonSchemaForm.schema));
+    delete newSchema.properties.children;
+    newSchema.properties.foobar = {
       type: 'string',
     };
-    form.schema = newSchema;
+    form.jsonSchemaForm.schema = newSchema;
     await new Promise(res => setTimeout(res));
-    let jsonSchemaControl = form.jsonSchemaForm.querySelector('json-schema-control');
+    jsonSchemaControl = form.jsonSchemaForm.querySelector('json-schema-control');
     await new Promise(res => setTimeout(res));
-    const inputBinders = Array.from(jsonSchemaControl.querySelectorAll('input')).map(input =>
-      input.getAttribute('bind'),
-    );
+    inputBinders = Array.from(jsonSchemaControl.querySelectorAll('input')).map(input => input.getAttribute('bind'));
     expect(inputBinders.length).to.equal(4);
     expect(inputBinders).to.eql(['#/name', '#/age', '#/male', '#/foobar']);
   });
