@@ -1,5 +1,5 @@
 import { initialize } from '../lib/binder-registry.js';
-import { filterValidationResults, matchingValidators, add } from '../lib/validator-registry.js';
+import { filterValidationResults, matchingValidators } from '../lib/validator-registry.js';
 import '../lib/validators/index.js';
 import { getValue, normalize, objectFlat, setValue } from '../lib/json-pointer.js';
 import { ShadowDomMutationObserver } from '../lib/observer.js';
@@ -56,25 +56,35 @@ export function getAttributeBinders(element) {
 }
 
 /**
- * @param {Element} parentElement to find child Element of
+ * @param {Node} parentElement to find child Element of
  * @returns {Array<Element>} found child Elements
  */
 function getChildElements(parentElement) {
-  const elements = Array.from(parentElement.querySelectorAll('*'));
-  return [
-    ...elements,
-    // Get all child shadow root elements
-    ...elements.filter((element) => !!element.shadowRoot).flatMap((element) => getChildElements(element)),
-    // Get all elements assigned to a slot
-    ...elements.filter((element) => element instanceof HTMLSlotElement).flatMap((slot) => slot instanceof HTMLSlotElement && slot.assignedElements()),
-    // Get all child elements of elements assign to a slot
-    ...elements.filter((element) => element instanceof HTMLSlotElement).flatMap((slot) => {
-        if (slot instanceof HTMLSlotElement) {
-          return [...slot.assignedElements().flatMap(element => getChildElements(element))];
-        }
-        return [];
-      }),
-  ];
+  if (parentElement instanceof ShadowRoot) {
+    return Array.from(parentElement.querySelectorAll('*')).flatMap(element => getChildElements(element));
+  }
+  if (parentElement instanceof HTMLSlotElement) {
+    return parentElement.assignedElements().flatMap(element => getChildElements(element));
+  }
+  if (parentElement instanceof Element) {
+    const elements = Array.from(parentElement.querySelectorAll('*'));
+    return [
+      ...elements,
+      // Get all child shadow root elements
+      ...elements
+        .filter(element => !!element.shadowRoot)
+        .flatMap(element => [element, ...getChildElements(element.shadowRoot)]),
+      ...elements
+        .filter(element => element instanceof HTMLSlotElement)
+        .flatMap(slot => {
+          if (slot instanceof HTMLSlotElement) {
+            return slot.assignedElements().flatMap(element => [element, ...getChildElements(element)]);
+          }
+          return [];
+        }),
+    ];
+  }
+  return [];
 }
 
 /** @template TData */
