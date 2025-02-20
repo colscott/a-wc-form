@@ -21,6 +21,7 @@ import { ShadowDomMutationObserver } from '../lib/observer.js';
 /** @typedef {import("../lib/validator-registry.js").FormValidationResult} FormValidationResult */
 
 const ATTRIBUTE_BINDER_PREFIX = 'bind-attr:';
+const PROPERTY_BINDER_PREFIX = 'bind-prop:';
 
 /**
  * @param {Element} element to get the name for
@@ -47,7 +48,25 @@ export function getAttributeBinders(element) {
     if (attribute.name.startsWith(ATTRIBUTE_BINDER_PREFIX)) {
       result.push({
         jsonPointer: normalize(attribute.value),
-        attribute: attribute.name.substr(ATTRIBUTE_BINDER_PREFIX.length),
+        attribute: attribute.name.substring(ATTRIBUTE_BINDER_PREFIX.length),
+      });
+    }
+    return result;
+  }, []);
+  return attributeBinders;
+}
+
+/**
+ * @param {Element} element to get the binder names for
+ * @returns {Array<{jsonPointer: string, property: string}>}
+ */
+export function getPropertyBinders(element) {
+  const attributes = Array.from(element.attributes);
+  const attributeBinders = attributes.reduce((result, attribute) => {
+    if (attribute.name.startsWith(PROPERTY_BINDER_PREFIX)) {
+      result.push({
+        jsonPointer: normalize(attribute.value),
+        property: attribute.name.substring(PROPERTY_BINDER_PREFIX.length),
       });
     }
     return result;
@@ -293,6 +312,11 @@ export class FormBinder extends HTMLElement {
       } else {
         control.setAttribute(attribute, attributeValue);
       }
+    });
+
+    getPropertyBinders(control).forEach(({ jsonPointer, property }) => {
+      const propertyValue = getValue(this.data, jsonPointer);
+      control[property] = propertyValue;
     });
 
     const binder = this.registeredControlBinders.get(control);

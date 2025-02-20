@@ -398,7 +398,7 @@ import { binderRegistry } from "a-wc-form-layout";
 
 // Create the binder
 const divToggleBinding = {
-  controlSelector: "div.toggle",
+  controlSelector: "div.my-toggle",
   initializeEvents: (control, onChange) =>
     control.addEventListener("click", e => {
       control.toggleValue = !control.toggleValue;
