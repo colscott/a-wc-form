@@ -344,23 +344,27 @@ export class FormBinder extends HTMLElement {
       return;
     }
 
-    const registeredControlBinders = Array.from(this.registeredControlBinders.entries()).map((entry) => ({
-      name: normalize(getName(entry[0])),
-      control: entry[0],
-      binding: entry[1],
-      attributeBinders: getAttributeBinders(entry[0]),
-    }));
+    const registeredControlBinders = Array.from(this.registeredControlBinders.entries()).map(
+      ([control, jsonPointer]) => ({
+        name: normalize(getName(control)),
+        control,
+        binding: jsonPointer,
+        attributeBinders: getAttributeBinders(control),
+        propertyBinders: getPropertyBinders(control),
+      }),
+    );
 
     // For each value, update the data and update the control
-    jsonPointers.forEach((jsonPointer) => {
+    jsonPointers.forEach(jsonPointer => {
       const normalizedKey = normalize(jsonPointer);
       registeredControlBinders
         .filter(
-          (binderEntry) =>
+          binderEntry =>
             binderEntry.name === normalizedKey ||
-            binderEntry.attributeBinders.find((a) => a.jsonPointer === normalizedKey),
+            binderEntry.attributeBinders.find(a => a.jsonPointer === normalizedKey) ||
+            binderEntry.propertyBinders.find(a => a.jsonPointer === normalizedKey),
         )
-        .forEach((binderEntry) => this.updateControlValue(binderEntry.control));
+        .forEach(binderEntry => this.updateControlValue(binderEntry.control));
     });
   }
 

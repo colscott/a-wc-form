@@ -37,7 +37,7 @@ async function createFormBinder(useShadowRoot = false) {
     <input id="message" bind="#/comments/1/message" />
     <input id="student" bind="#/student" type="checkbox" />
     <input id="start" type="date" bind="/start" bind-attr:max="/end" />
-    <input id="end" type="date" bind="/end" bind-attr:min="/start" />
+    <input id="end" type="date" bind="/end" bind-attr:min="/start" bind-prop:student="/student" />
     <input id="occupation" bind="/occupation" bind-attr:disabled="/student" />
   `;
   if (useShadowRoot) {
@@ -263,7 +263,7 @@ describe('form-binder binding tests', () => {
     expect(formBinder.data).to.eql(mockData);
   });
 
-  it('Should bind attributes', async () => {
+  it('Should bind attributes and properties', async () => {
     binderRegistry.add(...Object.values(binders));
     const { formBinder } = await createFormBinder();
     inputValue('start', '2021-03-04');
@@ -272,14 +272,27 @@ describe('form-binder binding tests', () => {
     const startInput = document.getElementById('start');
     const endInput = document.getElementById('end');
     expect(startInput.value).to.eql('2021-03-04');
+    // Test bind-attr worked
     expect(startInput.getAttribute('max')).to.eql('2021-03-10');
     expect(endInput.value).to.eql('2021-03-10');
     expect(endInput.getAttribute('min')).to.eql('2021-03-04');
+    // Test bind-prop worked
+    expect(endInput.student).to.be.true;
+    expect(endInput.hasAttribute('student')).to.be.false;
     formBinder.patch({ student: false });
+    // Test bind-prop worked
+    expect(endInput.student).to.be.false;
+    expect(endInput.hasAttribute('student')).to.be.false;
     await wait();
     const occupationInput = document.getElementById('occupation');
+    // Test bind-prop worked
+    expect(endInput.student).to.be.false;
+    expect(endInput.hasAttribute('student')).to.be.false;
     expect(occupationInput.hasAttribute('disabled')).to.equal(false);
     formBinder.patch({ student: true });
+    // Test bind-prop worked
+    expect(endInput.student).to.be.true;
+    expect(endInput.hasAttribute('student')).to.be.false;
     await wait();
     expect(occupationInput.hasAttribute('disabled')).to.equal(true);
   });
