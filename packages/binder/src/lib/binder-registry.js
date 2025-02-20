@@ -17,18 +17,37 @@ import { ControlBinding } from './control-binding.js';
  */
 
 /**
+ * @template {Element} [TElement=Element]
+ * @template [TValue=unknown]
  * @typedef {Object} Binder
  * @property {string} controlSelector css selector associated with this value accessor
- * @property {function(Element, OnValueChangeCallback, OnTouchCallback):void} initializeEvents should be used to bind component value change events to onChange. e.g. (control, binder) => control.addEventListener('input', () => binder.onChange())
- * @property {function(Element, undefined|unknown):void} writeValue responsible for writing a value to the control e.g. (control, value) => control.value = value
+ * @property {function(TElement, OnValueChangeCallback, OnTouchCallback):void} initializeEvents should be used to bind component value change events to onChange. e.g. (control, binder) => control.addEventListener('input', () => binder.onChange())
+ * @property {function(TElement, undefined|TValue):void} writeValue responsible for writing a value to the control e.g. (control, value) => control.value = value
  */
 
 /** @type {Array<Binder>} */
 const binders = [];
 
-/** @param {Array<Binder>} binder */
+/**
+ * Adds a Binder to the end of the registry.
+ * It will be processed after all other binders.
+ * To have the Binder be processed earlier use unshift(binder)
+ * If the Binder is already in the registry it will be moved to the end
+ * @param {Array<Binder>} binder */
 export function add(...binder) {
+  remove(...binder);
   binders.push(...binder);
+}
+
+/**
+ * Use to insert binders at the start.
+ * Use this to have a binder be evaluated first before other binders
+ * If the Binder is already in the registry it will be moved to the start
+ * @param {Array<Binder>} binder
+ */
+export function unshift(...binder) {
+  remove(...binder);
+  binders.unshift(...binder);
 }
 
 /**
@@ -37,7 +56,7 @@ export function add(...binder) {
  */
 export function remove(...binder) {
   binder.forEach((b) => {
-    const index = binders.findIndex((bc) => bc === b);
+    const index = binders.indexOf(b);
     if (index > -1) {
       binders.splice(index, 1);
     }

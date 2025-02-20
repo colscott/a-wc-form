@@ -1,5 +1,9 @@
 /** @typedef {import("./binder-registry").ControlElement} ControlElement */
-/** @typedef {import("./binder-registry").Binder} Binder */
+/**
+ * @template {Element} [TElement=Element]
+ * @template [TValue=unknown]
+ * @typedef {import('./binder-registry').Binder<TElement, TValue>} Binder<TElement, TValue>
+ */
 
 /**
  * @callback OnValueChangeCallback

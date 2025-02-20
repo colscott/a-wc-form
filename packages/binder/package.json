@@ -1,6 +1,6 @@
 {
   "name": "a-wc-form-binder",
-  "version": "2.5.0",
+  "version": "2.5.4",
   "description": "",
   "author": "colin scott",
   "homepage": "",
@@ -12,5 +12,5 @@
   "dependencies": {
     "lit": "^2.1.1"
   },
-  "gitHead": "202b610eefd801e61c15a5ac275b80ff3f79d7b3"
+  "gitHead": "d143b15d7750afec8ccea5dd762270abdeb5e868"
 }

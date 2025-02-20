@@ -10,10 +10,16 @@ export {};
 // ---------- LAYOUTS ----------
 
 /**
+ * @typedef AbstractControl
+ * @property {string} template
+ * @property {object} properties
+ */
+
+/**
  * @typedef {object} HorizontalLayout
  * @property {'HorizontalLayout'} template
  * @property {object} properties
- * @property {Array<ComponentTemplate>} properties.components child Components (Controls or Layouts) that are in this layout
+ * @property {Array<AbstractControl>} properties.components child Components (Controls or Layouts) that are in this layout
  * @property {string} [properties.label]
  */
 
@@ -21,7 +27,7 @@ export {};
  * @typedef {object} VerticalLayout
  * @property {'VerticalLayout'} template
  * @property {object} properties
- * @property {Array<ComponentTemplate>} properties.components child Components (Controls or Layouts) that are in this layout
+ * @property {Array<AbstractControl>} properties.components child Components (Controls or Layouts) that are in this layout
  * @property {string} [properties.label]
  */
 
@@ -29,14 +35,14 @@ export {};
  * @typedef {object} ArrayLayout
  * @property {'ArrayLayout'} template
  * @property {object} properties
- * @property {ComponentTemplate} properties.component child Components (Controls or Layouts) that are in this layout
+ * @property {AbstractControl} properties.component child Components (Controls or Layouts) that are in this layout
  * @property {string} properties.ref JSON pointer to the data value that will back this control
  * @property {string} [properties.label]
  */
 
 /**
  * @typedef {object} GridLayoutComponent Describes a component that goes into a GridLayout
- * @property {ComponentTemplate} component Component to show in this position in the grid
+ * @property {AbstractControl} component Component to show in this position in the grid
  * @property {number} [row] the row index to insert this component in the grid. Will default to the next available grid cell.
  * @property {number} [column] the column index to insert this component in the grid. Will default to the next available grid cell.
  * @property {number} [rows=1] the number of rows this component should span in the grid
@@ -148,7 +154,7 @@ export {};
 //  */
 
 /**
- * @template TComponent
+ * @template {AbstractControl} TComponent
  * @typedef {Object} LayoutContext
  * @property {TComponent} component currently being rendered
  */

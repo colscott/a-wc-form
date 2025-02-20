@@ -1,6 +1,6 @@
 {
   "name": "a-wc-form-json-schema",
-  "version": "2.5.0",
+  "version": "2.5.4",
   "description": "JSON Schema form binder and layout",
   "author": "colin scott",
   "homepage": "",
@@ -10,8 +10,9 @@
     "src"
   ],
   "dependencies": {
-    "a-wc-form-binder": "file:../binder",
-    "a-wc-form-layout": "file:../layout",
+    "a-wc-form-binder": "^2.5.4",
+    "a-wc-form-layout": "^2.5.4",
     "lit": "^2.1.1"
-  }
+  },
+  "gitHead": "d143b15d7750afec8ccea5dd762270abdeb5e868"
 }

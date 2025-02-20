@@ -1,6 +1,10 @@
-/** @typedef {import('./binder-registry').Binder} Binder */
+/**
+ * @template {Element} [TElement=Element]
+ * @template [TValue=unknown]
+ * @typedef {import('./binder-registry').Binder<TElement, TValue>} Binder<TElement, TValue>
+ */
 
-/** @type {Binder} */
+/** @type {Binder<HTMLInputElement, string>} */
 export const textInputBinder = {
   controlSelector: 'input, textarea',
   initializeEvents: (control, onChange, onTouch) => {
@@ -11,12 +15,12 @@ export const textInputBinder = {
     });
     control.addEventListener('blur', () => onTouch());
   },
-  writeValue: /** @param {HTMLInputElement} control */ (control, value) => {
+  writeValue: (control, value) => {
     control.value = (value || '').toString();
   },
 };
 
-/** @type {Binder} */
+/** @type {Binder<HTMLInputElement, number>} */
 export const numberInputBinder = {
   controlSelector: 'input[type=number]',
   initializeEvents: (control, onChange) =>
@@ -32,7 +36,7 @@ export const numberInputBinder = {
   },
 };
 
-/** @type {Binder} */
+/** @type {Binder<HTMLInputElement, boolean>} */
 export const checkboxInputBinder = {
   controlSelector: "input[type='checkbox']",
   initializeEvents: (control, onChange) =>
@@ -48,7 +52,7 @@ export const checkboxInputBinder = {
   },
 };
 
-/** @type {Binder} */
+/** @type {Binder<HTMLSelectElement, string>} */
 export const selectBinder = {
   controlSelector: 'select',
   initializeEvents: (control, onChange) =>

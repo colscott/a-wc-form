@@ -1,12 +1,11 @@
 /** @typedef {import('./models.js').ComponentTemplate} ComponentTemplate */
-/** @typedef {import('./models.js').LayoutContext<ComponentTemplate>} LayoutContext */
+/**
+ * @template {import('./models').AbstractControl} [TControl=ComponentTemplate]
+ * @typedef {import('./models.js').LayoutContext<TControl>} LayoutContext */
 /** @typedef {import('lit').TemplateResult} TemplateResult */
 
 /** @type {Map<string, (LayoutContext) => TemplateResult|Array<TemplateResult>>} */
 const componentTemplates = new Map();
-
-// TODO look to merge Control and Layout
-// Controls can have sub templates base on data type
 
 /**
  * @param {string} templateName key used to reference this componentTemplate
@@ -17,8 +16,9 @@ export function getComponentTemplate(templateName) {
 }
 
 /**
+ * @template {import('./models').AbstractControl} [TControl=ComponentTemplate]
  * @param {string} templateName key used to reference this componentTemplate
- * @param {(LayoutContext) => TemplateResult|Array<TemplateResult>} componentTemplate used to render components of this type
+ * @param {(context: LayoutContext<TControl>) => TemplateResult|Array<TemplateResult>} componentTemplate used to render components of this type
  */
 export function setComponentTemplate(templateName, componentTemplate) {
   componentTemplates.set(templateName, componentTemplate);
