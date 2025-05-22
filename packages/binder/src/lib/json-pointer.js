@@ -25,7 +25,7 @@ const isIntRegEx = /^[0-9]+$/;
  * @param {string} ref
  */
 const buildOutObject = (data, ref) => {
-  const keys = ref.split('/');
+  const keys = ref.split(/[\/\.]/);
   let nextData = data;
   keys.forEach((key, i) => {
     if (key.length && key !== '#') {
