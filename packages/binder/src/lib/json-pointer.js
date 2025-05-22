@@ -1,6 +1,6 @@
 /**
  * @param {Object.<string, any>} data
- * @param {string} ref
+ * @param {string|RegExp} ref
  * @returns {{data: any; property: string;}}
  */
 const getDataRef = (data, ref, pattern = '/') => {
