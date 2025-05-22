@@ -20,6 +20,8 @@ describe('JSON Pointer', () => {
     expect(getValue(data, '/comments/1')).to.deep.equal(data.comments[1]);
     expect(getValue(data, '#/comments/1/date')).to.equal(data.comments[1].date);
     expect(getValue(data, '/comments/1/date')).to.equal(data.comments[1].date);
+    expect(getValue(data, '#/comments.1.date')).to.equal(data.comments[1].date);
+    expect(getValue(data, '/comments.1.date')).to.equal(data.comments[1].date);
   });
 
   it('Should correctly map to schema', async () => {
@@ -39,6 +41,8 @@ describe('JSON Pointer', () => {
     expect(getSchemaValue(schema, '/address/1')).to.equal(schema.properties.address.items[1]);
     expect(getSchemaValue(schema, '#/telephoneNumbers/1')).to.equal(schema.properties.telephoneNumbers.items);
     expect(getSchemaValue(schema, '/telephoneNumbers/1')).to.equal(schema.properties.telephoneNumbers.items);
+    expect(getSchemaValue(schema, '#/telephoneNumbers.1')).to.be.undefined;
+    expect(getSchemaValue(schema, '/telephoneNumbers.1')).to.be.undefined;
   });
 
   it('Should set values', () => {
@@ -51,6 +55,8 @@ describe('JSON Pointer', () => {
     expect(t1).to.eql({ name: 1, name2: 1, nested1: { age: 1 } });
     setValue(t1, '/nested1/age2', 1);
     expect(t1).to.eql({ name: 1, name2: 1, nested1: { age: 1, age2: 1 } });
+    setValue(t1, '/nested1.age2', 2);
+    expect(t1).to.eql({ name: 1, name2: 1, nested1: { age: 1, age2: 2 } });
   });
 
   it('Should convert object to flat JSON Pointers', () => {

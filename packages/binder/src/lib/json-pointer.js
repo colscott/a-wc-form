@@ -3,9 +3,9 @@
  * @param {string} ref
  * @returns {{data: any; property: string;}}
  */
-const getDataRef = (data, ref) => {
+const getDataRef = (data, ref, pattern = '/') => {
   let nextData = data;
-  const keys = ref.split('/').reverse();
+  const keys = ref.split(pattern).reverse();
   while (nextData && keys.length > 1) {
     const nextKey = keys.pop();
 
@@ -62,7 +62,7 @@ const getDataProperty = dataAndProperty => {
  * @returns {any}
  */
 export const getValue = (data, ref) => {
-  const dataAndProperty = getDataRef(data, ref);
+  const dataAndProperty = getDataRef(data, ref, /[\/\.]/);
   return getDataProperty(dataAndProperty);
 };
 
@@ -73,7 +73,7 @@ export const getValue = (data, ref) => {
  */
 export const setValue = (data, ref, value) => {
   buildOutObject(data, ref);
-  const dataAndProperty = getDataRef(data, ref);
+  const dataAndProperty = getDataRef(data, ref, /[\/\.]/);
   dataAndProperty.data[dataAndProperty.property] = value;
 };
 
