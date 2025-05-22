@@ -1,6 +1,7 @@
 /**
  * @param {Object.<string, any>} data
- * @param {string|RegExp} ref
+ * @param {string} ref
+ * @param {string|RegExp} [pattern='/'] pattern to split the ref on
  * @returns {{data: any; property: string;}}
  */
 const getDataRef = (data, ref, pattern = '/') => {
