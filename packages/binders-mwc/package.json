@@ -1,6 +1,6 @@
 {
   "name": "a-wc-form-binders-mwc",
-  "version": "2.6.3",
+  "version": "2.7.0",
   "description": "Material Web Component Binders and Templates for the form-binder",
   "author": "colin scott",
   "homepage": "",
@@ -10,9 +10,9 @@
     "src"
   ],
   "dependencies": {
-    "a-wc-form-binder": "^2.6.3",
-    "a-wc-form-json-schema": "^2.6.3",
-    "a-wc-form-layout": "^2.6.3",
+    "a-wc-form-binder": "^2.7.0",
+    "a-wc-form-json-schema": "^2.7.0",
+    "a-wc-form-layout": "^2.7.0",
     "lit": "^2.1.1"
   },
   "peerDependencies": {
