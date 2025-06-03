@@ -86,6 +86,22 @@ export function getPossibleValues(schema) {
       });
   }
 
+  if (schema.anyOf) {
+    // { type: 'integer', anyOf: [ { enum: [0], description: 'value0'}, { enum: [1], description: 'value1'} ] }
+    // { type: 'integer', anyOf: [ { const: 0, description: 'value0'}, { const: 1, description: 'value1'} ] }
+    return schema.anyOf
+      .filter(anyOf => typeof anyOf !== 'boolean')
+      .map(anyOf => {
+        if (typeof anyOf !== 'boolean' && anyOf.description) {
+          return {
+            value: 'const' in anyOf ? anyOf.const.toString() : anyOf.enum[0].toString(),
+            label: anyOf.description,
+          };
+        }
+        return '';
+      });
+  }
+
   // Support for some proprietary libraries
   // { type: 'integer', enum: [0, 1], x-enumNames: ['zero', 'one']}
   // { type: 'integer', enum: [0, 1], x-enum-varnames: ['zero', 'one']}
@@ -219,7 +235,7 @@ const arrayToLayout = (schema, ref) => {
 
   // items: { type: number|string, enum: [], uniqueItems: true, minItems: 1 }
   // Select control
-  if ((items.type === 'string' || items.type === 'number') && items.enum instanceof Array) {
+  if ((items.type === 'string' || items.type === 'number' || items.type === 'integer') && items.enum instanceof Array) {
     return {
       template: 'ArrayControl',
       properties: {
