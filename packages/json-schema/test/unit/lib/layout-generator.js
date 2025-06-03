@@ -287,6 +287,30 @@ describe('Layout', () => {
     expect(isRequired(arraySchema, '#/children/1/age')).to.be.false;
     expect(isRequired(arraySchema, '/children/1/age')).to.be.false;
     expect(isRequired(arraySchema, 'children/1/age')).to.be.false;
+    const arrayOfArraySchema = {
+      type: 'object',
+      properties: {
+        children: {
+          type: 'array',
+          items: [
+            { type: 'object', properties: { name: { type: 'string' }, age: { type: 'number' } }, required: ['name'] },
+            { type: 'object', properties: { start: { type: 'string' }, end: { type: 'number' } }, required: ['start'] },
+          ],
+        },
+      },
+    };
+    expect(isRequired(arrayOfArraySchema, '#/children/0/name')).to.be.true;
+    expect(isRequired(arrayOfArraySchema, '/children/0/name')).to.be.true;
+    expect(isRequired(arrayOfArraySchema, 'children/0/name')).to.be.true;
+    expect(isRequired(arrayOfArraySchema, '#/children/0/age')).to.be.false;
+    expect(isRequired(arrayOfArraySchema, '/children/0/age')).to.be.false;
+    expect(isRequired(arrayOfArraySchema, 'children/0/age')).to.be.false;
+    expect(isRequired(arrayOfArraySchema, '#/children/1/start')).to.be.true;
+    expect(isRequired(arrayOfArraySchema, '/children/1/start')).to.be.true;
+    expect(isRequired(arrayOfArraySchema, 'children/1/start')).to.be.true;
+    expect(isRequired(arrayOfArraySchema, '#/children/1/end')).to.be.false;
+    expect(isRequired(arrayOfArraySchema, '/children/1/end')).to.be.false;
+    expect(isRequired(arrayOfArraySchema, 'children/1/end')).to.be.false;
   });
 
   it('should generate possible values', async () => {

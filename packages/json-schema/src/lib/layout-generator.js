@@ -28,9 +28,16 @@ export function getLayout(schema, startRef) {
 export function isRequired(schema, ref) {
   let innerProperties = ref
     // strip the property name to get the parent
-    .substring(0, ref.lastIndexOf('/'))
-    // strip any trailing array indexes to get the main parent object
-    .replace(/\/\d+$/, '');
+    .substring(0, ref.lastIndexOf('/'));
+
+  if (innerProperties.match(/\/\d+$/)) {
+    // if the parent is not an object, strip the array index
+    if (getSchemaValue(schema, innerProperties).type !== 'object') {
+      // strip any trailing array indexes to get the main parent object
+      innerProperties = innerProperties.replace(/\/\d+$/, '');
+    }
+  }
+
   if (innerProperties.match(/\/items/)) {
     // if an Array change ref to be parent object that has the required property
     innerProperties = innerProperties.substring(0, innerProperties.lastIndexOf('/'));
