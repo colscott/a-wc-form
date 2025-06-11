@@ -115,7 +115,7 @@ export function getPossibleValues(schema) {
     }
     return schema.enum.map(e => e.toString());
   }
-  return [];
+  return null;
 }
 
 /**
@@ -140,7 +140,7 @@ function controlToLayout(schema, ref) {
           : typeMapping[currentSchema.type],
       description: currentSchema.description,
       label: currentSchema.title,
-      possibleValues: possibleValues.length ? possibleValues : undefined,
+      possibleValues: Array.isArray(possibleValues) ? possibleValues : undefined,
       readOnly: currentSchema.readOnly === true,
       validation: {
         max: currentSchema.maximum || currentSchema.exclusiveMaximum,

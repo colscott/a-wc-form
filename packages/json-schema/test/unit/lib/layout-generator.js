@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* global describe, it */
 import { expect } from '@esm-bundle/chai/esm/chai.js';
 import { getLayout, isRequired, getPossibleValues } from '../../../src/lib/layout-generator.js';
@@ -344,5 +345,9 @@ describe('Layout', () => {
     expect(actual4).to.eql(expected);
 
     expect(getPossibleValues({ type: 'string', enum: ['value0', 'value1'] })).to.eql(['value0', 'value1']);
+
+    expect(getPossibleValues({ type: 'string', enum: [] })).to.eql([]);
+
+    expect(getPossibleValues({ type: 'string' })).to.be.null;
   });
 });
