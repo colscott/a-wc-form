@@ -1,6 +1,6 @@
 {
   "name": "a-wc-form-layout",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "form binder and layout",
   "author": "colin scott",
   "homepage": "",
@@ -10,7 +10,7 @@
     "src"
   ],
   "dependencies": {
-    "a-wc-form-binder": "^2.7.0",
+    "a-wc-form-binder": "^2.7.1",
     "lit": "^2.1.1"
   },
   "gitHead": "d143b15d7750afec8ccea5dd762270abdeb5e868"
