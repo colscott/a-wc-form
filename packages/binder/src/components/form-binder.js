@@ -156,6 +156,19 @@ export class FormBinder extends HTMLElement {
 
     this.mutationObserver.observe(this, config);
 
+    this.addEventListener('slotchange', (e) => {
+      const slot = e.composedPath()[0];
+      if (slot instanceof HTMLSlotElement) {
+        const assignedElements = slot.assignedElements();
+        assignedElements.forEach((assignedElement) => {
+          this.addControl(assignedElement);
+          assignedElement.querySelectorAll('*').forEach((childElement) => {
+            this.addControl(childElement);
+          });
+        });
+      }
+    });
+
     getChildElements(this).forEach((element) => this.addControl(element));
   }
 
