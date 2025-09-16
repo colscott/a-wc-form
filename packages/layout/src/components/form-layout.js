@@ -36,6 +36,14 @@ export class FormLayout extends FormBinder {
     super.connectedCallback();
   }
 
+  /** @inheritdoc */
+  disconnectedCallback() {
+    if (this.hasSlottedContent === false) {
+      render('', this);
+    }
+    super.disconnectedCallback();
+  }
+
   /** @protected */
   requestUpdate() {
     if (!this._requestedUpdate) {
