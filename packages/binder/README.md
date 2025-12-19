@@ -114,6 +114,7 @@ A single binder is made up of the following parts:
 - CSS Selector (controlSelector) that maps the binder to the controls. If a binder matches a control then a control binding is created
 - A function (initializeEvents) to listen to value changes on the control, and pass the new data values to an onChange callback
 - A function (writeValue) to write a value to the control
+- A function (reportValidity) [optional] to report validation state and messages to the control
 
 Here is an example binder for a using a DIV element as boolean toggle when it is clicked:
 
@@ -132,6 +133,20 @@ const divToggleBinding = {
     }),
   writeValue: (control, value) => {
     control.toggleValue = value;
+  },
+  reportValidity: (control, validationResults) => {
+    // Optional: Report validation state to the control
+    // validationResults is an array of ValidationResult objects from all validators
+    const invalid = validationResults.find(r => r.valid === false);
+    if (invalid && invalid.message) {
+      // Set error message on control
+      control.setAttribute('data-error', invalid.message);
+      control.classList.add('error');
+    } else {
+      // Clear error message
+      control.removeAttribute('data-error');
+      control.classList.remove('error');
+    }
   }
 };
 ```
@@ -274,6 +289,72 @@ validatorRegistry.add(validateLowerCase);
 // un-register the validator if no longer needed
 validatorRegistry.remove(validateLowerCase);
 ```
+
+## Custom Validator Messages
+
+Validators can optionally provide custom error messages by passing a fifth parameter to the ValidationResult constructor. These messages are then passed to the binder's `reportValidity` function, allowing the binder to display user-friendly error messages.
+
+Example validator with custom message:
+
+```js
+import { ValidationResult, validatorRegistry } from "a-wc-form-binder";
+
+/** @type {import('a-wc-form-binder/src/lib/validator-registry.js').Validator} */
+const validateMinLength = {
+  controlSelector: "[custom-min-length]",
+  validate: (control, value, data) => {
+    const minLength = parseInt(control.getAttribute("custom-min-length") || "0");
+    const isValid = value && value.toString().length >= minLength;
+    
+    // Fifth parameter is the optional custom error message
+    const message = isValid ? undefined : `Value must be at least ${minLength} characters`;
+    
+    return new ValidationResult(
+      "custom-min-length",
+      minLength,
+      value?.length || 0,
+      isValid,
+      message  // Custom error message
+    );
+  }
+};
+
+validatorRegistry.add(validateMinLength);
+```
+
+When validation runs, the form-binder will call the binder's `reportValidity` function with all validation results for that control. The binder can then choose how to display these messages:
+
+```js
+// Example binder that uses HTML5 constraint validation API
+const textInputBinder = {
+  controlSelector: 'input[type=text]',
+  initializeEvents: (control, onChange) => {
+    control.addEventListener('change', e => onChange(e.target.value));
+  },
+  writeValue: (control, value) => {
+    control.value = value || '';
+  },
+  reportValidity: (control, validationResults) => {
+    // Find first invalid result
+    const invalid = validationResults.find(r => r.valid === false);
+    
+    if (invalid && invalid.message) {
+      // Set the custom validation message
+      control.setCustomValidity(invalid.message);
+    } else if (!invalid) {
+      // Clear the message when valid
+      control.setCustomValidity('');
+    }
+  }
+};
+```
+
+The `reportValidity` function receives an array of all `ValidationResult` objects for the control, giving the binder flexibility to:
+- Display the first error message
+- Display all error messages
+- Prioritize certain types of errors
+- Implement custom UI patterns for error display
+
 ## Custom cross-field validation
 
 Let say we want to do some cross field validation in the form:

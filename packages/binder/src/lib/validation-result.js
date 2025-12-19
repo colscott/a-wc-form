@@ -8,8 +8,9 @@ export class ValidationResult {
    * @param {TValue} expected value
    * @param {TValue} actual value
    * @param {boolean} valid is valid or not
+   * @param {string} [message] optional message describing the validation result
    */
-  constructor(name, expected, actual, valid) {
+  constructor(name, expected, actual, valid, message) {
     /** @type {string} */
     this.name = name;
     /** @type {TValue} */
@@ -20,5 +21,7 @@ export class ValidationResult {
     this.valid = valid;
     /** @type {string} */
     this.field = null;
+    /** @type {string} */
+    this.message = message;
   }
 }

@@ -1,6 +1,7 @@
 import { ControlBinding } from './control-binding.js';
 
 /** @typedef {Element} ControlElement */
+/** @typedef {import('./validation-result').ValidationResult} ValidationResult */
 /**
  * @typedef OnValueChangeCallbackOptions
  * @property {string} [ref] optional JSON Pointer that will be appended to the controllers JSON Pointer. This is useful if the control is responsible for many properties in the schema, like a grid.
@@ -23,6 +24,7 @@ import { ControlBinding } from './control-binding.js';
  * @property {string} controlSelector css selector associated with this value accessor
  * @property {function(TElement, OnValueChangeCallback, OnTouchCallback):void} initializeEvents should be used to bind component value change events to onChange. e.g. (control, binder) => control.addEventListener('input', () => binder.onChange())
  * @property {function(TElement, undefined|TValue):void} writeValue responsible for writing a value to the control e.g. (control, value) => control.value = value
+ * @property {function(TElement, ValidationResult[]):void} [reportValidity] optional function to report validation results to the control e.g. (control, validationResult) => control.setCustomValidity(...)
  */
 
 /** @type {Array<Binder>} */

@@ -458,6 +458,12 @@ export class FormBinder extends HTMLElement {
         }
       });
 
+    // Call reportValidity once per control with the overall validation state
+    const binder = this.registeredControlBinders.get(control);
+    if (binder && typeof binder.binder.reportValidity === 'function') {
+      binder.binder.reportValidity(control, controlValidationResults);
+    }
+
     return {
       control,
       controlValidationResults,

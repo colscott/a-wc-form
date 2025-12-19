@@ -372,3 +372,346 @@ describe('form-binder binding tests', () => {
   //   // expect(formBinder.data.name).to.equal("Johnny Seven");
   // });
 });
+
+describe('Integration: Validator messages with reportValidity', () => {
+  /** @type {import('../../../src/lib/validator-registry').Validator} */
+  const validatorWithMessage = {
+    controlSelector: '[test-message]',
+    validate: (control, value) => {
+      const isValid = value && value.toString().length >= 5;
+      const message = isValid ? undefined : 'Must be at least 5 characters';
+      return new ValidationResult('min-length-message', 5, value?.length || 0, isValid, message);
+    },
+  };
+
+  /** @type {import('../../../src/lib/validator-registry').Validator} */
+  const validatorWithoutMessage = {
+    controlSelector: '[test-no-message]',
+    validate: (control, value) => {
+      const isValid = value && value.toString().startsWith('test');
+      return new ValidationResult('starts-with-test', 'test*', value, isValid);
+    },
+  };
+
+  after(() => {
+    validatorRegistry.remove(validatorWithMessage);
+    validatorRegistry.remove(validatorWithoutMessage);
+  });
+
+  beforeEach(() => {
+    binderRegistry.add(binders.textInputBinder);
+    binderRegistry.add(binders.numberInputBinder);
+  });
+
+  afterEach(() => {
+    binderRegistry.remove(binders.textInputBinder);
+    binderRegistry.remove(binders.numberInputBinder);
+    document.querySelectorAll('form-binder').forEach((e) => e.parentElement.removeChild(e));
+  });
+
+  it('should propagate validator message to control via binder.reportValidity', async () => {
+    validatorRegistry.add(validatorWithMessage);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { testField: 'abc' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `
+      <input id="test-input" type="text" bind="#/testField" test-message />
+    `;
+    await wait();
+
+    const input = document.getElementById('test-input');
+    expect(input.value).to.equal('abc');
+
+    // Trigger validation
+    const result = await formBinder.reportValidity();
+
+    // Should have validation error
+    expect(result.isValid).to.be.false;
+    expect(result.errors).to.have.lengthOf(1);
+    
+    // Most importantly, the control should have the validation message
+    expect(input.validationMessage).to.equal('Must be at least 5 characters');
+  });
+
+  it('should clear validation message when value becomes valid', async () => {
+    validatorRegistry.add(validatorWithMessage);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { testField: 'ab' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `
+      <input id="test-input" type="text" bind="#/testField" test-message />
+    `;
+    await wait();
+
+    const input = document.getElementById('test-input');
+    
+    // Initial validation should fail
+    await formBinder.reportValidity();
+    expect(input.validationMessage).to.equal('Must be at least 5 characters');
+
+    // Update to valid value
+    input.value = 'abcdef';
+    input.dispatchEvent(new Event('change'));
+    await wait();
+
+    // Validation should pass and message should be cleared
+    const result = await formBinder.reportValidity();
+    expect(result.isValid).to.be.true;
+    expect(input.validationMessage).to.equal('');
+  });
+
+  it('should not set validation message when validator does not provide one', async () => {
+    validatorRegistry.add(validatorWithoutMessage);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { testField: 'invalid' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `
+      <input id="test-input" type="text" bind="#/testField" test-no-message />
+    `;
+    await wait();
+
+    const input = document.getElementById('test-input');
+
+    // Trigger validation
+    const result = await formBinder.reportValidity();
+
+    // Should have validation error
+    expect(result.isValid).to.be.false;
+    expect(result.errors).to.have.lengthOf(1);
+    
+    // But control should NOT have validation message (validator didn't provide one)
+    expect(input.validationMessage).to.equal('');
+  });
+
+  it('should handle multiple validators with messages on same control', async () => {
+    /** @type {import('../../../src/lib/validator-registry').Validator} */
+    const requiredValidator = {
+      controlSelector: '[required-message]',
+      validate: (control, value) => {
+        const isValid = value && value.toString().trim().length > 0;
+        const message = isValid ? undefined : 'This field is required';
+        return new ValidationResult('required', true, !!value, isValid, message);
+      },
+    };
+
+    validatorRegistry.add(validatorWithMessage);
+    validatorRegistry.add(requiredValidator);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { testField: 'ab' };  // Changed from '' to 'ab' - too short for validatorWithMessage
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `
+      <input id="test-input" type="text" bind="#/testField" test-message required-message />
+    `;
+    await wait();
+
+    const input = document.getElementById('test-input');
+
+    // Trigger validation - validatorWithMessage should fail (< 5 chars), requiredValidator should pass
+    const result = await formBinder.reportValidity();
+    expect(result.isValid).to.be.false;
+
+    // Should show the min-length message
+    expect(input.validationMessage).to.equal('Must be at least 5 characters');
+
+    validatorRegistry.remove(requiredValidator);
+  });
+
+  it('should include message in validation result event detail', async () => {
+    validatorRegistry.add(validatorWithMessage);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { testField: 'ab' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `
+      <input id="test-input" type="text" bind="#/testField" test-message />
+    `;
+
+    let eventDetail = null;
+    formBinder.addEventListener('form-binder:report-validity', (e) => {
+      eventDetail = e.detail;
+    });
+
+    await wait();
+    await formBinder.reportValidity();
+
+    expect(eventDetail).to.not.be.null;
+    expect(eventDetail.errors).to.have.lengthOf(1);
+    
+    const errorResult = eventDetail.errors[0];
+    const validationResult = errorResult.controlValidationResults.find(
+      (r) => r.name === 'min-length-message'
+    );
+    
+    expect(validationResult).to.not.be.undefined;
+    expect(validationResult.message).to.equal('Must be at least 5 characters');
+  });
+
+  it('should work with number inputs and validator messages', async () => {
+    /** @type {import('../../../src/lib/validator-registry').Validator} */
+    const minValueValidator = {
+      controlSelector: '[min-value]',
+      validate: (control, value) => {
+        const min = parseInt(control.getAttribute('min-value'), 10);
+        const numValue = typeof value === 'number' ? value : parseInt(value, 10);
+        const isValid = !isNaN(numValue) && numValue >= min;
+        const message = isValid ? undefined : `Value must be at least ${min}`;
+        return new ValidationResult('min-value', min, numValue, isValid, message);
+      },
+    };
+
+    validatorRegistry.add(minValueValidator);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { age: 15 };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `
+      <input id="age-input" type="number" bind="#/age" min-value="18" />
+    `;
+    await wait();
+
+    const input = document.getElementById('age-input');
+    expect(input.value).to.equal('15');
+
+    // Trigger validation
+    const result = await formBinder.reportValidity();
+
+    expect(result.isValid).to.be.false;
+    expect(input.validationMessage).to.equal('Value must be at least 18');
+
+    // Update to valid value
+    input.value = '20';
+    input.dispatchEvent(new Event('change'));
+    await wait();
+
+    const result2 = await formBinder.reportValidity();
+    expect(result2.isValid).to.be.true;
+    expect(input.validationMessage).to.equal('');
+
+    validatorRegistry.remove(minValueValidator);
+  });
+
+  it('should call reportValidity automatically when visited control value changes', async () => {
+    validatorRegistry.add(validatorWithMessage);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { testField: 'valid value' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `
+      <input id="test-input" type="text" bind="#/testField" test-message />
+    `;
+    await wait();
+
+    const input = document.getElementById('test-input');
+    
+    // Mark as visited by triggering blur
+    input.dispatchEvent(new Event('blur'));
+    await wait();
+
+    // Change to invalid value - should automatically trigger reportValidity
+    input.value = 'ab';
+    input.dispatchEvent(new Event('change'));
+    await wait();
+
+    // Should automatically show validation message
+    expect(input.validationMessage).to.equal('Must be at least 5 characters');
+  });
+
+  it('should handle validator that returns valid result without message and clears previous errors', async () => {
+    /** @type {import('../../../src/lib/validator-registry').Validator} */
+    const alwaysValidValidator = {
+      controlSelector: '[always-valid]',
+      validate: (control, value) => {
+        // Returns valid result without a message
+        return new ValidationResult('always-valid', 'anything', value, true);
+      },
+    };
+
+    validatorRegistry.add(alwaysValidValidator);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { testField: 'test' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `
+      <input id="test-input" type="text" bind="#/testField" always-valid />
+    `;
+    await wait();
+
+    const input = document.getElementById('test-input');
+    
+    // Set an error manually first
+    input.setCustomValidity('Previous error');
+    expect(input.validationMessage).to.equal('Previous error');
+
+    // Trigger validation with the always-valid validator (no message)
+    await formBinder.reportValidity();
+    
+    // Should clear the previous error even though validator didn't provide a message
+    expect(input.validationMessage).to.equal('');
+
+    validatorRegistry.remove(alwaysValidValidator);
+  });
+
+  it('should handle multiple validators all returning valid and clear previous errors', async () => {
+    /** @type {import('../../../src/lib/validator-registry').Validator} */
+    const validator1 = {
+      controlSelector: '[multi-valid]',
+      validate: (control, value) => {
+        const isValid = value && value.toString().length >= 5;
+        const message = isValid ? undefined : 'Value must be at least 5 characters';
+        return new ValidationResult('validator-1', 5, value?.length || 0, isValid, message);
+      },
+    };
+
+    /** @type {import('../../../src/lib/validator-registry').Validator} */
+    const validator2 = {
+      controlSelector: '[multi-valid]',
+      validate: (control, value) => {
+        const isValid = value && value.toString().startsWith('valid');
+        return new ValidationResult('validator-2', 'starts with valid', value, isValid);
+      },
+    };
+
+    /** @type {import('../../../src/lib/validator-registry').Validator} */
+    const validator3 = {
+      controlSelector: '[multi-valid]',
+      validate: (control, value) => {
+        return new ValidationResult('validator-3', 'any', value, true);
+      },
+    };
+
+    validatorRegistry.add(validator1);
+    validatorRegistry.add(validator2);
+    validatorRegistry.add(validator3);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { testField: 'ab' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `
+      <input id="test-input" type="text" bind="#/testField" multi-valid />
+    `;
+    await wait();
+
+    const input = document.getElementById('test-input');
+    
+    // First validation should fail (too short)
+    await formBinder.reportValidity();
+    expect(input.validationMessage).to.equal('Value must be at least 5 characters');
+
+    // Update to valid value - all 3 validators should pass
+    input.value = 'valid test';
+    input.dispatchEvent(new Event('change'));
+    await wait();
+    
+    // Should clear the error - all validators pass
+    await formBinder.reportValidity();
+    expect(input.validationMessage).to.equal('');
+
+    validatorRegistry.remove(validator1);
+    validatorRegistry.remove(validator2);
+    validatorRegistry.remove(validator3);
+  });
+});
