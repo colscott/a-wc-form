@@ -714,4 +714,35 @@ describe('Integration: Validator messages with reportValidity', () => {
     validatorRegistry.remove(validator2);
     validatorRegistry.remove(validator3);
   });
+
+  [
+    { method: 'checkValidity', expected: false, message: 'checkValidity should not call binder.reportValidity' },
+    { method: 'reportValidity', expected: true, message: 'reportValidity should call binder.reportValidity' },
+    { method: 'validate', expected: false, message: 'validate should not call binder.reportValidity' },
+  ].forEach(({ method, expected, message }) => {
+    it(message, async () => {
+      validatorRegistry.add(validatorWithMessage);
+
+      const formBinder = document.createElement('form-binder');
+      formBinder.data = { testField: 'abc' };
+      document.body.appendChild(formBinder);
+      formBinder.innerHTML = `
+        <input id="test-input" type="text" bind="#/testField" test-message />
+      `;
+      await wait();
+
+      let reportValidityCalled = false;
+      const input = document.getElementById('test-input');
+      const binderEntry = formBinder.registeredControlBinders.get(input);
+      const original = binderEntry.binder.reportValidity;
+      binderEntry.binder.reportValidity = (...a) => {
+        reportValidityCalled = true;
+        return original.apply(binderEntry.binder, a);
+      };
+
+      await formBinder[method]();
+
+      expect(reportValidityCalled).to.equal(expected);
+    });
+  });
 });
