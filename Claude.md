@@ -47,6 +47,8 @@ Transform tasks into verifiable goals:
 - "Fix the bug" → "Write a test that reproduces it, then make it pass"
 - "Refactor X" → "Ensure tests pass before and after"
 
+**Test-first**: Always write/update tests before the implementation. Tests should fail first, then be made to pass by the fix.
+
 For multi-step tasks, state a brief plan:
 ```
 1. [Step] → verify: [check]
