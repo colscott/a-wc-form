@@ -21,10 +21,11 @@
     "typescript": "^4.4.2"
   },
   "scripts": {
-    "generateTypes": "npx tsc -p d.tsconfig.json",
+    "generateTypes": "npm run removeTypes && npx tsc -p d.tsconfig.json",
     "removeTypes": "rimraf \"./packages/*/src/**/*d.ts\"",
     "prepublishOnly": "npm run generateTypes",
     "start": "web-dev-server --node-resolve --preserve-symlinks",
+    "lint": "eslint \"packages/*/src/**/*.js\" \"packages/*/test/**/*.js\"",
     "test": "npm run test:unit",
     "test:coverage": "npm run test:unit -- --coverage",
     "test:watch": "npm run test:unit -- --watch",

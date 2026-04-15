@@ -271,7 +271,9 @@ export class FormBinder extends HTMLElement {
   commit() {
     this._patch = {};
     this._updatedControls = new Map();
+    this._visitedControls = new Set();
     this._originalData = JSON.parse(JSON.stringify(this.data));
+    this.clearValidity();
   }
 
   /**
@@ -281,9 +283,11 @@ export class FormBinder extends HTMLElement {
   rollback() {
     this._patch = {};
     this._updatedControls = new Map();
+    this._visitedControls = new Set();
     if (this._originalData) {
       this.data = this._originalData;
     }
+    this.clearValidity();
   }
 
   /** @deprecated use rollback */
@@ -520,6 +524,25 @@ export class FormBinder extends HTMLElement {
         binder.binder.reportValidity(control, controlValidationResults);
       }
     });
+  }
+
+  /** Clears validation errors on all controls. Dispatches a cancelable
+   *  'form-binder:clear-validity' event. If not cancelled, clears errors
+   *  via binder reportValidity with empty results. */
+  clearValidity() {
+    const event = new CustomEvent('form-binder:clear-validity', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    this.dispatchEvent(event);
+    if (!event.defaultPrevented) {
+      this.registeredControlBinders.forEach(({ binder }, control) => {
+        if (typeof binder.reportValidity === 'function') {
+          binder.reportValidity(control, []);
+        }
+      });
+    }
   }
 }
 

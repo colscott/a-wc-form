@@ -746,3 +746,168 @@ describe('Integration: Validator messages with reportValidity', () => {
     });
   });
 });
+
+describe('commit, rollback, and clearValidity', () => {
+  /** @type {import('../../../src/lib/validator-registry').Validator} */
+  const minLengthValidator = {
+    controlSelector: '[min-len]',
+    validate: (control, value) => {
+      const isValid = value && value.toString().length >= 5;
+      const message = isValid ? undefined : 'Must be at least 5 characters';
+      return new ValidationResult('min-length', 5, value?.length || 0, isValid, message);
+    },
+  };
+
+  beforeEach(() => {
+    binderRegistry.add(binders.textInputBinder);
+  });
+
+  afterEach(() => {
+    validatorRegistry.remove(minLengthValidator);
+    binderRegistry.remove(binders.textInputBinder);
+    document.querySelectorAll('form-binder').forEach((e) => e.parentElement.removeChild(e));
+  });
+
+  it('Should clear visitedControls on rollback', async () => {
+    validatorRegistry.add(minLengthValidator);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { field: 'hello' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `<input id="test-input" type="text" bind="#/field" min-len />`;
+    await wait();
+
+    const input = document.getElementById('test-input');
+
+    // Mark as visited
+    input.dispatchEvent(new Event('blur'));
+    await wait();
+
+    // Verify visited is true
+    const result1 = await formBinder.validate();
+    expect(result1.result[0].visited).to.be.true;
+
+    // Rollback
+    formBinder.rollback();
+    await wait();
+
+    // Verify visited is cleared
+    const result2 = await formBinder.validate();
+    expect(result2.result[0].visited).to.be.false;
+  });
+
+  it('Should clear visitedControls on commit', async () => {
+    validatorRegistry.add(minLengthValidator);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { field: 'hello' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `<input id="test-input" type="text" bind="#/field" min-len />`;
+    await wait();
+
+    const input = document.getElementById('test-input');
+
+    // Mark as visited
+    input.dispatchEvent(new Event('blur'));
+    await wait();
+
+    // Verify visited is true
+    const result1 = await formBinder.validate();
+    expect(result1.result[0].visited).to.be.true;
+
+    // Commit
+    formBinder.commit();
+    await wait();
+
+    // Verify visited is cleared
+    const result2 = await formBinder.validate();
+    expect(result2.result[0].visited).to.be.false;
+  });
+
+  it('Should clear validation errors on rollback', async () => {
+    validatorRegistry.add(minLengthValidator);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { field: 'ab' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `<input id="test-input" type="text" bind="#/field" min-len />`;
+    await wait();
+
+    const input = document.getElementById('test-input');
+
+    // Trigger validation to set error
+    await formBinder.reportValidity();
+    expect(input.validationMessage).to.equal('Must be at least 5 characters');
+
+    // Rollback should clear validation errors
+    formBinder.rollback();
+    await wait();
+
+    expect(input.validationMessage).to.equal('');
+  });
+
+  it('Should clear validation errors on commit', async () => {
+    validatorRegistry.add(minLengthValidator);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { field: 'ab' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `<input id="test-input" type="text" bind="#/field" min-len />`;
+    await wait();
+
+    const input = document.getElementById('test-input');
+
+    // Trigger validation to set error
+    await formBinder.reportValidity();
+    expect(input.validationMessage).to.equal('Must be at least 5 characters');
+
+    // Commit should clear validation errors
+    formBinder.commit();
+    await wait();
+
+    expect(input.validationMessage).to.equal('');
+  });
+
+  it('Should dispatch form-binder:clear-validity event on clearValidity', async () => {
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { field: 'hello' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `<input id="test-input" type="text" bind="#/field" />`;
+    await wait();
+
+    let eventFired = false;
+    formBinder.addEventListener('form-binder:clear-validity', () => {
+      eventFired = true;
+    });
+
+    formBinder.clearValidity();
+
+    expect(eventFired).to.be.true;
+  });
+
+  it('Should not call binder reportValidity when clear-validity event is cancelled', async () => {
+    validatorRegistry.add(minLengthValidator);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { field: 'ab' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `<input id="test-input" type="text" bind="#/field" min-len />`;
+    await wait();
+
+    const input = document.getElementById('test-input');
+
+    // Trigger validation to set error
+    await formBinder.reportValidity();
+    expect(input.validationMessage).to.equal('Must be at least 5 characters');
+
+    // Cancel the clear-validity event
+    formBinder.addEventListener('form-binder:clear-validity', (e) => {
+      e.preventDefault();
+    });
+
+    formBinder.clearValidity();
+
+    // Error should still be present because event was cancelled
+    expect(input.validationMessage).to.equal('Must be at least 5 characters');
+  });
+});

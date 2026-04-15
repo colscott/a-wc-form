@@ -62,11 +62,14 @@ formBinder.data = {
   name: { first: 'fred', second: 'bar', middle: 'foo' }
 };
 
-// Revert any user changes or patches made to the data
+// Revert any user changes or patches made to the data. Clears visited state and validation errors.
 formBinder.rollback();
 
-// Commit changes to create a new point that can be rolled back to
+// Commit changes to create a new point that can be rolled back to. Clears visited state and validation errors.
 formBinder.commit();
+
+// Clear validation errors on all controls without re-running validation
+formBinder.clearValidity();
 
 // Get changes to data since form was created or last commit
 formBinder.getPatch(); // As Object
@@ -197,6 +200,19 @@ formBinder.addEventListener('form-binder:report-validity', event => {
           .map(controlValidator => translate(controlValidator.name)) // Translate here
           .join(","));
     });
+});
+```
+
+### Clearing validation errors
+
+`commit()` and `rollback()` automatically clear validation errors via `clearValidity()`. You can also call `clearValidity()` directly.
+
+If you need to handle clearing validation UI differently (e.g., custom controls with their own clearing logic), listen for the cancelable `form-binder:clear-validity` event and call `preventDefault()`:
+
+```js
+formBinder.addEventListener('form-binder:clear-validity', event => {
+  event.preventDefault(); // Prevent default binder-based clearing
+  // Handle clearing validation UI your own way
 });
 ```
 
@@ -473,8 +489,8 @@ In this case form-binder would not be handling and displaying error messages as 
 | getPatch | Partial<TData> | data changed as a partial object since data was set or commit() was called. |
 | getPatchAsMap | Map<string, unknown> | data changed as a JSONPoint/value Map since data was set or commit() was called. |
 | getPatchAsArray | Array<[string, unknown]> | data changed as an Array or Tuple (JSONPointer/value) since data was set or commit() was called. |
-| rollback | void | Reverts any user changes or patches made to the data. |
-| commit | void | Clears the currently recorded changes and sets the current state as the new baseline. It does not clear the data changes themselves. You might use this if the user saves the form and you want to mark the form as unchanged. If rollback() is called the form will be reverted to the last time commit() was called. |
+| rollback | void | Reverts any user changes or patches made to the data. Clears visited state and validation errors via clearValidity(). |
+| commit | void | Clears the currently recorded changes and sets the current state as the new baseline. Clears visited state and validation errors via clearValidity(). If rollback() is called the form will be reverted to the last time commit() was called. |
 | addControl | void | Can be called to manually bind a control to a form. |
 | updateControlValue | void | Manually updates a control with the value in the data. Triggers reportValidity if the user has visited/touched the control. |
 | updateControlValues | void | Manually updates all bound controls with the value in the data. Triggers reportValidity if the user has visited/touched the control. |
@@ -483,6 +499,7 @@ In this case form-binder would not be handling and displaying error messages as 
 | checkValidity | Promise\<boolean> | Starts a validity check of all bound controllers. No reporting is performed. |
 | reportValidity | Promise\<import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult> | Starts a validity check of all bound controllers. Reporting is performed. |
 | reportErrors | void | Given a import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult will dispatch a form-binder:report-validity event |
+| clearValidity | void | Clears validation errors on all controls. Dispatches a cancelable 'form-binder:clear-validity' event. If not cancelled, clears errors via binder reportValidity with empty results. Called automatically by commit() and rollback(). |
 
 ## Events
 | Name | Detail | Description |
@@ -490,6 +507,7 @@ In this case form-binder would not be handling and displaying error messages as 
 | form-binder:change          | data              | event.detail.data references a copy of the original data that has new values applied to it. |
 |                             | validationResults | event.detail.validationResults validation was performed as part of the change process.      |
 | form-binder:report-validity | import("a-wc-form-binder/src/lib/control-validator.js").FormValidationResult | Should be listened to to update the UI with messages. |
+| form-binder:clear-validity  | none | Cancelable. Fired by clearValidity(), commit(), and rollback(). Call preventDefault() to handle clearing validation UI yourself instead of the default binder-based clearing. |
 
 ## Styles
 Since there is no shadow DOM applied, you are free to style the form-binder.
