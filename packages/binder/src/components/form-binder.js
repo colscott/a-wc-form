@@ -344,7 +344,7 @@ export class FormBinder extends HTMLElement {
       if (this._reportValidityRequested === false && this._visitedControls.has(control)) {
         this._reportValidityRequested = true;
         // Run validity check as task to give custom controls chance to initialize (e.g. MWC)
-        setTimeout(() => this.reportValidity());
+        setTimeout(() => this.reportValidity(Array.from(this._visitedControls)));
       }
     }
   }
@@ -425,7 +425,7 @@ export class FormBinder extends HTMLElement {
    */
   controlVisited(controlElement) {
     this._visitedControls.add(controlElement);
-    return this.reportValidity();
+    return this.reportValidity(Array.from(this._visitedControls));
   }
 
   /**

@@ -1,7 +1,7 @@
 /* global describe, before, after, afterEach, it */
 // @ts-check
 import { expect } from '@esm-bundle/chai/esm/chai.js';
-import { binderRegistry, binders, validatorRegistry, ValidationResult } from '../../../src/index.js';
+import { binderRegistry, binders, validatorRegistry, ValidationResult, jsonPointer } from '../../../src/index.js';
 import { patternValidator } from '../../../src/lib/validators/pattern.js';
 import { maxValidator } from '../../../src/lib/validators/max.js';
 import { data as mockData } from '../../../demo/mock.js';
@@ -606,7 +606,7 @@ describe('Integration: Validator messages with reportValidity', () => {
     await wait();
 
     const input = document.getElementById('test-input');
-    
+
     // Mark as visited by triggering blur
     input.dispatchEvent(new Event('blur'));
     await wait();
@@ -618,6 +618,170 @@ describe('Integration: Validator messages with reportValidity', () => {
 
     // Should automatically show validation message
     expect(input.validationMessage).to.equal('Must be at least 5 characters');
+  });
+
+  it('should not show validation UI on unvisited controls when a visited control changes', async () => {
+    validatorRegistry.add(validatorWithMessage);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { fieldA: 'ab', fieldB: 'cd' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `
+      <input id="input-a" type="text" bind="#/fieldA" test-message />
+      <input id="input-b" type="text" bind="#/fieldB" test-message />
+    `;
+    await wait();
+
+    const inputA = document.getElementById('input-a');
+    const inputB = document.getElementById('input-b');
+
+    // Visit only inputA
+    inputA.dispatchEvent(new Event('blur'));
+    await wait();
+
+    // Change inputA's value - this triggers auto reportValidity
+    inputA.value = 'xy';
+    inputA.dispatchEvent(new Event('change'));
+    await wait();
+
+    // inputA (visited) should show the validation message
+    expect(inputA.validationMessage).to.equal('Must be at least 5 characters');
+    // inputB (unvisited) should NOT show a validation message even though it is invalid
+    expect(inputB.validationMessage).to.equal('');
+  });
+
+  it('should update validation UI on visited dependent control when source control changes', async () => {
+    /** Validator on inputB whose validity depends on inputA's data value via the data arg. */
+    /** @type {import('../../../src/lib/validator-registry').Validator} */
+    const dependentValidator = {
+      controlSelector: '[depends-on-a]',
+      validate: (control, value, data) => {
+        const isValid = value === data.fieldA;
+        const message = isValid ? undefined : 'Must equal fieldA';
+        return new ValidationResult('matches-a', data.fieldA, value, isValid, message);
+      },
+    };
+    validatorRegistry.add(dependentValidator);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { fieldA: 'same', fieldB: 'same' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `
+      <input id="input-a" type="text" bind="#/fieldA" />
+      <input id="input-b" type="text" bind="#/fieldB" depends-on-a />
+    `;
+    await wait();
+
+    const inputA = document.getElementById('input-a');
+    const inputB = document.getElementById('input-b');
+
+    // Visit both A and B
+    inputA.dispatchEvent(new Event('blur'));
+    await wait();
+    inputB.dispatchEvent(new Event('blur'));
+    await wait();
+
+    // Both currently match - inputB should be valid
+    expect(inputB.validationMessage).to.equal('');
+
+    // Change inputA - inputB now no longer matches fieldA
+    inputA.value = 'different';
+    inputA.dispatchEvent(new Event('change'));
+    await wait();
+
+    // inputB (visited and dependent on A) should reflect the new validation state
+    expect(inputB.validationMessage).to.equal('Must equal fieldA');
+
+    validatorRegistry.remove(dependentValidator);
+  });
+
+  it('should update validation UI on visited dependent control using README cross-field pattern', async () => {
+    /** Mirrors the documented cross-field validator from packages/binder/README.md (renamed selector to avoid the built-in greater-than validator). */
+    /** @type {import('../../../src/lib/validator-registry').Validator} */
+    const customGreaterThanValidator = {
+      controlSelector: '[custom-gt]',
+      validate: (control, value, data) => {
+        const otherField = control.getAttribute('custom-gt');
+        const otherValue = jsonPointer.getValue(data, otherField);
+        const numValue = Number(value);
+        const numOther = Number(otherValue);
+        const isValid = numValue > numOther;
+        const message = isValid ? undefined : `Must be greater than ${otherField}`;
+        return new ValidationResult('custom-gt', otherField, value, isValid, message);
+      },
+    };
+    validatorRegistry.add(customGreaterThanValidator);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { from: 1, to: 5 };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `
+      <input id="from" type="number" bind="/from" />
+      <input id="to" type="number" bind="/to" custom-gt="/from" />
+    `;
+    await wait();
+
+    const fromInput = document.getElementById('from');
+    const toInput = document.getElementById('to');
+
+    // Visit both inputs
+    fromInput.dispatchEvent(new Event('blur'));
+    await wait();
+    toInput.dispatchEvent(new Event('blur'));
+    await wait();
+
+    // 5 > 1, so 'to' is currently valid
+    expect(toInput.validationMessage).to.equal('');
+
+    // Change 'from' so that 'to' (5) is no longer greater than 'from' (10)
+    fromInput.value = '10';
+    fromInput.dispatchEvent(new Event('change'));
+    await wait();
+
+    // 'to' is visited and depends on 'from' via the custom-gt validator
+    expect(toInput.validationMessage).to.equal('Must be greater than /from');
+
+    validatorRegistry.remove(customGreaterThanValidator);
+  });
+
+  it('should not validate unvisited dependent controls when source control changes', async () => {
+    /** Validator that always fails so we can detect if reportValidity ran on the control. */
+    /** @type {import('../../../src/lib/validator-registry').Validator} */
+    const dependentValidator = {
+      controlSelector: '[depends-on-a]',
+      validate: (control, value, data) => {
+        const isValid = value === data.fieldA;
+        const message = isValid ? undefined : 'Must equal fieldA';
+        return new ValidationResult('matches-a', data.fieldA, value, isValid, message);
+      },
+    };
+    validatorRegistry.add(dependentValidator);
+
+    const formBinder = document.createElement('form-binder');
+    formBinder.data = { fieldA: 'same', fieldB: 'same' };
+    document.body.appendChild(formBinder);
+    formBinder.innerHTML = `
+      <input id="input-a" type="text" bind="#/fieldA" />
+      <input id="input-b" type="text" bind="#/fieldB" depends-on-a />
+    `;
+    await wait();
+
+    const inputA = document.getElementById('input-a');
+    const inputB = document.getElementById('input-b');
+
+    // Visit only A; B is unvisited
+    inputA.dispatchEvent(new Event('blur'));
+    await wait();
+
+    // Change inputA - B is now invalid by the validator but unvisited
+    inputA.value = 'different';
+    inputA.dispatchEvent(new Event('change'));
+    await wait();
+
+    // B is unvisited - no validation UI should be set even though B depends on A
+    expect(inputB.validationMessage).to.equal('');
+
+    validatorRegistry.remove(dependentValidator);
   });
 
   it('should handle validator that returns valid result without message and clears previous errors', async () => {
